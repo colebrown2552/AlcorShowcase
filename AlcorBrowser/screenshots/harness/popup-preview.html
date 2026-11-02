@@ -1,0 +1,92 @@
+<!doctype html>
+<!--
+  AlcorBrowser popup preview, for screenshots only.
+
+  This page renders the REAL extension popup (extension/popup.html, its CSS and popup.js, loaded
+  unchanged) with STUBBED browser APIs. A stub `chrome` object answers the one message the popup
+  sends (`{kind:'hub', req}`) with demo data shaped like the broker's hub reply
+  (runtime/broker.py `_hub` / `_recent`) plus the extension's own facts (agents.js). Nothing here
+  talks to a broker or a browser profile, and the data below is made up: sample agents, example.com
+  origins, no port, path or host.
+
+  It is a harness, not part of the extension. Open it through headless Chrome with
+  --allow-file-access-from-files (the page fetches popup.html) and a dark colour scheme, e.g.
+    chrome --headless --allow-file-access-from-files --blink-settings=preferredColorScheme=1 \
+           --window-size=1440,900 --screenshot=popup.png file:///.../popup-preview.html
+  Query: ?zoom=2 sets the magnification (default 1.5).
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>AlcorBrowser popup preview</title>
+    <style>
+      html, body { margin: 0; height: 100%; background: #0b0d12; }
+      body {
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        font: 20px/1.3 system-ui, 'Segoe UI', sans-serif; color: #9aa0aa; gap: 14px;
+      }
+      #stage { zoom: var(--z, 1.5); box-shadow: 0 0 0 1px #2c3038, 0 12px 40px #000a; border-radius: 6px; overflow: hidden; }
+      iframe { display: block; width: 340px; border: 0; }
+      #cap { letter-spacing: 0.3px; }
+    </style>
+  </head>
+  <body>
+    <div id="stage"><iframe id="popup" scrolling="no"></iframe></div>
+    <div id="cap">AlcorBrowser extension popup</div>
+    <script>
+      const params = new URLSearchParams(location.search);
+      document.documentElement.style.setProperty('--z', params.get('zoom') || '1.5');
+      const now = Date.now() / 1000;
+      const BUILD = '3f9c2a71d0b4';
+
+      // What the broker's hub "status" reply carries, plus `ext` added by the extension worker.
+      const DEMO = {
+        connected: true,
+        ok: true,
+        broker_version: '2.2.1',
+        channel_kind: 'directory',
+        tabs_named: 3,
+        update_available: false,
+        channel: {
+          version: '2.2.1',
+          build: BUILD + 'e85a1c06',
+          published: '2026-10-28 14:02',
+          notes: ['Popup shows recent agent calls', 'Restart lane for the broker'],
+        },
+        recent: [
+          { ts: now - 190, agent: 'agent-a', tool: 'browser_open', origin: 'https://example.com', ok: true },
+          { ts: now - 120, agent: 'agent-a', tool: 'browser_type', origin: 'https://example.com', ok: true },
+          { ts: now - 75, agent: 'agent-b', tool: 'browser_upload', origin: 'https://example.org', ok: false },
+          { ts: now - 40, agent: 'agent-a', tool: 'browser_click', origin: 'https://example.com', ok: true },
+          { ts: now - 12, agent: 'agent-b', tool: 'browser_tabs', origin: '', ok: true },
+        ],
+        ext: { version: '2.2.1', build: BUILD, profile: 'default' },
+      };
+
+      const stub = {
+        runtime: {
+          id: 'demo',
+          sendMessage: async (msg) => (msg && msg.kind === 'hub' ? DEMO : {}),
+          getManifest: () => ({ version: '2.2.1' }),
+        },
+      };
+
+      (async () => {
+        const html = await (await fetch('../../extension/popup.html')).text();
+        const frame = document.getElementById('popup');
+        // Install the stub inside the frame ahead of popup.js; every other byte is the real popup.
+        const withStub = html
+          .replace('<head>', '<head><base href="../../extension/"><script>window.chrome = parent.__stub;<\/script>')
+          ;
+        window.__stub = stub;
+        frame.srcdoc = withStub;
+        frame.onload = () => {
+          setTimeout(() => {
+            const d = frame.contentDocument;
+            frame.style.height = d.documentElement.scrollHeight + 'px';
+          }, 200);
+        };
+      })();
+    </script>
+  </body>
+</html>

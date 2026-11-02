@@ -511,7 +511,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--fallback-installed",
         action="store_true",
-        help="declare that a fallback route exists (this carve-out ships only its decision)",
+        help="declare that a fallback route exists (this package ships only the decision)",
     )
     sub = parser.add_subparsers(dest="command", parser_class=_Parser)
 

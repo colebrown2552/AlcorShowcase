@@ -17,9 +17,8 @@ one model call followed by the tool calls it asked for. The loop itself decides 
 * **The full ledger stays on disk.** The model sees a bounded projection of it, and a final answer
   is committed in two steps so a crash cannot replay a draft as accepted history.
 
-Cells that belong to features outside this carve-out (a coach, child tasks, a second core, a
-solver tool) are supplied with neutral values, so ``kernel.alcor`` is exactly the program the full
-system runs.
+Cells that belong to features this package does not include (a coach, child tasks, a second core,
+a solver tool) are supplied with neutral values, so ``kernel.alcor`` runs unchanged.
 """
 
 from __future__ import annotations

@@ -19,13 +19,20 @@ Two parts:
    observation and a second identity check before the fake host sees a click or typed text.
 
 The exit status is 0 only if every expectation holds, so the script doubles as an end-to-end test.
+
+``--json PATH`` additionally writes what the run observed and decided (the screen state, each
+proposed action with its verdict and reason code, the receipts) for the viewer in ``viewer/``.
+A path ending in ``.js`` gets ``window.ALCOR_RUN = ...;`` so the viewer opens from disk.
+Temporary paths are replaced by ``<tmp>`` by the exporter. Without the flag nothing changes.
 """
 
 from __future__ import annotations
 
+import argparse
 import contextlib
 import json
 import os
+import re
 import shutil
 import sys
 import tempfile
@@ -69,6 +76,66 @@ NOW_MS = int(NOW * 1000)
 TARGET = "com.example.DemoApp"
 FAILURES: list[str] = []
 
+# What the run observed, for ``--json``. Filled as the demo proceeds.
+RUN: dict[str, Any] = {"checks": [], "mediator": {"cases": []}, "session": {"steps": []}}
+WORKDIR: Path | None = None
+RANDOM_ID_KEYS = {"effect_id", "expected_observation_id", "next_observation_id", "observation_id"}
+ABSOLUTE_PATH = re.compile(r"(?:[A-Za-z]:[\\/]|/(?:tmp|var|home|Users|private)/)[^\s'\"]*")
+
+
+def clean(value: Any) -> Any:
+    """Return ``value`` with the temp folder and any other absolute path replaced by ``<tmp>``.
+
+    The exporter does this itself so the summary is safe to publish without hand-editing.
+    """
+    if isinstance(value, str):
+        if WORKDIR is not None:
+            value = value.replace(str(WORKDIR), "<tmp>")
+        return ABSOLUTE_PATH.sub("<tmp>", value)
+    if isinstance(value, dict):
+        # Random per run; hiding them keeps the summary identical on every run.
+        return {
+            key: "<random-id>" if key in RANDOM_ID_KEYS and item else clean(item)
+            for key, item in value.items()
+        }
+    if isinstance(value, (list, tuple)):
+        return [clean(item) for item in value]
+    return value
+
+
+def log_step(verb: str, receipt: dict[str, Any], **extra: Any) -> None:
+    """Remember one proposed action and what the controller decided, for ``--json``."""
+    RUN["session"]["steps"].append(
+        clean(
+            {
+                "verb": verb,
+                "intent": receipt.get("public_rationale"),
+                "ok": receipt["ok"],
+                "reason": receipt["reason_code"],
+                "phase": receipt.get("phase"),
+                "action": receipt.get("action"),
+                "events_used": receipt.get("events_used"),
+                "input_fired": receipt.get("host_input_fired"),
+                **extra,
+            }
+        )
+    )
+
+
+def write_summary(path: Path, summary: dict[str, Any]) -> None:
+    """Write the run summary as JSON, or as ``window.ALCOR_RUN = ...;`` when ``path`` ends in .js.
+
+    The script form lets the viewer load it from a file:// page, where fetch is not allowed.
+    """
+    text = json.dumps(clean(summary), indent=2, sort_keys=True)
+    if path.suffix == ".js":
+        text = (
+            "/**\n * Real output of AlcorComputer/demo/run_demo.py, written by its --json flag.\n"
+            " * Generated: regenerate it instead of editing it.\n */\n"
+            f"// prettier-ignore\nwindow.ALCOR_RUN = {text};"
+        )
+    path.write_text(text + "\n", encoding="utf-8", newline="\n")
+
 
 def section(title: str) -> None:
     print(f"\n== {title} ==")
@@ -76,6 +143,7 @@ def section(title: str) -> None:
 
 def expect(label: str, condition: bool, detail: str = "") -> None:
     """Print one check and remember it if it failed."""
+    RUN["checks"].append({"label": label, "ok": bool(condition), "detail": detail})
     print(f"  [{'PASS' if condition else 'FAIL'}] {label}" + (f"  ({detail})" if detail else ""))
     if not condition:
         FAILURES.append(label)
@@ -191,12 +259,13 @@ def mediator_part(workdir: Path) -> None:
         "tool_access": True,
         "source": "demo",
     }
-    adapter = FakeObservationAdapter(
-        {"screen/dialog.txt": "Save button, lower right of the dialog"}
-    )
+    screen_text = "Save button, lower right of the dialog"
+    adapter = FakeObservationAdapter({"screen/dialog.txt": screen_text})
     run = ReadLane(authority).run(task, token, operator, adapter)
     expect("the lane completed prepared -> search -> read -> completed", run.ok)
     assert run.result is not None
+    RUN["mediator"]["observation"] = {"path": "screen/dialog.txt", "text": screen_text}
+    RUN["mediator"]["lane_receipts"] = clean(list(run.result.receipts))
 
     chain = {
         "schema": SCHEMA_NAME,
@@ -219,6 +288,7 @@ def mediator_part(workdir: Path) -> None:
         },
     }
     digest = authority.authorize_computer_chain(run.result, chain)
+    RUN["mediator"]["projection"] = chain["projection"]
 
     def bundle_for(read_chain_sha256: str, nonce: str = "demo-bundle-nonce-01") -> dict[str, Any]:
         return {
@@ -235,6 +305,10 @@ def mediator_part(workdir: Path) -> None:
     mediator = ComputerUseMediator.for_repo(COMPONENT_ROOT, replay_ledger=ReplayLedger(ledger_path))
     mediator.now_ms = lambda: NOW_MS  # a fixed clock keeps the run reproducible
     status = mediator.status()
+    RUN["mediator"]["status"] = {
+        key: status[key]
+        for key in ("validation_ready", "actuation_backend_present", "network_access_present")
+    }
     print(f"  readiness : validation_ready={status['validation_ready']}")
     print(
         f"  boundary  : actuation_backend_present={status['actuation_backend_present']}"
@@ -249,8 +323,24 @@ def mediator_part(workdir: Path) -> None:
         return mediator.stage_json_pair(json.dumps(read_chain), json.dumps(bundle))
 
     accepted = mediator.validate_json_pair(json.dumps(chain), json.dumps(bundle_for(digest)))
+    RUN["mediator"]["cases"].append(
+        {
+            "label": "click bound to the observation (validate)",
+            "ok": accepted["accepted"],
+            "reason": accepted["reason_code"],
+            "input_fired": accepted["input_fired"],
+        }
+    )
     expect("validate accepts the bound pair without consuming it", accepted["accepted"] is True)
     first = stage(chain, bundle_for(digest))
+    RUN["mediator"]["cases"].append(
+        {
+            "label": "same click, staged once",
+            "ok": first["reason_code"] == "staged_no_input",
+            "reason": first["reason_code"],
+            "input_fired": first["input_fired"],
+        }
+    )
     print(f"  stage     : reason={reasons(first)} input_fired={first['input_fired']}")
     expect(
         "stage consumes the proposal once and fires no input",
@@ -259,10 +349,19 @@ def mediator_part(workdir: Path) -> None:
         and first["desktop_state_touched"] is False,
     )
     again = stage(chain, bundle_for(digest, nonce="demo-bundle-nonce-02"))
+    RUN["mediator"]["cases"].append(
+        {
+            "label": "replay with a fresh bundle nonce",
+            "ok": False,
+            "reason": reasons(again),
+            "input_fired": again["input_fired"],
+        }
+    )
     expect(
         "a replay with a fresh bundle nonce is refused", reasons(again) == "replay", reasons(again)
     )
     lines = ledger_path.read_text(encoding="ascii").splitlines()
+    RUN["mediator"]["replay_ledger_hashes"] = len(lines)
     expect(
         "the ledger holds only SHA-256 hashes",
         len(lines) == 1 and all(len(line) == 64 for line in lines),
@@ -314,6 +413,14 @@ def mediator_part(workdir: Path) -> None:
     for label, read_chain, bundle, expected in cases:
         receipt = mediator.validate_json_pair(json.dumps(read_chain), json.dumps(bundle))
         print(f"  {label:<46} -> {reasons(receipt)}")
+        RUN["mediator"]["cases"].append(
+            {
+                "label": label,
+                "ok": False,
+                "reason": reasons(receipt),
+                "input_fired": receipt["input_fired"],
+            }
+        )
         expect(f"{label}: {expected}", reasons(receipt) == expected and not receipt["input_fired"])
     ambiguous = {**chain, "projection": {**chain["projection"], "candidate_count": 2}}
     try:
@@ -321,6 +428,10 @@ def mediator_part(workdir: Path) -> None:
         refused = ""
     except AuthorityError as exc:
         refused = exc.reason_code
+    RUN["mediator"]["authority_refusal"] = {
+        "label": "ambiguous chain (2 candidates)",
+        "reason": refused,
+    }
     expect(
         "the authority itself will not register an ambiguous chain",
         refused == "readlane_chain_mismatch",
@@ -353,6 +464,13 @@ def session_part(workdir: Path) -> None:
         ),
         encoding="utf-8",
     )
+    RUN["session"]["grant"] = {
+        "target": TARGET,
+        "ttl_seconds": 120,
+        "max_events": 3,
+        "allowed_actions": ["focus", "click", "type"],
+        "max_observation_age_ms": 2000,
+    }
     grant_path.chmod(0o600)  # required on POSIX; the Windows check reads the directory's ACL
     print(
         "  grant     : owner-written, 120 s, 3 events, actions focus/click/type (no key, no move)"
@@ -381,16 +499,33 @@ def session_part(workdir: Path) -> None:
         monotonic=lambda: clock[0],
         wall_time=lambda: NOW,
     )
+    RUN["session"]["steps"].append(
+        {
+            "verb": "target com.apple.Terminal",
+            "intent": "start a session aimed at a terminal emulator",
+            "ok": False,
+            "reason": terminal,
+            "phase": "refusal",
+            "action": None,
+            "events_used": 0,
+            "input_fired": False,
+        }
+    )
     secret_text = "demo text that must stay out of every receipt"
     try:
         observed = controller.observe()
+        RUN["session"]["observation"] = clean(
+            {key: observed[key] for key in ("schema", "target", "host_input_fired")}
+        )
         clicked = controller.click(640, 420, observed["observation_id"], "Press the Save button.")
+        log_step("click", clicked)
         print(f"  click     : reason={reasons(clicked)} events_used={clicked['events_used']}")
         expect(
             "a click with a fresh observation reaches the fake host",
             clicked["ok"] and host.events[-1]["kind"] == "click",
         )
         replayed = controller.click(640, 420, observed["observation_id"], "Press it again.")
+        log_step("click", replayed, note="same observation id as the click above")
         expect(
             "the consumed observation cannot be replayed",
             reasons(replayed) == "fresh_observation_required",
@@ -399,12 +534,14 @@ def session_part(workdir: Path) -> None:
 
         observed = controller.observe()
         denied = controller.key("enter", observed["observation_id"], "Confirm the dialog.")
+        log_step("key", denied, key="enter")
         expect(
             "a key press is outside the grant",
             reasons(denied) == "owner_grant_action_denied",
             reasons(denied),
         )
         outside = controller.click(900, 700, observed["observation_id"], "Click off the window.")
+        log_step("click", outside)
         expect(
             "a click outside the window is refused by the backend",
             reasons(outside) == "pointer_outside_target_window",
@@ -414,6 +551,7 @@ def session_part(workdir: Path) -> None:
         observed = controller.observe()
         clock[0] += 3.0
         stale = controller.type_text("x", observed["observation_id"], "Type with an old view.")
+        log_step("type", stale, note="observation taken 3 s earlier; the limit is 2 s")
         expect(
             "an observation older than 2 s is stale",
             reasons(stale) == "observation_stale",
@@ -424,6 +562,7 @@ def session_part(workdir: Path) -> None:
         typed = controller.type_text(
             secret_text, observed["observation_id"], "Fill the name field."
         )
+        log_step("type", typed)
         print(f"  type      : reason={reasons(typed)} text_length={typed['action']['text_length']}")
         expect("typing reaches the fake host", typed["ok"] and host.typed == secret_text)
         expect(
@@ -436,8 +575,10 @@ def session_part(workdir: Path) -> None:
             "the third event is still inside the budget",
             clicked["ok"] and clicked["events_used"] == 3,
         )
+        log_step("click", clicked)
         observed = controller.observe()
         spent = controller.click(640, 420, observed["observation_id"], "One click too many.")
+        log_step("click", spent)
         print(f"  4th event : reason={reasons(spent)}")
         expect(
             "the grant's event budget is exhausted",
@@ -455,6 +596,7 @@ def session_part(workdir: Path) -> None:
     )
     durable = receipt_path.read_text(encoding="utf-8")
     rows = [json.loads(line) for line in durable.splitlines()]
+    RUN["session"]["receipts_on_disk"] = clean(rows)
     pending = sum(1 for row in rows if row["phase"] == "pending")
     terminal = sum(1 for row in rows if row["phase"] == "terminal")
     print(f"  receipts  : {pending} pending, {terminal} terminal records on disk")
@@ -467,7 +609,12 @@ def session_part(workdir: Path) -> None:
 
 
 def main() -> int:
+    global WORKDIR
+    parser = argparse.ArgumentParser(description="Contract-bound computer-use demo.")
+    parser.add_argument("--json", metavar="PATH", help="also write a summary of the run as JSON")
+    args = parser.parse_args()
     with no_os_input(), private_workdir() as workdir:
+        WORKDIR = workdir
         mediator_part(workdir)
         session_part(workdir)
     section("3. Summary")
@@ -475,6 +622,8 @@ def main() -> int:
     print(f"\ndemo finished: {len(FAILURES)} failed expectation(s)")
     for label in FAILURES:
         print(f"  FAILED: {label}")
+    if args.json:
+        write_summary(Path(args.json), {"component": "AlcorComputer", "failures": FAILURES, **RUN})
     return 1 if FAILURES else 0
 
 

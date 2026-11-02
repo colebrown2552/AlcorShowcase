@@ -1,29 +1,36 @@
 # AlcorMap
 
-![AlcorMap](../../screenshots/AlcorMap.png)
-
-A simple map maker: search for a place or type coordinates, drop labelled markers, then share the
+A simple map maker: search for a place or type coordinates, drop labeled markers, then share the
 whole map as a link or export it as GeoJSON, CSV or a PNG image.
 
-## How it works
+![AlcorMap](../../screenshots/AlcorMap.png)
 
-| File | Role |
-|---|---|
-| `alcor-map-core.mjs` | Pure helpers: coordinate parsing, marker validation, state, share links, GeoJSON. |
-| `alcor-map-places.mjs` | A built-in place list, so city search works without a geocoding service. |
-| `alcor-map.mjs` | The UI on top of MapLibre GL JS. |
-
-## The hard parts
+## Highlights
 
 - **Share links with no server.** `alcorMapEncodeShare` packs the markers into the URL itself and
   `alcorMapDecodeShare` restores them, validating every field on the way in.
 - **Forgiving input, strict storage.** `alcorMapParseCoordinates` accepts the common ways people
   write coordinates; `alcorMapNormalizeMarker` and `alcorMapWrapLongitude` keep stored data valid.
-- **Round-trip GeoJSON** through `alcorMapToGeoJSON` and `alcorMapFromGeoJSON`.
+- **Round-trip GeoJSON** (the standard JSON format for map features) through `alcorMapToGeoJSON`
+  and `alcorMapFromGeoJSON`.
+- **Place search without a geocoding service.** A built-in place list answers city searches
+  offline.
 
-The basemap tiles come from OpenStreetMap, so the background map needs a network connection.
+## How it works
+
+| File | Role |
+|---|---|
+| [`alcor-map-core.mjs`](../assets/js/alcor-map-core.mjs) | Pure helpers: coordinate parsing, marker validation, state, share links, GeoJSON. |
+| [`alcor-map-places.mjs`](../assets/js/alcor-map-places.mjs) | The built-in place list for city search. |
+| [`alcor-map.mjs`](../assets/js/alcor-map.mjs) | The UI on top of MapLibre GL JS. |
+
+The background map tiles come from OpenStreetMap, so that layer needs a network connection.
 Markers, search, sharing and exports work offline.
 
-## Run
+## Run it
 
-Serve `AlcorApps/web` with any static server and open `AlcorMap/`.
+Serve `AlcorApps/web` with any static server (see the [AlcorApps README](../../README.md)) and
+open `AlcorMap/`.
+
+MapLibre GL JS is BSD-3-Clause licensed; its license is in
+[`assets/lib/maplibre-gl`](../assets/lib/maplibre-gl).

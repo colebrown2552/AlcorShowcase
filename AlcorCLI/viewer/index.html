@@ -1,0 +1,48 @@
+<!doctype html>
+<!--
+  AlcorCLI viewer: a static page that shows one recorded run of the AlcorCLI policy gate.
+  It reads sample-run.js (window.ALCOR_RUN), so it opens from disk with no server or network.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AlcorCLI · policy gate run</title>
+    <link rel="stylesheet" href="viewer.css" />
+  </head>
+  <body>
+    <header class="bar">
+      <div>
+        <h1>AlcorCLI</h1>
+        <p class="subtitle">policy gate run · every request, every verdict, every receipt</p>
+      </div>
+      <div id="chain" class="chain"></div>
+    </header>
+    <main class="layout">
+      <section class="left">
+        <div id="counters" class="counters"></div>
+        <div class="panel table-panel">
+          <div id="filters" class="filters" role="tablist"></div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>asked by</th>
+                  <th>request</th>
+                  <th>rule or reason</th>
+                  <th>verdict</th>
+                  <th>receipt</th>
+                </tr>
+              </thead>
+              <tbody id="rows"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+      <aside id="detail" class="panel detail"></aside>
+    </main>
+    <script src="sample-run.js"></script>
+    <script src="viewer.js"></script>
+  </body>
+</html>

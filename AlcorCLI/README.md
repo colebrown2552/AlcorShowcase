@@ -1,20 +1,28 @@
 # AlcorCLI: the single gate between an agent and the world
 
-![AlcorCLI demo: routed model calls, admitted and refused effects, receipts](screenshots/demo.svg)
+AlcorCLI decides what an AI agent is allowed to do, and keeps tamper-evident proof of every decision.
+Every model call and every side effect, such as writing a file, passes through it. Anything it cannot
+confirm is safe, it refuses.
+
+![AlcorCLI viewer](screenshots/viewer.png)
 
 An agent that can call a model and change files needs one place where "may it?" is answered, and
-where the answer leaves evidence. AlcorCLI is that place: every model call and every side effect
-goes through it. The host measures facts (is this path inside the workspace, is this lane up), a
-small `.alcor` program with no I/O decides, the host obeys, and each step appends a hash-chained
-receipt. What makes it work is that a program that cannot answer is treated as "no", never as "yes".
+where the answer leaves evidence. In AlcorCLI the host measures facts (is this path inside the
+workspace, is this model endpoint up), a small `.alcor` program with no I/O decides, the host obeys,
+and each step appends a **receipt**: a hashed record of what was asked, what was decided and why. The
+system **fails closed**: a program that cannot answer is treated as "no", never as "yes".
 
-## Why it's built this way
+## See it
+
+Open `viewer/index.html` in a browser to explore a recorded demo run.
+
+## Highlights
 
 - **Policy is a program, facts are code.** Resolving a path or probing a port needs I/O, so the
   host does it and reports the result as a named cell (`inside_root=no`). What to do about it is
   a decision over a closed vocabulary, so it lives in a short `.alcor` file you can read in one
-  sitting (`programs/tool.alcor` is 117 lines) instead of in a thicket of `if` statements. The
-  cost is two places to read; the gain is that policy can be audited without running the agent.
+  sitting (`programs/tool.alcor` is 117 lines) instead of in a thicket of `if` statements. Policy
+  can be audited without running the agent.
 - **Unavailable is deny.** `PolicyHost.run` returns `decided`, `refused`, `unavailable` or
   `error`, and only `decided` is obeyed. A missing program, a runtime that raises, a cell with a
   line break, a receipt that does not verify, a decision that cannot be written to the receipt
@@ -25,13 +33,14 @@ receipt. What makes it work is that a program that cannot answer is treated as "
   caught. The receipt proves reproducibility, not that a caller's fact was true.
 - **Loopback is enforced at one chokepoint.** `transport.guarded_http` refuses any URL that is not
   plain `http` to `127.0.0.1`, `localhost` or `::1` with an explicit port, refuses redirects, and
-  then checks that the *resolved* addresses are loopback too. A remote machine is reached through
-  a tunnel, so the gate never speaks to a routable host. The HTTP endpoint (`serve.py`) applies the
+  then checks that the *resolved* addresses are loopback too. A remote model is reached through a
+  tunnel, so the gate never speaks to a routable host. The HTTP endpoint (`serve.py`) applies the
   same rule inward: a non-loopback bind is refused unless a bearer token is configured.
 - **Effects prove themselves, claims are checked.** A write reads itself back and returns the
   SHA-256 of the bytes on disk; a missing `content` is refused instead of truncating the file. When
-  the model says DONE, the task's own check runs, and a claim over a file it never read back is
-  pushed back once. The agent cannot set `owner_enabled`: it comes from the operator's flag.
+  the model says DONE, the task's own check runs, and a claim about a file it never read back is
+  pushed back once. The agent cannot grant itself owner permission (`owner_enabled`): only the
+  operator's flag sets it.
 - **Receipts carry hashes and counts, never text.** Every gate writes to one append-only log whose
   rows name the id of the row before. Edit or delete a row and `receipts verify` names the first
   one that fails.
@@ -59,6 +68,8 @@ flowchart TD
     verify -.-> receipts
 ```
 
+A **lane** is a named model endpoint (`fast`, `flash` or `deep`).
+
 **A model call** (`ask.py`). Probe each lane over loopback, ask `cli.alcor` for a route, send the
 request through the guarded transport, admit the reply only if the provider says it finished with
 one choice and the expected model, then append a `model.call` receipt and an `ask` receipt. A
@@ -77,30 +88,38 @@ by where the claim came from; lessons staged until the operator admits them), `g
 ends only when its own check exits zero) and `fallback_lane.py` (what is allowed when every lane
 is down) follow the same pattern: host facts in, program decision out, receipt kept.
 
+### The six policy programs
+
+Every path through every program emits `effect_authority=false` (the program itself can never act),
+and `PolicyHost.verify` rejects any decision that says otherwise. The language has no comment
+syntax, so each program is documented by the module that hosts it.
+
+| Program | Decides | Hosted by |
+|---|---|---|
+| `tool.alcor` | `allow`, `deny` or `ask_owner` for one tool call, with a reason code | `tools.py` |
+| `cli.alcor` | Which lane answers; whether memory may be used; whether a lesson may be staged or admitted | `routing.py`, `ask.py`, `memory.py` |
+| `kernel.alcor` | How a round ends: continue, finalize, push back, accept, fail | `agent.py` |
+| `memory.alcor` | The admission of a remembered row: stamped, testimony, unsourced, refused | `memory.py` |
+| `goal.alcor` | The next move for a goal: pursue, decompose, change approach, escalate, satisfied, halt | `goal.py` |
+| `fallback_lane.alcor` | What the fallback may do when every lane is down | `fallback_lane.py` |
+
 ## Run it
 
-Python 3.10 or newer (tested on 3.12), standard library only; `pytest` for the tests. The `.alcor`
-programs run on the sibling [AlcorLang](../AlcorLang) package of this repository, so run
-everything from the repository root, where `import alcorlang` resolves. No model, no network and no
-private service is needed.
+Python 3.10 or newer, standard library only. The `.alcor` programs run on the sibling
+[AlcorLang](../AlcorLang) package, so run everything from the repository root, where
+`import alcorlang` resolves. No model and no network are needed.
 
-PowerShell:
-
-```powershell
+```bash
 python AlcorCLI/demo/run_demo.py           # end to end, prints what each step proves
-python -m pytest AlcorCLI/tests -q         # the ported tests
 python -m alcorcli doctor                  # what is configured and what works
 ```
 
-bash:
+The demo runs eleven sections, from a single policy decision to a tampered receipt chain, and each
+ends in checks that print `ok` or `FAIL`. It exits non-zero if any check fails.
 
-```bash
-python AlcorCLI/demo/run_demo.py
-python -m pytest AlcorCLI/tests -q
-python -m alcorcli doctor
-```
+![AlcorCLI demo output](screenshots/demo.svg)
 
-Try the CLI against a scripted provider that listens on loopback (two terminals):
+Try the CLI against a scripted model provider that listens on loopback (two terminals):
 
 ```bash
 python -m alcorcli fake-provider --model demo-model --reply "Hello from the fake provider"
@@ -115,10 +134,23 @@ python -m alcorcli tool call write_file --owner-enabled \
 python -m alcorcli receipts verify
 ```
 
-Windows PowerShell 5 mangles quotes inside a JSON argument that contains spaces; put the JSON in
-a file and pass `--args-file` instead. State lives under `$ALCOR_HOME` (default `~/.alcor`); effects are confined to `--workspace`
-(default: the current directory). Lanes come from `ALCOR_LANE_<FAST|FLASH|DEEP>_BASE` and `_MODEL`
-or from `--lane-base NAME=URL`; there is deliberately no default address.
+Windows PowerShell 5 mangles quotes inside a JSON argument that contains spaces; put the JSON in a
+file and pass `--args-file` instead. State lives under `$ALCOR_HOME` (default `~/.alcor`); effects
+are confined to `--workspace` (default: the current directory). Lanes come from
+`ALCOR_LANE_<FAST|FLASH|DEEP>_BASE` and `_MODEL` or from `--lane-base NAME=URL`; there is
+deliberately no default address.
+
+The fake provider is scripted text on a real loopback socket, so the real transport, the loopback
+checks and the response admission all run. The demo's shell tool (`RecordingShell`) records a
+command and never runs it.
+
+## Tests
+
+```bash
+python -m pytest AlcorCLI/tests -q         # 163 tests; needs pytest
+```
+
+Start with `test_tool_program.py` and `test_claim_pushback_is_bounded.py`.
 
 ## Read the code
 
@@ -137,46 +169,8 @@ or from `--lane-base NAME=URL`; there is deliberately no default address.
 | `serve.py` | `Handler._guard`: loopback or a correct bearer token, never neither |
 | `ledger.py`, `context.py` | Append-only thread, two-step commit, tool-transaction-safe compaction |
 | `fakes.py` | The stand-ins: scripted loopback provider, in-memory shell |
-| `demo/run_demo.py` | Eleven sections, each ending in checks that print `ok` or `FAIL`; the same output every run |
-| `tests/` | The ported tests; start with `test_tool_program.py` and `test_claim_pushback_is_bounded.py` |
 
-The six `.alcor` programs, and who consults them. The language has no comment syntax, so each
-program is documented by the module that hosts it. Every path through every program emits
-`effect_authority=false`, and `PolicyHost.verify` rejects any decision that says otherwise.
-
-| Program | Decides | Hosted by |
-|---|---|---|
-| `tool.alcor` | `allow`, `deny` or `ask_owner` for one tool call, with a reason code | `tools.py` |
-| `cli.alcor` | Which lane answers; whether memory may be used; whether a lesson may be staged or admitted | `routing.py`, `ask.py`, `memory.py` |
-| `kernel.alcor` | How a round ends: continue, finalize, push back, accept, fail | `agent.py` |
-| `memory.alcor` | The admission of a remembered row: stamped, testimony, unsourced, refused | `memory.py` |
-| `goal.alcor` | The next move for a goal: pursue, decompose, change approach, escalate, satisfied, halt | `goal.py` |
-| `fallback_lane.alcor` | What the fallback may do when every lane is down | `fallback_lane.py` |
-
-## Scope and limits
-
-### The full system vs. this carve-out
-
-| Part | In the full system | In this carve-out |
-|---|---|---|
-| `.alcor` interpreter | Part of the language runtime | Not here: the sibling `alcorlang` package runs the programs |
-| Model providers | Several machines and models behind HTTPS | A loopback OpenAI-compatible endpoint; `fakes.FakeProvider` for offline runs |
-| Shell and desktop tools | Shell sessions, window capture and input control | `RecordingShell`, which records a command and never runs it |
-| Memory store | A separate hash-chained ledger module with richer retrieval | `MemoryLedger`, a hash-chained JSONL with word-overlap search |
-| Receipts | One log per gate | One shared chained log (`receipts.py`) |
-| Identity and strategy contracts | A hash-bound identity prompt and a strategy contract chosen per turn | A one-line neutral preamble; `kernel.alcor`'s strategy cell is `selected` once the turn pinned the program bytes |
-| Agent loop | Coach notes, child tasks, a second core, a solver tool, result paging, live events | The loop, tool admission, duplicate and stall handling, claim checks and compaction; those kernel cells get neutral values |
-| Entry points | TUI, desktop app, MCP server, benchmark and training lanes, platform launchers | `python -m alcorcli` with eleven commands |
-| Fallback route | A GitHub-connected coordination lane | The decision only, with the route renamed `remote-fallback` and three data-only operations; nothing is wired behind it |
-| Tests | About 275 files | The ones that cover these modules, adapted; no new unit tests |
-
-### What is stubbed
-
-The fake provider is scripted text on a real loopback socket, so the real transport, the loopback
-checks and the response admission all run. Its token counts are character counts divided by four.
-`RecordingShell` returns `(recorded, not executed)`. Nothing here pretends to be a model.
-
-### Limits
+## Limitations
 
 - This is a policy gate, not a sandbox. There is no process isolation. Goal probe commands run as
   subprocesses with the operator's permissions, after passing the same effect gate.
@@ -185,24 +179,4 @@ checks and the response admission all run. Its token counts are character counts
 - Plain `http` on loopback only. There is no TLS client, by design.
 - An append to the receipt log re-reads the file to find the previous row. That suits an audit trail
   of thousands of rows, not millions.
-- "Owner" means the human operator who runs the agent. The word is kept from the full system so
-  the `.alcor` programs match theirs.
-
-### Fixed while porting
-
-- The tool gate only resolved path arguments that contained a slash, so a bare `name.txt` was
-  judged "inside" while the tool resolved it against the process directory. Gate and tool now
-  resolve every path against the workspace, the same way.
-- The loopback rule compared the URL text only. `localhost` resolving elsewhere would have passed.
-  Resolved addresses are now checked too.
-- A cell value containing a line break shifted every later cell on the tape. It is refused.
-- Staged lesson ids came from Python's per-process salted `hash()`, so one lesson staged twice got
-  two ids. They are SHA-256 prefixes now.
-- A goal id became a file name unchecked. It is now restricted to letters, digits and `._-`.
-- A refused write still counted as "changed, never read back" and pushed the agent to verify a file
-  that was never touched. Only calls that happened create or discharge that debt.
-- `ask_owner` was gated on owner enablement although `tool.alcor` says a question to the owner is
-  always allowed.
-
-Extracted from the Alcor system; the model provider, shell, memory ledger and identity prompt were
-replaced with in-repo stand-ins, and the `.alcor` interpreter is the sibling `alcorlang` package.
+- "Owner" means the human operator who runs the agent.

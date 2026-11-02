@@ -1,11 +1,14 @@
 # Mental Health Austin
 
-Mental Health Austin is a guide that connects Austin residents to information about mental-health
-**disorders**, the **treatments** used for them, and the **local care locations** that offer those
-treatments. Every disorder links to the treatments and places that address it, and the other way round.
-Locations are shown on an OpenStreetMap map.
+Mental Health Austin is a website that helps Austin residents find mental-health information and
+care. It connects **disorders**, the **treatments** used for them, and the **local care locations**
+that offer those treatments: every disorder links to the treatments and places that address it,
+and the other way round. Locations are shown on an OpenStreetMap map.
 
-This was a team project for **UT Austin Software Engineering, fall 2023**.
+![Mental Health Austin home page](screenshots/home.png)
+
+This was a five-person team project for **UT Austin Software Engineering, fall 2023**: a React
+frontend, a Flask REST API and an SQL database, with unit, API and browser acceptance tests.
 
 ## Team
 
@@ -26,27 +29,26 @@ All five members built the project together; see [NOTICE.md](NOTICE.md) for copy
 - The Jest unit tests and the Selenium acceptance tests.
 - The navbar, the About page and the team statistics cards.
 
-## Stack
+## How it works
 
-- **Frontend:** React 18 (Create React App), React Router, Bootstrap, fuse.js, react-leaflet / Leaflet with OpenStreetMap tiles, recharts and chart.js. Tests: Jest and React Testing Library.
-- **Backend:** Flask and SQLAlchemy (`backend/API`). Data lives as JSON under `backend/data`.
-- **Tests:** Jest (frontend), `unittest` (API), Selenium (acceptance, `acceptance_tests/`).
+- **Frontend:** React 18 (Create React App), React Router, Bootstrap, fuse.js, react-leaflet / Leaflet with OpenStreetMap tiles, recharts and chart.js.
+- **Backend:** a Flask and SQLAlchemy REST API in `backend/API`, with endpoints such as `/get_all_disorders/` and `/get_disorder/?name=...`. Data is loaded from JSON under `backend/data`.
+- **Tests:** Jest and React Testing Library (frontend), `unittest` (API) and Selenium (acceptance, in `acceptance_tests/`).
+- **Deployment:** the team ran the React frontend and the Flask API on AWS, with MySQL on Amazon RDS, Dockerized and deployed by GitLab CI. Locally it runs with SQLite and needs no accounts, keys or cloud services.
 
-### How it was originally deployed
+Diagrams: [UML diagram](UML_Diagram_Updated.PNG) and [model diagram](Model_Diagram.PNG).
 
-The React frontend and the Flask API ran on AWS, with MySQL on Amazon RDS. The services were
-Dockerized and deployed by GitLab CI. This repository has been reworked so none of that is needed:
-it runs locally with SQLite and no accounts, keys or cloud services.
+```
+backend/API        Flask app, ORM models, seed.py, API unit tests
+backend/data       JSON data loaded by seed.py
+backend/scrapers   Data-collection scripts and notebook (credentials not included)
+src                React app (pages, tiles, tests)
+acceptance_tests   Selenium tests
+```
 
-### Diagrams
+## Run it
 
-- [UML diagram](UML_Diagram_Updated.PNG)
-- [Model diagram](Model_Diagram.PNG)
-
-
-## Run it locally
-
-Requirements: Python 3.10+, Node.js 18+ and npm.
+You need Python 3.10+, Node.js 18+ and npm.
 
 ### 1. Seed the database and start the API
 
@@ -73,12 +75,12 @@ npm ci
 REACT_APP_API_URL=http://127.0.0.1:5000 npm start    # http://localhost:3000
 ```
 
-`REACT_APP_API_URL` defaults to `http://127.0.0.1:5000`. For a production bundle run `npm run build`
+`REACT_APP_API_URL` defaults to `http://127.0.0.1:5000`. For a production bundle, run `npm run build`
 and serve the `build/` folder with any static file server.
 
 Map tiles come from OpenStreetMap and need internet access; everything else works offline.
 
-### 3. Run the tests
+## Tests
 
 ```bash
 npx jest                              # frontend unit tests
@@ -93,17 +95,7 @@ The Selenium tests in `acceptance_tests/` need Chrome and a running site; set `S
 - Disorder and treatment information was collected from public sources: the WHO ICD API, Wikipedia,
   DailyMed and the NHS.
 - **Location data came from public business listings** (name, address, hours, phone number, rating and
-  coordinates of mental-health providers around Austin). Only the final, joined data used by the app is
-  included in `backend/data/connections`. The scripts in `backend/scrapers` show how it was gathered; they
-  need your own API credentials and their intermediate outputs are not included.
+  coordinates of mental-health providers around Austin). The joined data the app uses is in
+  `backend/data/connections`. The scripts in `backend/scrapers` show how it was gathered; they need
+  your own API credentials, and their intermediate outputs are not included.
 - Treatment descriptions and links belong to their original publishers.
-
-## Repository layout
-
-```
-backend/API        Flask app, ORM models, seed.py, API unit tests
-backend/data       JSON data loaded by seed.py
-backend/scrapers   Data-collection scripts and notebook (credentials not included)
-src                React app (pages, tiles, tests)
-acceptance_tests   Selenium tests
-```

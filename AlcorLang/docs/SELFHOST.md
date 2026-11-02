@@ -219,8 +219,9 @@ ill-typed combinations are included on purpose, because the traps are the semant
 
 The adversarial cases are the ones worth naming, because they are where a string-encoded
 interpreter is supposed to break: guest blocks that share names with the interpreter's own library
-blocks, and (from the original design, not re-run here) label and program names that are prefixes
-of one another, and cell values that look like netstrings or like an environment key record.
+blocks, and (covered by the design, not re-run in this sweep) label and program names that are
+prefixes of one another, and cell values that look like netstrings or like an environment key
+record.
 
 ### Real programs, not just test cases
 

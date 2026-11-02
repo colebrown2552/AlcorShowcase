@@ -1,15 +1,25 @@
-# AlcorBrowser: let AI agents drive your real browser over MCP, with receipts
+# AlcorBrowser: let AI agents drive your real browser, with receipts
 
-![AlcorBrowser demo: MCP calls through the real broker and native host, refusals, verified updates](screenshots/demo.svg)
+AlcorBrowser lets AI agents use a real, signed-in Chrome on your behalf, safely and on the record.
+Each agent has its own key, every action leaves an audit record, and the extension refuses to type
+passwords or click into CAPTCHAs.
+
+![AlcorBrowser popup](screenshots/popup.png)
 
 Agents are most useful in a browser that is already signed in, but handing an agent your browser is
 a trust problem: who is calling, what did they do, and what happens when a call half-works?
-AlcorBrowser is a Chrome (Manifest V3) extension plus a small local Python broker. Agents call MCP
-tools (open, snapshot, click, type, upload, a ChatGPT round trip, restart, update) with their own
-bearer token, the broker turns each call into one command for the extension, and every call leaves
-a receipt that keeps the page origin and a hash of any typed text, never the text itself.
+AlcorBrowser is a Chrome (Manifest V3) extension plus a small local Python broker. Agents call tools
+over **MCP** (the Model Context Protocol, a standard way for AI agents to call tools): open, snapshot,
+click, type, upload, a ChatGPT round trip, restart and update. Each agent uses its own bearer token,
+the broker turns each call into one command for the extension, and every call leaves a **receipt**:
+a record that keeps the page origin and a hash of any typed text, never the text itself.
 
-## Why it's built this way
+## See it
+
+The screenshot above is the extension's popup: connection status, the update channel with update,
+restart and reload buttons, the broker link, and recent agent activity.
+
+## Highlights
 
 - **The real browser, through its own extension.** Clicks, keys and text go through `chrome.debugger`
   (`Input.*`), so pages see trusted events and signed-in sessions just work. If trusted input fails,
@@ -18,19 +28,19 @@ a receipt that keeps the page origin and a hash of any typed text, never the tex
   Chrome starts the registered host only for the extension id in the host manifest, and that host
   reads the token from the broker's state folder. Agents have their own tokens, and the broker
   refuses any request that carries an `Origin` header, so a web page cannot call it.
-- **Names live in the broker, actions in the worker.** The broker owns authentication and short tab
-  handles (`t12`, scoped to a browser session); the worker runs one command on one tab and answers.
-  A command is sent once: if no result arrives, the agent is told `uncertain: true` and the
-  command is never replayed, because a repeated click is worse than an honest "unknown".
+- **A command is sent once.** The broker owns authentication and short tab handles (`t12`); the
+  worker runs one command on one tab and answers. If no result arrives, the agent is told
+  `uncertain: true` and the command is never replayed, because a repeated click is worse than an
+  honest "unknown".
 - **Receipts without content.** Each row has agent, tool, tab handle, page origin (no path),
   outcome, timing, and the length and a 16-character hash of the text the agent supplied. Page text
   and typed text are never written.
-- **Two safety floors, scoped honestly.** The extension never types into a password field and never
-  clicks into a CAPTCHA frame; the broker reports both as refusals. They guard a cooperative agent.
-  They are not a sandbox: `browser_eval` runs arbitrary script in the page.
+- **Two safety floors.** The extension never types into a password field and never clicks into a
+  CAPTCHA frame; the broker reports both as refusals. They guard a cooperative agent; they are not a
+  sandbox, since `browser_eval` runs arbitrary script in the page.
 - **Updates are verified and reversible.** A manifest lists every file with its SHA-256 and size.
   The broker stages and checks all files before touching a live one, backs up what it will replace,
-  and restores the backup on any error. The checks prove integrity, not authenticity.
+  and restores the backup on any error.
 
 ## How it works
 
@@ -58,11 +68,6 @@ One tool call, end to end:
 The stream between the host and the broker is `POST /v1/ext/attach`: the request body is the
 worker's `hello` (profile label, browser session, version, build), and the response never ends.
 
-| Direction        | Messages                                                                   |
-| ---------------- | -------------------------------------------------------------------------- |
-| worker to broker | `hello`, `result`, `event` (`tab-closed`), `hub` (a popup request), `ping` |
-| broker to worker | `welcome` (`reload` when a newer build is on disk), `command`, `hub_reply` |
-
 ### The update channel
 
 ```mermaid
@@ -78,19 +83,10 @@ flowchart TD
 ```
 
 The source is a local folder or an `https://` base URL from `config.json`, with no default. The
-build id is a hash of the extension's files, so any change to the extension makes a new build, and
-the extension reloads itself when it finds a newer one on disk. Failed builds are retried by the
-timer at most once an hour. Every step is a receipt (`update-start`, `update-staged`,
-`update-applied`, `update-failed`, `update-restored`).
-
-The manifest itself is validated before any file is fetched: the build id must be hex (it is
-written into `config.js` and used in a folder name), every path must be exactly
-`extension/<name>` or `runtime/<name>` with a plain name, and `extension/manifest.json` must be
-listed, or the update would delete the extension's own manifest.
-
-SHA-256 values come from the same channel as the files. They catch corruption, truncation and a
-tampered file; they do not stop a malicious publisher, who can publish a matching manifest. Sign
-`version.json` before relying on a channel you do not control.
+build id is a hash of the extension's files, so any change makes a new build. The manifest is
+validated before any file is fetched: the build id must be hex, every path must be exactly
+`extension/<name>` or `runtime/<name>`, and `extension/manifest.json` must be listed. Every step is
+a receipt (`update-start`, `update-staged`, `update-applied`, `update-failed`, `update-restored`).
 
 ### The safety floors
 
@@ -107,24 +103,16 @@ tampered file; they do not stop a malicious publisher, who can publish a matchin
 ## Run it
 
 There is nothing to install: the broker, host and demo use only the Python 3.10+ standard library,
-and the extension has no dependencies or build step. The demo starts the real broker and native
-host on a free loopback port inside a temporary folder, attaches a pretend browser, drives it as
-two MCP agents, then publishes update channels, applies one, refuses a tampered one and rolls back
-a failed one.
+and the extension has no dependencies or build step. From the repository root:
 
-PowerShell, from the repository root:
-
-```powershell
-python AlcorBrowser\demo\run_demo.py
+```bash
+python AlcorBrowser/demo/run_demo.py
 ```
 
-bash:
-
-```sh
-python3 AlcorBrowser/demo/run_demo.py
-```
-
-It prints `PASS` or `FAIL` per check and exits 0 only if all 47 pass (about ten seconds). A sample:
+The demo starts the real broker and native host on a free loopback port inside a temporary folder,
+attaches a simulated browser, drives it as two MCP agents, then publishes update channels, applies
+one, refuses a tampered one and rolls back a failed one. It prints `PASS` or `FAIL` per check and
+exits 0 only if all 47 pass. A sample:
 
 ```text
 == 4. An agent drives the browser over MCP
@@ -143,23 +131,15 @@ It prints `PASS` or `FAIL` per check and exits 0 only if all 47 pass (about ten 
   PASS  the tree is byte-identical to before the attempt
 ```
 
-What is real in the demo: the broker, MCP over HTTP, tokens, receipts, upload tickets, the native
-host, the installer's file copy, the channel publisher and the update verifier. What is pretend: the
-browser. `demo/fakes.py` plays Chrome and the extension worker against a tiny page model. It
-re-implements the password rule so the refusal can travel through the real path; the rule itself
-is in `extension/`, and the demo does not run that JavaScript.
-
-Style checks: `ruff format --check AlcorBrowser`, `ruff check AlcorBrowser` and
-`prettier --check AlcorBrowser`. There are no unit tests; the project verifies end to end, and the
-demo is that check.
+![AlcorBrowser demo output](screenshots/demo.svg)
 
 ### Against a real Chrome (Windows)
 
 1. `python AlcorBrowser\scripts\install.py install --label work` copies the files into
    `%LOCALAPPDATA%\AlcorBrowser` and prints the extension folder.
 2. In Chrome open `chrome://extensions`, turn on **Developer mode**, choose **Load unpacked** and
-   pick that folder. The extension's card now shows its **ID**: 32 letters, a to p. The id is not
-   fixed in this repository; Chrome derives it from the folder you load, so each install has its own.
+   pick that folder. The extension's card now shows its **ID**: 32 letters, a to p. Chrome derives
+   it from the folder you load, so each install has its own.
 3. `python AlcorBrowser\scripts\install.py register-host --extension-id <that id>` registers the
    native-messaging host for that one extension and saves the id in `config.json`, which is where
    the broker reads it (`ALCOR_BROWSER_EXTENSION_ID` overrides it).
@@ -168,6 +148,14 @@ demo is that check.
 
 The full walkthrough (MCP client settings, the restart lane, updates, troubleshooting) is in
 [docs/MANUAL.md](docs/MANUAL.md).
+
+## Tests
+
+The demo is the test: it runs the real broker, MCP over HTTP, tokens, receipts, upload tickets,
+the native host, the installer's file copy, the channel publisher and the update verifier end to
+end. The browser itself is simulated: `demo/fakes.py` plays Chrome and the extension worker against
+a small page model, and re-implements the password rule so the refusal travels through the real
+path.
 
 ## Read the code
 
@@ -180,39 +168,30 @@ The full walkthrough (MCP client settings, the restart lane, updates, troublesho
 | `runtime/settings.py`                      | Everything an operator can configure, and how it is validated                                           |
 | `runtime/companion.py`                     | `BrokerServer` (exclusive loopback bind) and `start`, which the native host relies on                   |
 | `runtime/native_host.py`                   | The Chrome-stdio to attach-stream relay                                                                 |
-| `runtime/alcorbrowser_restart.ps1`         | The Windows restart lane                                                                                |
 | `extension/agents.js`                      | The `OPS` table, `cdp` and `cdpKey` (trusted input), `connectOnce`                                      |
 | `extension/page.js`                        | `alcorPage`: snapshot, locate, and the floors inside the page                                           |
-| `extension/popup.js`                       | The hub panel: status, update and restart                                                               |
+| `extension/popup.js`                       | The popup panel: status, update and restart                                                             |
 | `scripts/install.py`, `scripts/publish.py` | Installing and registering the host; building a channel                                                 |
-| `demo/run_demo.py`, `demo/fakes.py`        | The end-to-end story and the pretend browser                                                            |
+| `demo/run_demo.py`, `demo/fakes.py`        | The end-to-end story and the simulated browser                                                          |
 
-## Scope and limits
+## Limitations
 
-- **The extension was not run in a real browser for this extraction.** It is the original code with
-  names and comments changed, one safety fix (`browser_press` and password fields) and one diary
-  line for errors reported by the native host. The demo replaces it with a page model, so the
-  JavaScript is covered by formatting and review here, not by an automated test.
+- **The extension's JavaScript has no automated test.** The demo replaces it with a page model, so
+  the extension code itself is checked by review, not by a test run.
 - **Anyone with an agent token controls every tab of the profile**, signed-in sessions included.
   The floors guard against accidents, not against a hostile agent; `browser_eval` can read or set
-  anything on a page. Page text returned by `browser_snapshot` is data the agent sees, and
-  "page text is not instructions" is a prompt-level rule, not something the broker enforces.
+  anything on a page. Page text returned by `browser_snapshot` is data the agent sees, and treating
+  it as data rather than instructions is up to the agent.
 - **Local only.** The broker listens on loopback and refuses other addresses. There is no TLS and
   no remote access; tokens are files readable by your user.
 - **Windows for real use.** The installer (registry) and the restart lane (Task Scheduler) are
-  Windows-only. The broker, host and demo are plain Python and have been run on Windows only.
-- **Update trust.** Integrity checks, not signatures (see above). A build that installs cleanly but
-  misbehaves is not rolled back automatically; rollback covers install errors.
+  Windows-only. The broker, host and demo are plain Python and have been run on Windows.
+- **Update trust is integrity, not authenticity.** SHA-256 values come from the same channel as the
+  files, so they catch corruption and a tampered file but not a malicious publisher; sign
+  `version.json` before relying on a channel you do not control. Rollback covers install errors, not
+  a build that installs cleanly but misbehaves.
 - **Uploads** are limited to the folders in `upload_dirs` (default: an `uploads` folder in the
   broker home), resolved before comparing, so `..` and links cannot climb out. The limit is 1 GiB,
   but the browser holds the whole file in memory while it uploads, so keep files small.
-- **Cut from the private system:** a relay that let an agent gateway on another machine call the
-  same tools (an SSH-forwarded long poll), named agent identities and their token files, a ChatGPT
-  "lane" companion and reply gate from an older design, a grant and lease permission model the
-  current design dropped, the publisher's push to a server, and a second, unverified update path in
-  the restart script. The ChatGPT round trip (`browser_chatgpt`) stays; it depends on ChatGPT's
-  page markup, which changes without notice, and the demo does not exercise it.
-
-Extracted from the Alcor system; the remote relay, named agent identities, fixed extension id and
-private update host were replaced by configuration (`config.json`, environment variables) and a
-folder-based update channel.
+- **`browser_chatgpt`** depends on ChatGPT's page markup, which changes without notice, and the demo
+  does not exercise it.

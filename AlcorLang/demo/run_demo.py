@@ -11,14 +11,20 @@ Usage, from anywhere::
     python demo/run_demo.py            # from the alcorlang component folder
     python AlcorLang/demo/run_demo.py  # from the repository root
 
+Add ``--json PATH`` to also write a summary of the run (programs, traces, lint results and
+every check) for the viewer in ``AlcorLang/viewer``. A path ending in ``.js`` is written as the
+script the viewer loads. Without it nothing else changes.
+
 Exit status is 0 when every check passes.
 """
 
 from __future__ import annotations
 
+import argparse
 import datetime
 import json
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -37,15 +43,21 @@ if hasattr(sys.stdout, "reconfigure"):
 
 PROGRAMS = ROOT / "programs"
 RESULTS: list[tuple[str, bool]] = []
+# What the run did, kept only so ``--json`` can export it. Printing is unaffected.
+SECTIONS: list[dict[str, Any]] = []
+CONFORMANCE: dict[str, Any] = {}
 
 
 def section(title: str) -> None:
+    SECTIONS.append({"title": re.sub(r"^\d+\. ", "", title), "checks": []})
     print(f"\n== {title} " + "=" * max(3, 70 - len(title)))
 
 
 def check(label: str, condition: bool) -> None:
     """Record one check and print it."""
     RESULTS.append((label, bool(condition)))
+    if SECTIONS:
+        SECTIONS[-1]["checks"].append({"label": label, "ok": bool(condition)})
     print(f"  [{'ok' if condition else 'FAIL'}] {label}")
 
 
@@ -348,6 +360,7 @@ def demo_conformance() -> None:
     section("8. Conformance: the corpus is the ground truth")
     done = cli("conformance")
     last = done.stdout.strip().splitlines()[-1]
+    CONFORMANCE["referee"] = last
     print(f"  referee (each test in its own interpreter): {last}")
     check(
         "the referee passes every conformance test",
@@ -356,6 +369,7 @@ def demo_conformance() -> None:
     done = cli("selftest")
     last = done.stdout.strip().splitlines()[-1]
     passed, total = last.split(": ")[1].split("/")
+    CONFORMANCE["selftest"] = {"passed": int(passed), "total": int(total)}
     print(f"  in-process selftest: {last}")
     check("the in-process selftest passes", done.returncode == 0 and passed == total)
     judged = subprocess.run(
@@ -420,7 +434,106 @@ def demo_selfhost() -> None:
     check("effects are refused out loud, never faked", effect.kind == "refused-by-design")
 
 
+SHOWN_PROGRAMS = (
+    ("quorum_gate.alcor", "", "Four votes, four verdicts: veto beats everything."),
+    ("capped_backoff.alcor", "", "Retry delays that double and stop at a cap."),
+    ("backoff_v3.alcor", "3", "v3 syntax, input 3: lowered to the same core."),
+    ("runaway.alcor", "", "A loop with no exit, stopped only by fuel."),
+)
+TRACE_STEPS_SHOWN = 150
+
+
+def program_entry(filename: str, tape_input: str, caption: str) -> dict[str, Any]:
+    """Run one shipped program for real and describe the run for the viewer.
+
+    Args:
+        filename: A file in ``programs/``.
+        tape_input: Text given to the program as its input.
+        caption: One line saying why the program is in the demo.
+
+    Returns:
+        The source, output, metered cost, lint result and the first steps of the trace.
+    """
+    source = (PROGRAMS / filename).read_text(encoding="utf-8")
+    metered = alcorlang.run_metered(source, tape_input)
+    traced = alcorlang.run_traced(source, tape_input, max_steps=TRACE_STEPS_SHOWN)
+    done = cli("lint", f"programs/{filename}", "--format", "json")
+    lint = json.loads(done.stdout)
+    diagnostics = [
+        {
+            key: d[key]
+            for key in ("rule", "severity", "line", "column", "message", "hint")
+            if key in d
+        }
+        for d in lint["diagnostics"]
+    ]
+    return {
+        "file": filename,
+        "caption": caption,
+        "input": tape_input,
+        "source": source,
+        "output": metered["tape"].splitlines(),
+        "profile": metered["profile"],
+        "steps": metered["steps"],
+        "fuel": metered["fuel"],
+        "headroom": metered["headroom"],
+        "trap": metered["trap"],
+        "lint": {"summary": lint["summary"], "diagnostics": diagnostics},
+        "trace": traced["steps"],
+        "trace_shown": len(traced["steps"]),
+    }
+
+
+def as_viewer_script(component: str, text: str) -> str:
+    """Wrap a JSON summary as the script the viewer loads straight from disk.
+
+    A script tag works from file:// where fetch() does not, so the viewer reads this form.
+
+    Args:
+        component: The component name for the header comment.
+        text: The JSON text.
+
+    Returns:
+        JavaScript that assigns the summary to ``window.ALCOR_RUN``.
+    """
+    return (
+        f"/**\n * Sample run of the {component} demo, from `python demo/run_demo.py --json`.\n"
+        " * Generated: regenerate it instead of editing it.\n */\n"
+        f"window.ALCOR_RUN = {text};\n"
+    )
+
+
+def write_summary(path: Path) -> None:
+    """Write the JSON summary of this run for the viewer.
+
+    The file is meant for a public page, so it fails closed: if anything that looks like a drive
+    letter, a home directory or a loopback address got in, nothing is written.
+
+    Args:
+        path: Where to write the summary.
+
+    Raises:
+        SystemExit: If the summary contains something that looks like a private path.
+    """
+    summary = {
+        "schema": "alcor.lang.demo-summary.v1",
+        "component": "AlcorLang",
+        "programs": [program_entry(*shown) for shown in SHOWN_PROGRAMS],
+        "conformance": CONFORMANCE,
+        "sections": SECTIONS,
+    }
+    text = json.dumps(summary, indent=1)
+    if re.search(r"[A-Za-z]:[\\/]|/Users/|/home/|127\.0\.0\.1", text):
+        raise SystemExit("refusing to write a summary that contains a private-looking path")
+    if path.suffix == ".js":
+        text = as_viewer_script("AlcorLang", text)
+    path.write_text(text.rstrip("\n") + "\n", encoding="utf-8")
+
+
 def main() -> int:
+    parser = argparse.ArgumentParser(description="Run the AlcorLang demo.")
+    parser.add_argument("--json", type=Path, help="also write a JSON summary of the run here")
+    options = parser.parse_args()
     print("AlcorLang demo: every line below is computed now.")
     parts = (
         demo_policies,
@@ -439,6 +552,8 @@ def main() -> int:
     print(f"\n{len(RESULTS)} checks, {len(failed)} failed")
     for label in failed:
         print(f"  FAILED: {label}")
+    if options.json is not None:
+        write_summary(options.json)
     return 1 if failed else 0
 
 

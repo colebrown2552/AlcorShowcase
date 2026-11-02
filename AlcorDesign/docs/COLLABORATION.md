@@ -14,11 +14,11 @@ opens a network listener or a tunnel.
 
 ## Editing and conflicts
 
-Each canvas edit, insertion, removal, viewport change, undo and redo now requires
+Each canvas edit, insertion, removal, viewport change, undo and redo requires
 `expected_revision` from the last page read. A stale HTTP write returns 409 with
-`code: revision_conflict` and the expected/current revisions. This is a deliberate
-API contract change: older clients that omit the revision receive an error and
-must read the page first. The MCP schemas advertise the required field.
+`code: revision_conflict` and the expected/current revisions. A client that omits
+the revision receives an error and must read the page first. The MCP schemas
+advertise the required field.
 
 Saved changes propagate to other sessions without resetting their zoom or pan.
 Remote changes wait while a user types properties, writes a comment, drags a
@@ -35,7 +35,7 @@ best-effort leave. Hidden tabs stop polling. Connection errors clear stale
 presence and retry reads with bounded backoff; a server restart requires reloading
 the page to establish its new local session cookie. No edits are replayed.
 
-## Verification and remaining work
+## Verification and limits
 
 Acceptance uses a real isolated Rust server and Chromium browser contexts with
 synthetic documents. It exercises shared edits, comments and selections,
@@ -46,7 +46,7 @@ input arriving during an in-flight refresh and presence expiration.
 This is saved-state collaboration, not a CRDT/operational-transform document
 engine. Character-level simultaneous editing, per-author undo, account roles,
 team invitations, document permissions, new-document discovery and shared source
-draft presence remain open. GitHub source drafts and live refresh use their
+draft presence are not supported. GitHub source drafts and live refresh use their
 existing separate operations. Full Figma parity is not claimed.
 
 With a separately started server on a disposable data directory, run the browser integrations:

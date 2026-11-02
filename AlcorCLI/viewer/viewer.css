@@ -1,0 +1,308 @@
+/**
+ * AlcorCLI viewer styles. Uses the colour tokens shared by every viewer in this repository so
+ * the screenshots read as one set: dark panels, one teal accent, green/red/amber for verdicts.
+ */
+
+:root {
+  --bg: #0b0d12;
+  --panel: #12151c;
+  --border: #222833;
+  --text: #e6e9ef;
+  --muted: #8b93a3;
+  --accent: #4fd1c5;
+  --ok: #3ecf8e;
+  --refuse: #f06a6a;
+  --warn: #f5b14c;
+  --radius: 8px;
+  --space: 16px;
+  --mono: ui-monospace, 'Cascadia Mono', 'SF Mono', Consolas, 'Liberation Mono', monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-size: 15px;
+  overflow: hidden;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space) calc(var(--space) * 1.5);
+  border-bottom: 1px solid var(--border);
+  background: var(--panel);
+}
+
+h1 {
+  margin: 0;
+  font-size: 34px;
+  letter-spacing: 0.5px;
+  color: var(--accent);
+}
+
+.subtitle {
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: 16px;
+}
+
+.chain {
+  text-align: right;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.chain small {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.layout {
+  display: grid;
+  flex: 1;
+  grid-template-columns: 1fr 430px;
+  gap: var(--space);
+  min-height: 0;
+  padding: var(--space);
+}
+
+.left {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space);
+  min-height: 0;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.counters {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space);
+}
+
+.counter {
+  padding: 12px var(--space);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.counter b {
+  display: block;
+  font-size: 54px;
+  line-height: 1.05;
+}
+
+.counter span {
+  color: var(--muted);
+  font-size: 16px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.ok {
+  color: var(--ok);
+}
+
+.refused {
+  color: var(--refuse);
+}
+
+.waiting {
+  color: var(--warn);
+}
+
+.recorded {
+  color: var(--muted);
+}
+
+.accent {
+  color: var(--accent);
+}
+
+.table-panel {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.filters {
+  display: flex;
+  gap: 8px;
+  padding: 12px var(--space);
+  border-bottom: 1px solid var(--border);
+}
+
+.filters button {
+  padding: 5px 14px;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.filters button[aria-selected='true'] {
+  color: var(--bg);
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.table-scroll {
+  flex: 1;
+  overflow-y: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  position: sticky;
+  top: 0;
+  padding: 8px 12px;
+  color: var(--muted);
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+td {
+  padding: 5px 12px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+td.reason {
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+tbody tr {
+  cursor: pointer;
+}
+
+tbody tr:hover {
+  background: rgba(79, 209, 197, 0.06);
+}
+
+tbody tr.selected {
+  background: rgba(79, 209, 197, 0.14);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
+.mono {
+  font-family: var(--mono);
+  font-size: 13px;
+}
+
+.badge {
+  display: inline-block;
+  min-width: 78px;
+  padding: 1px 10px;
+  border: 1px solid currentcolor;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.detail {
+  padding: var(--space);
+  overflow-y: auto;
+}
+
+.detail h2 {
+  margin: 0 0 4px;
+  font-size: 15px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.verdict {
+  margin: 4px 0 var(--space);
+  font-size: 44px;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.reason-text {
+  margin: 0 0 var(--space);
+  font-family: var(--mono);
+  font-size: 15px;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+dl {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 6px 12px;
+  margin: 0 0 var(--space);
+}
+
+dt {
+  color: var(--muted);
+}
+
+dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 14px;
+}
+
+.steps li {
+  display: flex;
+  justify-content: space-between;
+  padding: 3px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.step-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.steps li span:last-child {
+  flex: none;
+  padding-left: 8px;
+}

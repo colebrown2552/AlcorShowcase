@@ -1,4 +1,4 @@
-# Lint and format settings shared by every Python component (see STYLE.md).
+# Lint and format settings shared by every Python component.
 [tool.ruff]
 line-length = 100
 target-version = "py310"

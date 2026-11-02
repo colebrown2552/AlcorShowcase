@@ -1,0 +1,56 @@
+<!doctype html>
+<!--
+  AlcorLang viewer: a static page that shows real AlcorLang programs next to their execution.
+  It reads sample-run.js (window.ALCOR_RUN), so it opens from disk with no server or network.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AlcorLang · program run</title>
+    <link rel="stylesheet" href="viewer.css" />
+  </head>
+  <body>
+    <header class="bar">
+      <div>
+        <h1>AlcorLang</h1>
+        <p class="subtitle">program run · source, steps, fuel and verdict from the real interpreter</p>
+      </div>
+      <div id="conformance" class="chain"></div>
+    </header>
+    <nav id="tabs" class="tabs" role="tablist"></nav>
+    <main class="layout">
+      <section class="panel source-panel">
+        <h2 id="source-title"></h2>
+        <pre id="source" class="source"></pre>
+      </section>
+      <section class="right">
+        <div id="metrics" class="metrics"></div>
+        <div class="columns">
+          <div class="stack">
+            <div class="panel pad">
+              <h2>output</h2>
+              <pre id="tape" class="tape"></pre>
+            </div>
+            <div class="panel pad">
+              <h2>lint</h2>
+              <div id="lint"></div>
+            </div>
+          </div>
+          <div class="panel trace-panel">
+            <h2 class="pad-h">trace · each instruction and the cells it left</h2>
+            <div class="trace-scroll">
+              <table>
+                <tbody id="trace"></tbody>
+              </table>
+            </div>
+            <div id="cells" class="cells"></div>
+          </div>
+        </div>
+        <div id="sections" class="sections"></div>
+      </section>
+    </main>
+    <script src="sample-run.js"></script>
+    <script src="viewer.js"></script>
+  </body>
+</html>

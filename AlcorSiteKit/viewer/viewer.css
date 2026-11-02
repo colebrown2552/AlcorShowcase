@@ -1,0 +1,338 @@
+/**
+ * AlcorSiteKit viewer: styles.
+ * The colour, font, radius and spacing tokens below are shared by every viewer in this repo so the
+ * screenshots look like one family. Change them in all viewers or in none.
+ */
+
+:root {
+  --bg: #0b0d12;
+  --panel: #12151c;
+  --border: #222833;
+  --text: #e6e9ef;
+  --muted: #8b93a3;
+  --accent: #4fd1c5;
+  --ok: #3ecf8e;
+  --refuse: #f06a6a;
+  --warn: #f5b14c;
+  --radius: 8px;
+  --gap: 16px;
+  --mono: ui-monospace, 'Cascadia Mono', 'SF Mono', Consolas, 'Liberation Mono', monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font:
+    15px/1.4 system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: var(--gap);
+  padding: 0 var(--gap);
+  height: 64px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+}
+
+.bar h1 {
+  margin: 0;
+  font-size: 28px;
+  color: var(--accent);
+}
+
+.subtitle {
+  margin: 0;
+  flex: 1;
+  color: var(--muted);
+}
+
+.badges {
+  display: flex;
+  gap: 8px;
+}
+
+.badge {
+  padding: 4px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.badge.ok {
+  color: var(--ok);
+  border-color: var(--ok);
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+  padding: var(--gap);
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--gap);
+  min-width: 0;
+}
+
+.panel h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.panel-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.pipe {
+  display: grid;
+  grid-template-columns: 150px repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.stage {
+  padding: 4px 8px;
+  border-bottom: 2px solid var(--accent);
+  font-weight: 800;
+  font-size: 16px;
+}
+
+.stage small {
+  display: block;
+  color: var(--muted);
+  font-weight: 400;
+  font-size: 12px;
+}
+
+.release {
+  padding: 4px 0;
+  font-weight: 800;
+  font-size: 17px;
+}
+
+.release code {
+  display: block;
+  font-family: var(--mono);
+  font-size: 14px;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.release .verdict {
+  display: block;
+  font-size: 13px;
+}
+
+.release .verdict.ok {
+  color: var(--ok);
+}
+
+.release .verdict.refuse {
+  color: var(--refuse);
+}
+
+.cell {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 4px 0;
+  border-top: 1px solid var(--border);
+}
+
+.result {
+  display: block;
+  width: 100%;
+  padding: 2px 8px;
+  border: 1px solid var(--border);
+  border-left-width: 4px;
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.result.ok {
+  border-left-color: var(--ok);
+}
+
+.result.refuse {
+  border-left-color: var(--refuse);
+  color: var(--refuse);
+}
+
+.result.warn {
+  border-left-color: var(--warn);
+}
+
+.result.on {
+  outline: 2px solid var(--accent);
+}
+
+.empty {
+  color: var(--muted);
+  padding: 3px 8px;
+}
+
+.bottom {
+  display: grid;
+  grid-template-columns: 450px 350px minmax(0, 1fr);
+  gap: var(--gap);
+}
+
+.panel h3 {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+
+.stats {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.stat {
+  flex: 1;
+  padding: 4px 8px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  text-align: center;
+}
+
+.stat b {
+  display: block;
+  font-size: 24px;
+  line-height: 1.1;
+}
+
+.stat span {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.stat.ok b {
+  color: var(--ok);
+}
+
+.stat.refuse b {
+  color: var(--refuse);
+}
+
+.line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 2px 0;
+  font-size: 13px;
+}
+
+.line .n {
+  width: 18px;
+  color: var(--muted);
+  font-family: var(--mono);
+}
+
+.line .what {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dot {
+  flex: 0 0 auto;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--muted);
+}
+
+.dot.ok {
+  background: var(--ok);
+}
+
+.dot.refuse {
+  background: var(--refuse);
+}
+
+.dot.warn {
+  background: var(--warn);
+}
+
+.mono {
+  font-family: var(--mono);
+}
+
+.note {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.terminal {
+  margin: 0;
+  height: 188px;
+  overflow: auto;
+  padding: 8px 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font: 13px/1.45 var(--mono);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.terminal .cmd {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.terminal .ok {
+  color: var(--ok);
+}
+
+.terminal .refuse {
+  color: var(--refuse);
+}
+
+.terminal .warn {
+  color: var(--warn);
+}
+
+.attempts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 8px;
+}

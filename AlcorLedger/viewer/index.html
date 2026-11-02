@@ -1,0 +1,43 @@
+<!doctype html>
+<!--
+  AlcorLedger viewer: the page shell. It loads sample-run.js (the real output of demo/run_demo.py)
+  and viewer.js draws the hash chain, the privacy gate, the verify result and the tamper cases.
+  Static on purpose: no framework, no build step, no network, so it opens straight from disk.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AlcorLedger viewer</title>
+    <link rel="stylesheet" href="viewer.css" />
+  </head>
+  <body>
+    <header class="bar">
+      <h1>AlcorLedger</h1>
+      <p class="subtitle">
+        A hash-chained memory ledger with a privacy gate. Every block below is from a real demo run.
+      </p>
+      <div class="badges" id="badges"></div>
+    </header>
+    <main>
+      <section class="panel" id="chain-panel">
+        <div class="panel-head">
+          <h2>Hash chain</h2>
+          <div class="seg" id="scenarios" role="group" aria-label="Show on the chain"></div>
+        </div>
+        <div class="chain" id="chain"></div>
+      </section>
+      <div class="row3">
+        <section class="panel" id="refused-panel"></section>
+        <section class="panel" id="redacted-panel"></section>
+        <section class="panel" id="verify-panel"></section>
+      </div>
+      <section class="panel" id="tamper-panel">
+        <div class="panel-head"><h2>Tamper detection</h2></div>
+        <div class="cards" id="cards"></div>
+      </section>
+    </main>
+    <script src="sample-run.js"></script>
+    <script src="viewer.js"></script>
+  </body>
+</html>

@@ -1,8 +1,12 @@
 """End-to-end demo of continuity-core: hash chain, privacy gate, tamper detection, reconstruction.
 
-Run it from anywhere with ``python AlcorLedger/demo/run_demo.py``. It needs no install, no network and
-no configuration. Ids and timestamps are fixed, so the printed hashes are identical on every run.
-Each claim is asserted: the script exits non-zero if the behaviour regresses.
+Run it from anywhere with ``python AlcorLedger/demo/run_demo.py``. It needs no install, no
+network and no configuration. Ids and timestamps are fixed, so the printed hashes are identical on
+every run. Each claim is asserted: the script exits non-zero if the behaviour regresses.
+
+``--json PATH`` additionally writes a summary of the run (the chain, the refusals, the verify
+reports, the claims) for the viewer in ``viewer/``. Temporary paths in it are replaced by
+``<tmp>``. Without the flag the output is unchanged.
 
 The library is used where the demo needs to catch exceptions and inspect findings. Verification,
 scanning and the other verbs go through the real ``continuity`` command line, as a user would.
@@ -10,9 +14,11 @@ scanning and the other verbs go through the real ``continuity`` command line, as
 
 from __future__ import annotations
 
+import argparse
 import hashlib
 import json
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -34,6 +40,32 @@ from continuity_core.reconstruct import (  # noqa: E402
 
 checks_passed = 0
 
+# What the run observed, for ``--json``. Filled by ``note`` and ``expect`` as the demo proceeds.
+RUN: dict = {"claims": []}
+WORKDIR: Path | None = None
+ABSOLUTE_PATH = re.compile(r"(?:[A-Za-z]:[\\/]|/(?:tmp|var|home|Users|private)/)[^\s'\"]*")
+
+
+def clean(value):
+    """Return ``value`` with the temp folder and any other absolute path replaced by ``<tmp>``.
+
+    The exporter does this itself so the summary is safe to publish without hand-editing.
+    """
+    if isinstance(value, str):
+        if WORKDIR is not None:
+            value = value.replace(str(WORKDIR), "<tmp>")
+        return ABSOLUTE_PATH.sub("<tmp>", value)
+    if isinstance(value, dict):
+        return {key: clean(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [clean(item) for item in value]
+    return value
+
+
+def note(key: str, value) -> None:
+    """Remember a result under ``key`` for the ``--json`` summary."""
+    RUN[key] = clean(value)
+
 
 def heading(title: str) -> None:
     print(f"\n== {title} ==")
@@ -45,6 +77,7 @@ def expect(condition: bool, claim: str) -> None:
     if not condition:
         sys.exit(f"DEMO FAILED: {claim}")
     checks_passed += 1
+    RUN["claims"].append(claim)
     print(f"   proven: {claim}")
 
 
@@ -129,6 +162,7 @@ def part_chain_and_privacy(workdir: Path) -> None:
             f"   line {number}: {entry['kind']:<11} {entry['id']:<11} "
             f"previous={short(entry['previous_hash'])} hash={short(entry['entry_hash'])}"
         )
+    note("zero_hash", ZERO_HASH)
     expect(stored[0]["previous_hash"] == ZERO_HASH, "the first entry points at the all-zero hash")
     expect(
         stored[1]["previous_hash"] == stored[0]["entry_hash"]
@@ -152,6 +186,14 @@ def part_chain_and_privacy(workdir: Path) -> None:
             f"   finding: label={finding.label} location={finding.location} "
             f"length={finding.length} fingerprint={finding.fingerprint}"
         )
+    note(
+        "refusal",
+        {
+            "entry_id": risky["id"],
+            "message": str(refusal),
+            "findings": [finding.as_dict() for finding in refusal.findings],
+        },
+    )
     expect(ledger_path.stat().st_size == size_before, "nothing was written to the ledger")
     expect(
         "alice" not in str(refusal)
@@ -174,6 +216,8 @@ def part_chain_and_privacy(workdir: Path) -> None:
     )
     print(f"   stored metadata : {json.dumps(keyed['metadata'], sort_keys=True)}")
     raw = ledger_path.read_text(encoding="utf-8")
+    note("chain", [json.loads(line) for line in raw.splitlines()])
+    note("redacted_ids", [redacted["id"], keyed["id"]])
     expect(
         "alice@example.com" not in raw and "not-a-real-key" not in raw,
         "neither original value appears anywhere in the file",
@@ -186,6 +230,7 @@ def part_chain_and_privacy(workdir: Path) -> None:
     heading("4. Verify the chain with the CLI")
     code, out, _ = run_cli(workdir, "verify", "ledger.jsonl")
     report = json.loads(out)
+    note("verify_clean", {"exit": code, **report})
     print(f"   continuity verify ledger.jsonl -> exit {code}, entries={report['entries']}")
     expect(code == 0 and report["ok"] and report["entries"] == 5, "an untouched ledger verifies")
 
@@ -199,6 +244,15 @@ def part_chain_and_privacy(workdir: Path) -> None:
     print(f"   continuity verify ledger.jsonl -> exit {code}")
     for error in report["errors"]:
         print(f"   error: {error}")
+    note(
+        "tamper",
+        {
+            "line": 2,
+            "before": "41 seconds",
+            "after": "4 seconds",
+            "verify": {"exit": code, **report},
+        },
+    )
     expect(
         code == 1 and report["errors"] == ["line 2: entry_hash mismatch"],
         "verify exits 1 and names the line and the reason",
@@ -207,6 +261,7 @@ def part_chain_and_privacy(workdir: Path) -> None:
     chain_error = capture(lambda: ledger.append(late_entry), ChainError)
     expect(chain_error is not None, "append refuses to extend a ledger that fails verification")
     print(f"   ChainError: {chain_error}")
+    note("append_after_tamper", str(chain_error))
 
     heading("6. A forger who recomputes that line's own hash is caught one line later")
     forged = json.loads(edited)
@@ -216,6 +271,7 @@ def part_chain_and_privacy(workdir: Path) -> None:
     report = json.loads(out)
     for error in report["errors"]:
         print(f"   error: {error}")
+    note("forgery", {"forged_hash": forged["entry_hash"], "verify": {"exit": code, **report}})
     expect(
         code == 1 and report["errors"] == ["line 3: previous_hash mismatch"],
         "line 2 is now self-consistent, but line 3 still points at the old hash",
@@ -227,6 +283,16 @@ def part_chain_and_privacy(workdir: Path) -> None:
     code, out, _ = run_cli(workdir, "verify", "ledger.jsonl")
     report = json.loads(out)
     print(f"   newest entry deleted -> verify exit {code}, entries={report['entries']}")
+    note(
+        "truncation",
+        {
+            "verify": {"exit": code, **report},
+            "pinned_head": pinned_head,
+            "head_after": json.loads(ledger_path.read_text(encoding="utf-8").splitlines()[-1])[
+                "entry_hash"
+            ],
+        },
+    )
     expect(code == 0, "a ledger shortened from the end still verifies")
     current_head = json.loads(ledger_path.read_text(encoding="utf-8").splitlines()[-1])
     expect(
@@ -240,6 +306,14 @@ def part_cli_verbs(workdir: Path) -> None:
     code, out, _ = run_cli(workdir, "init", "state")
     created = json.loads(out)["created"]
     print(f"   continuity init state -> exit {code}, created {len(created)} paths")
+    cli = RUN.setdefault("cli", [])
+    cli.append(
+        {
+            "command": "continuity init state",
+            "exit": code,
+            "result": f"{len(created)} paths created",
+        }
+    )
     expect(code == 0 and len(created) == 5, "init lays out four ledgers and a local-state marker")
 
     ledger = "state/memory/public.jsonl"
@@ -255,6 +329,9 @@ def part_cli_verbs(workdir: Path) -> None:
         "Tests and receipts outrank narrative confidence.",
     )
     print(f"   continuity append (clean statement)  -> exit {code}")
+    cli.append(
+        {"command": "continuity append (clean statement)", "exit": code, "result": "appended cli-1"}
+    )
     expect(code == 0 and json.loads(out)["id"] == "cli-1", "a clean entry is appended")
 
     code, out, err = run_cli(
@@ -267,11 +344,19 @@ def part_cli_verbs(workdir: Path) -> None:
         "Send the report to bob@example.com",
     )
     print(f"   continuity append (contains email)   -> exit {code}, {json.loads(err)['type']}")
+    cli.append(
+        {
+            "command": "continuity append (contains email)",
+            "exit": code,
+            "result": json.loads(err)["type"],
+        }
+    )
     expect(code == 2 and "bob@example.com" not in err, "a secret is refused with exit code 2")
 
     code, out, _ = run_cli(workdir, "list", ledger, "--limit", "1")
     listed = json.loads(out.splitlines()[0])
     print(f"   continuity list --limit 1             -> {listed['id']}: {listed['statement']}")
+    cli.append({"command": "continuity list --limit 1", "exit": code, "result": listed["id"]})
     expect(code == 0 and len(out.splitlines()) == 1, "list streams entries and honours --limit")
 
     notes = workdir / "notes.txt"
@@ -281,6 +366,13 @@ def part_cli_verbs(workdir: Path) -> None:
     print(
         f"   continuity scan notes.txt             -> exit {code}, label={finding['label']}, "
         f"length={finding['length']}, fingerprint={finding['fingerprint']}"
+    )
+    cli.append(
+        {
+            "command": "continuity scan notes.txt",
+            "exit": code,
+            "result": f"{finding['label']} finding, length {finding['length']}",
+        }
     )
     expect(code == 1 and "carol" not in out, "scan exits 1 and reports the category, not the value")
 
@@ -323,6 +415,7 @@ def part_reconstruction(workdir: Path) -> None:
         f"   state_digest={short(receipt['state_digest'])} passes={receipt['pass_count']} "
         f"cache_used={receipt['cache_used']}"
     )
+    note("reconstruction", {"receipt": receipt})
     expect(
         receipt["ok"] and receipt["turn_three_process_distinct"],
         "three identical cold reconstructions agree, and turn 3 ran in a distinct process",
@@ -332,6 +425,7 @@ def part_reconstruction(workdir: Path) -> None:
     build_proof(cached, cache_used_on_turn_two=True)
     cache_failure = capture(lambda: verify_pass_k(cached), ReconstructionError)
     print(f"   turn 2 recorded cache_used=True -> {cache_failure}")
+    note("reconstruction_cache_failure", str(cache_failure))
     expect(str(cache_failure) == "cache-use-not-proven-false", "a recorded cache use fails closed")
 
     lines = good.read_text(encoding="utf-8").splitlines()
@@ -339,20 +433,43 @@ def part_reconstruction(workdir: Path) -> None:
     write_lines(good, lines)
     chain_failure = capture(lambda: verify_pass_k(good), ReconstructionError)
     print(f"   one line edited on disk         -> {chain_failure}")
+    note("reconstruction_chain_failure", str(chain_failure))
     expect(
         str(chain_failure) == "ledger-chain-invalid",
         "reconstruction refuses a ledger that fails verify",
     )
 
 
+def write_summary(path: Path, summary: dict) -> None:
+    """Write the run summary as JSON, or as ``window.ALCOR_RUN = ...;`` when ``path`` ends in .js.
+
+    The script form lets the viewer load it from a file:// page, where fetch is not allowed.
+    """
+    text = json.dumps(summary, indent=2, sort_keys=True)
+    if path.suffix == ".js":
+        text = (
+            "/**\n * Real output of AlcorLedger/demo/run_demo.py, written by its --json flag.\n"
+            " * Generated: regenerate it instead of editing it.\n */\n"
+            f"// prettier-ignore\nwindow.ALCOR_RUN = {text};"
+        )
+    path.write_text(text + "\n", encoding="utf-8", newline="\n")
+
+
 def main() -> int:
+    global WORKDIR
+    parser = argparse.ArgumentParser(description="End-to-end demo of continuity-core.")
+    parser.add_argument("--json", metavar="PATH", help="also write a summary of the run as JSON")
+    args = parser.parse_args()
     print("continuity-core demo: hash-chained ledger with a privacy gate")
     with tempfile.TemporaryDirectory() as directory:
         workdir = Path(directory)
+        WORKDIR = workdir
         part_chain_and_privacy(workdir)
         part_cli_verbs(workdir)
         part_reconstruction(workdir)
     print(f"\nAll {checks_passed} claims proven.")
+    if args.json:
+        write_summary(Path(args.json), {"component": "AlcorLedger", **RUN})
     return 0
 
 

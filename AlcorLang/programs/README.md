@@ -1,7 +1,7 @@
-# Executable AlcorLang program corpus
+# Example program corpus
 
-This directory is the runnable corpus of example programs. It is deliberately small,
-deterministic, and machine-checked.
+The runnable example programs for AlcorLang. The set is deliberately small, deterministic and
+machine-checked.
 
 `corpus.json` is the contract. Every `.alcor` file in this directory must be listed there with
 either an exact output tape or an exact metered outcome. A program may be listed more than once,
@@ -23,8 +23,8 @@ with different `input` lines and a `name`, so one policy can be shown on several
 
 The policy programs are default-profile, effect-free finite DAGs. They make decisions but perform
 no effects; the host retains execution authority. `kernel.alcor`, `restraint.alcor` and
-`count.alcor` are unmodified programs from the system this repository was extracted from. They
-read their request from the input tape, one value per line, and print a `schema=...` decision.
+`count.alcor` are the policies Alcor's own agent loop runs, unchanged. They read their request from
+the input tape, one value per line, and print a `schema=...` decision.
 
 ## Run one
 

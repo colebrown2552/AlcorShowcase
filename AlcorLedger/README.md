@@ -1,17 +1,24 @@
 # AlcorLedger: a hash-chained, append-only ledger with a privacy gate
 
-The Python package is `continuity-core` (import `continuity_core`, command `continuity`).
+AlcorLedger is a tamper-evident log for an AI agent's memory and decisions. Every entry is linked to
+the one before it, so a later edit is detected, and secrets such as passwords, tokens or email
+addresses are refused before they can be written.
 
-![AlcorLedger demo: appends, a refused secret, redaction, tamper detection](screenshots/demo.svg)
+![AlcorLedger viewer](screenshots/viewer.png)
 
 Long-lived agent memory and decision logs get copied, committed and published, and a secret that
-lands in one is hard to take back. continuity-core stores each entry as one JSON line that carries
-the SHA-256 of the line before it, and it scans every entry for private data before anything is
+lands in one is hard to take back. The ledger stores each entry as one JSON line that carries the
+SHA-256 of the line before it, and it scans every entry for private data before anything is
 written: by default it refuses, and on request it replaces the value with a marker. `verify`
 re-checks the chain, the schema and the privacy policy for the whole file, and an append refuses to
-extend a file that fails.
+extend a file that fails. The Python package is `continuity-core` (import `continuity_core`,
+command `continuity`).
 
-## Why it's built this way
+## See it
+
+Open `viewer/index.html` in a browser to explore a recorded demo run.
+
+## Highlights
 
 - **Refuse first, redact on request.** An entry is rejected if it contains an email address; a
   bearer, GitHub or `sk-` style token; a private-key header; a URL with embedded credentials; a
@@ -23,14 +30,14 @@ extend a file that fails.
   findings can still be told apart.
 - **Verify before every append.** `append` takes the write lock, verifies the whole file, links to
   the last hash, writes one line and calls `fsync`. A damaged ledger is never extended. The price is
-  that each append re-reads the file, so cost grows with ledger size; large ledgers were not measured.
+  that each append re-reads the file, so cost grows with ledger size.
 - **Canonical bytes.** Entries are stored as JSON with sorted keys and no extra whitespace, and the
-  hash is taken over exactly that form. The hash then depends only on the data, so the demo prints the
+  hash is taken over exactly that form. The hash depends only on the data, so the demo prints the
   same hashes on every run.
 - **One error per edit.** The next line is linked to the hash the previous line *claims*, not the one
   it should have. An edited line is reported once, on its own line, and a forger who recomputes that
   line's hash is caught on the following line instead.
-- **Standard library only.** Writers are serialised by an in-process lock plus a lock file created
+- **Standard library only.** Writers are serialized by an in-process lock plus a lock file created
   with `O_EXCL`. There are no runtime dependencies.
 
 ## How it works
@@ -65,14 +72,22 @@ use, turn 3 in a different process than turns 1 and 2).
 
 ## Run it
 
-PowerShell, from the repository root:
+From the repository root, with no install:
 
-```powershell
-python AlcorLedger/demo/run_demo.py                  # chain, privacy gate, tampering, CLI, reconstruction
-python -m pytest AlcorLedger                         # 29 tests, no install needed
-python AlcorLedger/continuity.py verify AlcorLedger/examples/principles.jsonl   # no install needed
+```bash
+python AlcorLedger/demo/run_demo.py      # chain, privacy gate, tampering, CLI, reconstruction
+python AlcorLedger/continuity.py verify AlcorLedger/examples/principles.jsonl
+```
 
-pip install -e AlcorLedger                           # optional: adds the `continuity` command
+The demo needs no network and prints one `proven:` line per claim, ending with
+`All 22 claims proven.`; it exits non-zero if any claim fails.
+
+![AlcorLedger demo output](screenshots/demo.svg)
+
+With the `continuity` command installed:
+
+```bash
+pip install -e AlcorLedger
 continuity init AlcorLedger/demo/state               # git-ignored scratch folder
 continuity append AlcorLedger/demo/state/memory/public.jsonl --kind decision --statement "Receipts outrank narrative confidence."
 continuity append AlcorLedger/demo/state/memory/public.jsonl --kind memory --statement "Mail alice@example.com"            # exit 2, refused
@@ -80,28 +95,18 @@ continuity append AlcorLedger/demo/state/memory/public.jsonl --kind memory --sta
 continuity verify AlcorLedger/demo/state/memory/public.jsonl
 ```
 
-bash, from the repository root:
+`continuity scan <paths>` looks for private data in files and exits 1 if it finds any. Exit codes
+are 0 for success, 1 for a failed check and 2 for an error such as a refused entry.
+
+## Tests
 
 ```bash
-python AlcorLedger/demo/run_demo.py
-python -m pytest AlcorLedger
-python AlcorLedger/continuity.py verify AlcorLedger/examples/principles.jsonl
-
-pip install -e AlcorLedger
-continuity init AlcorLedger/demo/state
-continuity append AlcorLedger/demo/state/memory/public.jsonl --kind decision --statement "Receipts outrank narrative confidence."
-continuity append AlcorLedger/demo/state/memory/public.jsonl --kind memory --statement "Mail alice@example.com"            # exit 2, refused
-continuity append AlcorLedger/demo/state/memory/public.jsonl --kind memory --statement "Mail alice@example.com" --redact   # stored with a marker
-continuity verify AlcorLedger/demo/state/memory/public.jsonl
-
-# Tests without pytest:
-PYTHONPATH=AlcorLedger/src python -m unittest discover -s AlcorLedger/tests
+python -m pytest AlcorLedger                                          # 29 tests
+PYTHONPATH=AlcorLedger/src python -m unittest discover -s AlcorLedger/tests   # without pytest (bash)
 ```
 
-The demo needs no install or network and prints one `proven:` line per claim, ending with
-`All 22 claims proven.`; it exits non-zero if any claim fails. `continuity scan <paths>` looks for
-private data in files and exits 1 if it finds any. Exit codes are 0 for success, 1 for a failed
-check and 2 for an error such as a refused entry.
+Start with `test_ledger_hardening.py` (damaged ledgers are never extended) and
+`test_continuity_three_turn.py`.
 
 ## Read the code
 
@@ -113,10 +118,9 @@ check and 2 for an error such as a refused entry.
 | `src/continuity_core/reconstruct.py` | `reconstruct`: the invariant checks, in order |
 | `continuity.py` | The no-install launcher (puts `src` on the import path) |
 | `examples/principles.jsonl` | A six-entry ledger that verifies |
-| `tests/` | `test_ledger_hardening.py` (damaged ledgers are never extended), `test_continuity_three_turn.py` |
 | `demo/run_demo.py` | The walk-through, including the tamper and forger cases |
 
-## Scope and limits
+## Limitations
 
 - **Tamper-evident, not tamper-proof.** Editing, reordering or deleting a middle line is detected.
   Deleting the newest entries, or rewriting every line from an edit onward with fresh hashes, still
@@ -124,19 +128,13 @@ check and 2 for an error such as a refused entry.
   that; demo part 7 shows it. A valid chain proves the file is internally consistent, not that its
   statements are true or who wrote them.
 - **The detectors are regular expressions.** They cover the shapes listed above and a fixed list of
-  sensitive key names. They miss secrets in other forms, and they flag some harmless text, for example
-  a four-part version number looks like an IPv4 address. They are a last line of defence, not a
-  replacement for secret scanning at the hosting provider.
+  sensitive key names. They miss secrets in other forms, and they flag some harmless text; for
+  example, a four-part version number looks like an IPv4 address. They are a last line of defense,
+  not a replacement for secret scanning at the hosting provider.
 - **The lock is advisory.** If two waiters break the same stale lock (older than 120 s) at the same
   instant, both can write; `verify` reports the resulting broken chain and later appends refuse to
   extend it.
-- **Local and single-file.** No encryption, signing or network. The tests and demo were run on
-  Windows with Python 3.12; the code declares Python 3.10+ and has not been run on Linux or macOS here.
+- **Local and single-file.** No encryption, signing or network. Tested on Windows with Python 3.12;
+  the code targets Python 3.10+.
 - **`reconstruct` checks recorded claims.** It shows the evidence is complete and consistent; it does
   not observe the processes the entries describe.
-- **What was cut.** The original repository's own memory and wishlist ledgers (a six-entry sample is
-  kept), its CI workflow and its design notes. Nothing is stubbed: the package has no private
-  dependencies.
-
-Extracted from the Alcor system; test fixtures now use reserved example addresses, and the launcher
-test checks a bundled copy of the six-entry sample ledger.

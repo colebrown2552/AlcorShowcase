@@ -1,14 +1,13 @@
 # AlcorShowcase
 
 Selected work by **Cole Brown** from [Alcor Industries](https://alcor-industries.com/): the agent
-infrastructure, browser apps and web tooling behind a one-person software company, extracted from
-the private system so it can be read and run.
+infrastructure, browser apps and web tooling behind a one-person software company, packaged to run
+standalone.
 
 ![Alcor components](screenshots/collage.png)
 
-Every component runs on a clean machine with no private services: each one ships an offline
-end-to-end demo (and its existing tests), and every screenshot below is rendered from a real run of
-that demo. `python scripts/check.py` runs all of them; CI runs the same file on Linux and Windows.
+Every component runs on a clean machine with no outside services, and each one ships an offline
+end-to-end demo alongside its tests. `python scripts/check.py` runs all of them.
 
 ## Components
 
@@ -46,14 +45,6 @@ python scripts/check.py AlcorLang  # one component
 
 Python 3.10+ for the Python components; Node 20+ for the JavaScript tooling; Rust for AlcorDesign.
 Each component's README has its own "Run it" section.
-
-## Conventions
-
-- [STYLE.md](STYLE.md): one formatting and commenting standard across Python, JavaScript, Rust and
-  PHP. File headers say what a file is for; comments say why, not what.
-- Nothing private: no credentials, hostnames, addresses or personal paths. Configuration comes from
-  environment variables or config files with neutral defaults.
-- Fixes found while extracting the code are listed in each README.
 
 ## About
 

@@ -1,0 +1,395 @@
+/**
+ * AlcorLang viewer styles. Uses the colour tokens shared by every viewer in this repository so
+ * the screenshots read as one set: dark panels, one teal accent, green/red/amber for verdicts.
+ */
+
+:root {
+  --bg: #0b0d12;
+  --panel: #12151c;
+  --border: #222833;
+  --text: #e6e9ef;
+  --muted: #8b93a3;
+  --accent: #4fd1c5;
+  --ok: #3ecf8e;
+  --refuse: #f06a6a;
+  --warn: #f5b14c;
+  --radius: 8px;
+  --space: 16px;
+  --mono: ui-monospace, 'Cascadia Mono', 'SF Mono', Consolas, 'Liberation Mono', monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-size: 15px;
+  overflow: hidden;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space) calc(var(--space) * 1.5);
+  border-bottom: 1px solid var(--border);
+  background: var(--panel);
+}
+
+h1 {
+  margin: 0;
+  font-size: 34px;
+  letter-spacing: 0.5px;
+  color: var(--accent);
+}
+
+.subtitle {
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: 16px;
+}
+
+
+
+.chain {
+  text-align: right;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.chain small {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  padding: var(--space) var(--space) 0;
+}
+
+.tabs button {
+  padding: 8px 18px;
+  color: var(--muted);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font: inherit;
+  font-family: var(--mono);
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.tabs button[aria-selected='true'] {
+  color: var(--bg);
+  background: var(--accent);
+  border-color: var(--accent);
+  font-weight: 700;
+}
+
+.layout {
+  display: grid;
+  flex: 1;
+  grid-template-columns: 560px 1fr;
+  gap: var(--space);
+  min-height: 0;
+  padding: var(--space);
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+h2 {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.pad {
+  padding: 12px var(--space);
+}
+
+.pad-h {
+  margin: 0;
+  padding: 12px var(--space) 8px;
+}
+
+.source-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 12px 0 0;
+}
+
+.source-panel h2 {
+  padding: 0 var(--space);
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 14px;
+}
+
+.source {
+  flex: 1;
+  margin: 0;
+  padding: 0 var(--space) var(--space);
+  overflow: auto;
+  font-family: var(--mono);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.line {
+  display: block;
+  padding-left: 7ch;
+  text-indent: -7ch;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.num {
+  display: inline-block;
+  width: 3ch;
+  margin-right: 14px;
+  color: var(--muted);
+  opacity: 0.6;
+  text-align: right;
+  user-select: none;
+}
+
+.t-kw {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.t-op {
+  font-style: italic;
+}
+
+.t-var {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.t-str {
+  color: var(--ok);
+}
+
+.t-num {
+  color: var(--warn);
+}
+
+.t-lbl {
+  color: var(--refuse);
+}
+
+.right {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space);
+  min-height: 0;
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr 1.3fr;
+  gap: var(--space);
+}
+
+.metric {
+  padding: 12px var(--space);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.metric b {
+  display: block;
+  font-size: 46px;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.metric span {
+  color: var(--muted);
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.meter {
+  height: 10px;
+  margin-top: 8px;
+  background: var(--border);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.meter i {
+  display: block;
+  height: 100%;
+  background: var(--ok);
+}
+
+.meter i.full {
+  background: var(--refuse);
+}
+
+.ok {
+  color: var(--ok);
+}
+
+.refused {
+  color: var(--refuse);
+}
+
+.waiting {
+  color: var(--warn);
+}
+
+.accent {
+  color: var(--accent);
+}
+
+.columns {
+  display: grid;
+  flex: 1;
+  grid-template-columns: 1fr 1.25fr;
+  gap: var(--space);
+  min-height: 0;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space);
+  min-height: 0;
+}
+
+.stack .panel:first-child {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.tape {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.tape .now {
+  color: var(--accent);
+}
+
+.tape .later {
+  color: var(--muted);
+  opacity: 0.55;
+}
+
+.diag {
+  margin: 0 0 6px;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.diag code,
+.mono {
+  font-family: var(--mono);
+  font-size: 13px;
+}
+
+.trace-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.trace-scroll {
+  flex: 1;
+  overflow-y: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+td {
+  padding: 3px 10px;
+  border-top: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+td.dim {
+  color: var(--muted);
+}
+
+td.ins {
+  max-width: 230px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+tbody tr {
+  cursor: pointer;
+}
+
+tbody tr:hover {
+  background: rgba(79, 209, 197, 0.06);
+}
+
+tbody tr.selected {
+  background: rgba(79, 209, 197, 0.16);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
+.cells {
+  padding: 8px var(--space);
+  border-top: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 13px;
+  min-height: 52px;
+  overflow-wrap: anywhere;
+}
+
+.sections {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip {
+  padding: 3px 10px;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 13px;
+}
+
+.chip b {
+  margin-left: 6px;
+  color: var(--ok);
+}

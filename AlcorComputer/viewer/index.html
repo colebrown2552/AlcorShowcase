@@ -1,0 +1,62 @@
+<!doctype html>
+<!--
+  AlcorComputer viewer: the page shell. It loads sample-run.js (the real output of demo/run_demo.py)
+  and viewer.js draws the observed screen, each proposed action with the authority's verdict, and
+  the receipt. Static on purpose: no framework, no build step, no network, so it opens from disk.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AlcorComputer viewer</title>
+    <link rel="stylesheet" href="viewer.css" />
+  </head>
+  <body>
+    <header class="bar">
+      <h1>AlcorComputer</h1>
+      <p class="subtitle">
+        Contract-bound computer use: observe, propose, get a verdict, keep a receipt. Real demo run.
+      </p>
+      <div class="badges" id="badges"></div>
+    </header>
+    <main>
+      <div class="col">
+        <section class="panel">
+          <div class="panel-head">
+            <h2>1. Observation</h2>
+            <span class="muted" id="screen-meta"></span>
+          </div>
+          <div class="screen-wrap">
+            <div class="screen" id="screen"></div>
+            <ul class="legend" id="legend"></ul>
+          </div>
+        </section>
+        <section class="panel">
+          <div class="panel-head"><h2>Mediator: staging a click</h2></div>
+          <div id="mediator"></div>
+        </section>
+      </div>
+      <div class="col">
+        <section class="panel">
+          <div class="flow" id="flow"></div>
+        </section>
+        <section class="panel">
+          <div class="panel-head">
+            <h2>2. Proposed actions and the verdict</h2>
+            <span class="muted" id="grant"></span>
+          </div>
+          <div id="actions"></div>
+        </section>
+        <section class="panel">
+          <div class="panel-head">
+            <h2>3. Receipt</h2>
+            <span class="muted" id="receipt-meta"></span>
+          </div>
+          <pre class="receipt" id="receipt"></pre>
+        </section>
+      </div>
+    </main>
+    <script src="sample-run.js"></script>
+    <script src="viewer.js"></script>
+  </body>
+</html>

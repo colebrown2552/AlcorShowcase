@@ -2,8 +2,8 @@
 
 Each component declares its own steps in ``scripts/checks.json`` (lint, existing tests, demo), so
 this runner stays generic: it executes the steps in order, from the repository root, and prints a
-pass/fail table. CI runs the same file, which keeps "works on my machine" and "works in CI" the
-same claim.
+pass/fail table. A CI job can run the same file, so "works on my machine" and "works in CI" stay
+the same claim.
 
 Usage:
     python scripts/check.py                 # everything
@@ -39,7 +39,7 @@ def resolve(argv: list[str]) -> list[str] | None:
 
     Steps name their tool as the first argument. A missing optional tool (``"optional": true``)
     is reported as skipped rather than failed, so a machine without Rust can still run the Python
-    checks, while CI installs everything and treats every step as required.
+    checks, while a full CI install treats every step as required.
     """
     resolved = [sys.executable if a == "{python}" else a for a in argv]
     if resolved[0] != sys.executable and shutil.which(resolved[0]) is None:

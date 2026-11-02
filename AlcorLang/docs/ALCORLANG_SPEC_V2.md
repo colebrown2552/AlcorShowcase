@@ -2,7 +2,7 @@
 **Spec version:** 2.0.0
 **Judge:** `alcorlang/referee.py` + `conformance/conformance_v2.json` (the corpus is the ground truth; where prose and corpus disagree, the corpus wins and the disagreement is a spec bug — report it, don't guess).
 
-> **About this copy.** This is the specification the code in this repository implements. Two things it mentions are not part of this extract: the v1 task-language compiler (the spec describes v1 only as far as v2 needs it), and the full vocabulary table. The extract ships a 23-element working table (`alcorlang/data/periodic_table.json`); any token that is not in the table fails closed, exactly as the spec says.
+> **Scope.** This is the specification the code in this folder implements. The v1 task language is described only as far as v2 needs it; its compiler is not implemented. The vocabulary table (`alcorlang/data/periodic_table.json`) holds 23 elements, and any token that is not in it fails closed, as the spec says.
 
 ---
 

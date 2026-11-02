@@ -1,0 +1,39 @@
+<!doctype html>
+<!--
+  AlcorSiteKit viewer: the page shell. It loads sample-run.js (the real output of demo/run_demo.py)
+  and viewer.js draws the release pipeline, the one-time-code gate and the audit log.
+  Static on purpose: no framework, no build step, no network, so it opens straight from disk.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AlcorSiteKit viewer</title>
+    <link rel="stylesheet" href="viewer.css" />
+  </head>
+  <body>
+    <header class="bar">
+      <h1>AlcorSiteKit</h1>
+      <p class="subtitle">
+        Release pipeline with a one-time-code promotion gate. Every cell is a real CLI run.
+      </p>
+      <div class="badges" id="badges"></div>
+    </header>
+    <main>
+      <section class="panel">
+        <div class="panel-head">
+          <h2>Release pipeline</h2>
+          <span class="muted">click any result to read the command output</span>
+        </div>
+        <div class="pipe" id="pipe"></div>
+      </section>
+      <div class="bottom">
+        <section class="panel" id="gate"></section>
+        <section class="panel" id="audit"></section>
+        <section class="panel" id="detail"></section>
+      </div>
+    </main>
+    <script src="sample-run.js"></script>
+    <script src="viewer.js"></script>
+  </body>
+</html>

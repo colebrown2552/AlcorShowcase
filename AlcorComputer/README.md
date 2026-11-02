@@ -1,18 +1,26 @@
-# AlcorComputer: a contract-bound computer-use mediator with real macOS and Windows backends
+# AlcorComputer: contract-bound computer use with real macOS and Windows backends
 
-Python packages: `alcor_computer` (the mediator, its authority lane and backends) and `alcor_click`
-(a small MCP plugin built on it).
+AlcorComputer lets an AI model click and type on a real computer only when code can prove the action
+is allowed. Every click must be tied to something the model really saw, it can be used once, and each
+attempt leaves an audit record that contains no private content.
 
-![AlcorComputer demo: staged clicks, refused replays and forgeries, sanitized receipts](screenshots/demo.svg)
+![AlcorComputer viewer](screenshots/viewer.png)
 
-A model that can click and type on a real machine needs more than a permission prompt. This package puts
-that power behind contracts that code checks. A **mediator** stages a click only if it is bound, by hash,
-to an observation that a typed authority really produced. A bounded **app-control session** lets input
-through only with an owner-written grant, a fresh one-use observation and a second identity check, and it
-writes a durable receipt before the event is sent. Standard library only; the MCP servers need the
-optional `mcp` package.
+A model that can click and type on a real machine needs more than a permission prompt. This package
+puts that power behind contracts that code checks. A **mediator** stages a click only if it is bound,
+by hash, to an observation that a typed authority really produced. A bounded **app-control session**
+lets input through only with a grant file the machine's owner wrote, a fresh one-use observation and
+a second identity check, and it writes a durable **receipt** (a hashed record of the action) before
+the event is sent. Two Python packages: `alcor_computer` (the mediator, its authority lane and
+backends) and `alcor_click` (a small MCP plugin built on it; MCP is the Model Context Protocol, a
+standard way for AI agents to call tools). Standard library only; the MCP servers need the optional
+`mcp` package.
 
-## Why it's built this way
+## See it
+
+Open `viewer/index.html` in a browser to explore a recorded demo run.
+
+## Highlights
 
 - **The mediator proposes, it never acts.** It validates a click bundle and *stages* it: the proposal is
   consumed once and a sanitized receipt says `input_fired: false`. There is no actuator in the module, and
@@ -54,8 +62,8 @@ flowchart LR
     end
 ```
 
-The paths are independent. A staged proposal is meant for a gated broker that is not part of this
-repository; `AppController` is the bounded session an embedding program uses to act on one application.
+The paths are independent. A staged proposal is meant for a separate gated broker that performs the
+input; `AppController` is the bounded session an embedding program uses to act on one application.
 
 **The read-lane authority** (`alcor_computer/authority/`) issues a scoped read token, runs
 `prepared -> search -> read -> completed` for a single-turn, data-only operator, and signs the finished
@@ -72,36 +80,41 @@ allowlist), which extends `_mediator_core.ComputerUseMediator` (the contract its
 
 ## Run it
 
-PowerShell:
-
-```powershell
-python AlcorComputer/demo/run_demo.py
-python -m pytest AlcorComputer
-Set-Location AlcorComputer; python -m alcor_computer.selftest; python -m alcor_computer.authority.static_check
-```
-
-bash:
+Python 3.10+. From the repository root:
 
 ```bash
 python AlcorComputer/demo/run_demo.py
-python -m pytest AlcorComputer
-(cd AlcorComputer && python -m alcor_computer.selftest && python -m alcor_computer.authority.static_check)
 ```
 
 The demo needs no install and touches nothing real: a tripwire makes any `subprocess` or `ctypes.CDLL`
 call raise, and the "desktop" is a few lines of Python behind the real macOS backend's test seams. It
 stages a click, then refuses a replay, a chain the authority never registered, an expired scope, an
-ambiguous projection (which the authority also refuses to register) and three malformed bundles; then
+ambiguous projection (which the authority also refuses to register) and three malformed bundles. Then it
 runs an app-control session where a replayed observation, a key outside the grant, an off-window click
 and a stale observation are refused and the fourth event exceeds the budget. It prints reason codes and
 exits non-zero if any expectation fails.
 
+![AlcorComputer demo output](screenshots/demo.svg)
+
 To serve the mediator over MCP, install the SDK (`pip install "mcp[cli]"`) and run
 `python -m alcor_computer.mcp_server` from `AlcorComputer/` (`--check` lists the tools, `--config` prints a
 client entry). Without the SDK it prints how to install it and exits with status 2. State goes to
-`ALCOR_COMPUTER_STATE_DIR` (default `~/.alcor/computer`). The test suite is 98 tests: the original 70
-(64 plus 6 for `alcor_click`) and 28 for the authority; two POSIX-only tests skip on Windows. Python
-3.10+. Pillow is optional and only used for screenshots in `alcor_click`.
+`ALCOR_COMPUTER_STATE_DIR` (default `~/.alcor/computer`). Pillow is optional and only used for
+screenshots in `alcor_click`.
+
+## Tests
+
+```bash
+python -m pytest AlcorComputer                      # from the repository root
+cd AlcorComputer
+python -m alcor_computer.selftest
+python -m alcor_computer.authority.static_check
+```
+
+98 tests, 28 of them for the authority; two POSIX-only tests skip on Windows. `selftest` fails if
+any top-level module of the package imports an input or socket library. `static_check` parses the authority modules
+without importing them and fails if any imports a network, process or input library, writes a file,
+reads the environment or contains a URL.
 
 ## Read the code
 
@@ -120,7 +133,7 @@ client entry). Without the SDK it prints how to install it and exits with status
 | `alcor_computer/mcp_server.py` | The three mediator tools and the optional-SDK failure path |
 | `demo/run_demo.py` | All of it on a fake desktop |
 
-## Scope and limits
+## Limitations
 
 - The real backends are not exercised against a live desktop by the tests or the demo. They are covered
   through their injection seams and by static checks; the macOS and Win32 calls themselves need a human
@@ -129,13 +142,9 @@ client entry). Without the SDK it prints how to install it and exits with status
   lost when the process ends. The mediator's ledger is a local file, not shared storage.
 - "Owner" means the person who owns the account and its files. On POSIX the grant must be a regular file
   with no group or world bits; on Windows its directory's ACL is checked instead.
-- Left out: the UI Automation scripts that fed `WindowsAppBackend.elements()` (inject an
-  `element_provider`), model-specific policy adapters, and the proposal, summary and arm-record
-  validators of the original authority package, which this component does not use.
-- Changes from the private original: the file-lock helper is inlined, a small MCP server replaces the
-  registration that lived in a larger private one, the unused file-based chain verifier and a private
-  hand-off hook were removed, and `private_acl` now accepts the OWNER RIGHTS entry that Python's own
-  `tempfile` creates. See `NOTICE.md` for the design ideas adapted from an MIT-licensed project.
+- `WindowsAppBackend.elements()` needs an injected `element_provider` (for example a UI Automation
+  adapter); none ships here.
 
-Extracted from the Alcor system; a private file lock, MCP server and test fixtures were replaced with an
-inlined lock, a small server and in-memory fakes.
+## Credits
+
+The reflex executor adapts design ideas from an MIT-licensed project; see [NOTICE.md](NOTICE.md).

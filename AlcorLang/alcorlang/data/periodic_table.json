@@ -1,5 +1,5 @@
 {
- "_comment": "Working vocabulary for v1 statements: 23 elements, each with a verb and/or object role. Message carries both roles because it is used both ways: SEND Message TO Person is the verb, WRITE Message TO File is the object. A token that is not listed fails closed, and a token in the wrong position is rejected. This is a subset of a larger private vocabulary; extend it by adding entries here.",
+ "_comment": "Working vocabulary for v1 statements: 23 elements, each with a verb and/or object role. Message carries both roles because it is used both ways: SEND Message TO Person is the verb, WRITE Message TO File is the object. A token that is not listed fails closed, and a token in the wrong position is rejected. Extend it by adding entries here.",
  "elements": [
   {"name": "Update", "role": "verb"},
   {"name": "View", "role": "verb"},

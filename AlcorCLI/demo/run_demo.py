@@ -20,12 +20,17 @@ Run from the repository root:
 
     python AlcorCLI/demo/run_demo.py          (PowerShell or bash)
 
+Add ``--json PATH`` to also write a summary of the run (the receipt chain, every check, the
+tamper result) for the viewer in ``AlcorCLI/viewer``. A path ending in ``.js`` is written as the
+script the viewer loads. Without the flag nothing else changes.
+
 It needs the sibling ``alcorlang`` package to run the .alcor programs. Exit code 0 means every
 check held; any failed check prints FAIL and the exit code is 1.
 """
 
 from __future__ import annotations
 
+import argparse
 import hashlib
 import json
 import os
@@ -62,14 +67,22 @@ from alcorcli.write_tools import WriteTools  # noqa: E402
 FIXED_CLOCK = 1_700_000_000.0
 failures: list[str] = []
 
+# What the run did, kept only so ``--json`` can export it. Printing is unaffected.
+trace_sections: list[dict] = []
+trace_receipts: list[ReceiptLog] = []
+
 
 def section(title: str) -> None:
+    receipts_so_far = len(trace_receipts[0].rows()) if trace_receipts else 0
+    trace_sections.append({"title": title, "first_receipt": receipts_so_far, "checks": []})
     print(f"\n== {title}")
 
 
 def check(label: str, condition: bool) -> None:
     """Print one proof. A check that does not hold is reported, never skipped."""
     print(f"  [{'ok' if condition else 'FAIL'}] {label}")
+    if trace_sections:
+        trace_sections[-1]["checks"].append({"label": label, "ok": bool(condition)})
     if not condition:
         failures.append(label)
 
@@ -103,16 +116,155 @@ def hostile_server(raw: bytes) -> str:
     return f"http://127.0.0.1:{listener.getsockname()[1]}"
 
 
+ACTORS = {
+    "model": "ask()",
+    "ask": "ask()",
+    "tool": "tool gate",
+    "effect": "tool gate",
+    "agent": "agent loop",
+    "memory": "memory",
+    "goal": "goal store",
+}
+OUTCOMES = {"allow": "admitted", "deny": "refused", "ask_owner": "waiting"}
+FIXED_OUTCOMES = {
+    "model.call": "admitted",
+    "ask": "admitted",
+    "model.refused": "refused",
+    "effect.write": "admitted",
+    "memory.admitted": "admitted",
+    "memory.refused": "refused",
+    "memory.lesson-staged": "waiting",
+    "memory.lesson-admitted": "admitted",
+}
+
+
+def describe_receipt(row: dict, section_number: int) -> dict:
+    """Reduce one receipt row to what a reader of the viewer needs.
+
+    Args:
+        row: A row from the receipt log.
+        section_number: The demo step (1-based) during which the row was written.
+
+    Returns:
+        A dict with the actor, outcome, subject and reason, plus the row's hashes and body.
+    """
+    body, kind = row["body"], row["kind"]
+    actor = ACTORS[kind.split(".")[0]]
+    if kind == "tool.decision" and section_number == 6:
+        actor = "agent loop"
+    outcome = OUTCOMES.get(body.get("verdict"), "") if kind == "tool.decision" else ""
+    outcome = outcome or FIXED_OUTCOMES.get(kind, "recorded")
+    subject = (
+        body.get("tool")
+        or body.get("path")
+        or body.get("lane")
+        or body.get("route")
+        or body.get("thread_id")
+        or ""
+    )
+    if kind.startswith(("goal.", "memory.lesson")):
+        subject = body["id"]
+    reason = (
+        body.get("reason")
+        or body.get("admission_reason")
+        or body.get("verdict")
+        or body.get("ended_because")
+        or body.get("admission")
+        or ""
+    )
+    return {
+        "seq": row["seq"],
+        "kind": kind,
+        "actor": actor,
+        "outcome": outcome,
+        "subject": subject,
+        "reason": reason,
+        "step": section_number,
+        "id": row["id"],
+        "prev": row["prev"],
+        "body": body,
+    }
+
+
+def as_viewer_script(component: str, text: str) -> str:
+    """Wrap a JSON summary as the script the viewer loads straight from disk.
+
+    A script tag works from file:// where fetch() does not, so the viewer reads this form.
+
+    Args:
+        component: The component name for the header comment.
+        text: The JSON text.
+
+    Returns:
+        JavaScript that assigns the summary to ``window.ALCOR_RUN``.
+    """
+    return (
+        f"/**\n * Sample run of the {component} demo, from `python demo/run_demo.py --json`.\n"
+        " * Generated: regenerate it instead of editing it.\n */\n"
+        f"window.ALCOR_RUN = {text};\n"
+    )
+
+
+def write_summary(path: Path, scratch: Path, receipts: ReceiptLog, tamper: dict) -> None:
+    """Write the JSON summary of this run for the viewer.
+
+    Private-looking text must never reach the file, so the scratch directory is replaced by
+    ``<tmp>`` here, and the write fails closed if a drive letter, a home directory or a
+    loopback port is still present.
+
+    Args:
+        path: Where to write the summary.
+        scratch: The temporary directory this run used.
+        receipts: The receipt log of the run.
+        tamper: The verify result of the forged copy.
+
+    Raises:
+        SystemExit: If the summary still contains something that looks like a private path.
+    """
+    rows = receipts.rows()
+    starts = [s["first_receipt"] for s in trace_sections]
+    described = []
+    for row in rows:
+        step = sum(1 for start in starts if start < row["seq"])
+        described.append(describe_receipt(row, step))
+    counts = Counter(r["outcome"] for r in described)
+    report = receipts.verify()
+    summary = {
+        "schema": "alcor.cli.demo-summary.v1",
+        "component": "AlcorCLI",
+        "chain": {"ok": report["ok"], "count": report["count"]},
+        "tamper": {"detected": not tamper["ok"], "reason": tamper["reason"]},
+        "counts": {name: counts.get(name, 0) for name in ("admitted", "refused", "waiting")}
+        | {"recorded": counts.get("recorded", 0), "receipts": len(described)},
+        "steps": [
+            {"n": n, "title": s["title"].split(". ", 1)[-1], "checks": s["checks"]}
+            for n, s in enumerate(trace_sections, 1)
+        ],
+        "receipts": described,
+    }
+    text = json.dumps(summary, indent=1, sort_keys=False)
+    for form in {str(scratch), scratch.as_posix(), str(scratch).replace("\\", "\\\\")}:
+        text = text.replace(form, "<tmp>")
+    if re.search(r"[A-Za-z]:[\\/]|/Users/|/home/|127\.0\.0\.1:\d", text):
+        raise SystemExit("refusing to write a summary that contains a private-looking path")
+    if path.suffix == ".js":
+        text = as_viewer_script("AlcorCLI", text)
+    path.write_text(text.rstrip("\n") + "\n", encoding="utf-8")
+
+
 def main() -> int:
+    parser = argparse.ArgumentParser(description="Run the AlcorCLI gate demo.")
+    parser.add_argument("--json", type=Path, help="also write a JSON summary of the run here")
+    options = parser.parse_args()
     for variable in (serve.TOKEN_ENV, "ALCOR_HOME", "ALCOR_WRITE_ROOTS", "ALCOR_PROTECTED_INPUTS"):
         os.environ.pop(variable, None)
     with tempfile.TemporaryDirectory(prefix="alcorcli-demo-") as scratch:
-        run(Path(scratch))
+        run(Path(scratch), options.json)
     print("\n" + ("all checks held" if not failures else f"{len(failures)} check(s) FAILED"))
     return 1 if failures else 0
 
 
-def run(scratch: Path) -> None:
+def run(scratch: Path, summary_path: Path | None = None) -> None:
     workspace = scratch / "workspace"
     workspace.mkdir()
     (workspace / "inputs").mkdir()
@@ -120,6 +272,7 @@ def run(scratch: Path) -> None:
     scope = Scope.for_workspace(workspace, protected=(workspace / "inputs",), environ={})
     policy = PolicyHost()
     receipts = ReceiptLog(config.receipts_path, clock=lambda: FIXED_CLOCK)
+    trace_receipts.append(receipts)
     shell = RecordingShell()
     registry = ToolRegistry(
         [*ReadTools(scope).specs(), *WriteTools(scope, receipts).specs(), shell.spec()],
@@ -521,6 +674,8 @@ def run(scratch: Path) -> None:
         httpd.shutdown()
         httpd.server_close()
     check("a loopback bind needs no token and serves the program list", "tool" in names)
+    if summary_path is not None:
+        write_summary(summary_path, scratch, receipts, verdict)
 
 
 if __name__ == "__main__":

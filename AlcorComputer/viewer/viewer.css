@@ -1,0 +1,389 @@
+/**
+ * AlcorComputer viewer: styles.
+ * The colour, font, radius and spacing tokens below are shared by every viewer in this repo so the
+ * screenshots look like one family. Change them in all viewers or in none.
+ */
+
+:root {
+  --bg: #0b0d12;
+  --panel: #12151c;
+  --border: #222833;
+  --text: #e6e9ef;
+  --muted: #8b93a3;
+  --accent: #4fd1c5;
+  --ok: #3ecf8e;
+  --refuse: #f06a6a;
+  --warn: #f5b14c;
+  --radius: 8px;
+  --gap: 16px;
+  --mono: ui-monospace, 'Cascadia Mono', 'SF Mono', Consolas, 'Liberation Mono', monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font:
+    15px/1.4 system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: var(--gap);
+  padding: 0 var(--gap);
+  height: 64px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+}
+
+.bar h1 {
+  margin: 0;
+  font-size: 28px;
+  color: var(--accent);
+}
+
+.subtitle {
+  margin: 0;
+  flex: 1;
+  color: var(--muted);
+}
+
+.badges {
+  display: flex;
+  gap: 8px;
+}
+
+.badge {
+  padding: 4px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.badge.ok {
+  color: var(--ok);
+  border-color: var(--ok);
+}
+
+main {
+  display: grid;
+  grid-template-columns: 600px minmax(0, 1fr);
+  gap: var(--gap);
+  padding: var(--gap);
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+  min-width: 0;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--gap);
+  min-width: 0;
+}
+
+.panel h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.panel-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.note {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+/* The screen: world units are scaled by script; the window is drawn at its real bounds. */
+.screen {
+  position: relative;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  background: repeating-linear-gradient(45deg, #0e1117, #0e1117 8px, #0b0d12 8px, #0b0d12 16px);
+}
+
+.window {
+  position: absolute;
+  border: 2px solid var(--muted);
+  border-radius: 4px;
+  background: var(--bg);
+}
+
+.titlebar {
+  height: 24px;
+  padding: 0 8px;
+  background: var(--border);
+  font-size: 13px;
+  line-height: 24px;
+}
+
+.window .dim {
+  position: absolute;
+  right: 8px;
+  bottom: 4px;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 12px;
+}
+
+.target {
+  position: absolute;
+  border: 2px dashed var(--accent);
+  border-radius: 50%;
+}
+
+.target-label {
+  position: absolute;
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.pin {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  margin: -11px 0 0 -11px;
+  border-radius: 50%;
+  border: 2px solid var(--muted);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+  line-height: 18px;
+}
+
+.pin.allowed {
+  border-color: var(--ok);
+  background: var(--ok);
+  color: var(--bg);
+}
+
+.pin.refused {
+  border-color: var(--refuse);
+  background: var(--refuse);
+  color: var(--bg);
+}
+
+.pin.stale {
+  border-color: var(--warn);
+  background: var(--warn);
+  color: var(--bg);
+}
+
+.pin.replay {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--bg);
+}
+
+.pin-label {
+  position: absolute;
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.chip {
+  display: inline-block;
+  min-width: 118px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  text-align: center;
+  color: var(--bg);
+}
+
+.chip.allowed {
+  background: var(--ok);
+}
+
+.chip.refused {
+  background: var(--refuse);
+}
+
+.chip.stale {
+  background: var(--warn);
+}
+
+.chip.replay {
+  background: var(--accent);
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 3px 8px;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+}
+
+.row.pick {
+  cursor: pointer;
+}
+
+.row.on {
+  background: var(--bg);
+  border-color: var(--accent);
+}
+
+.row .n {
+  width: 18px;
+  color: var(--muted);
+  font-family: var(--mono);
+}
+
+.row .what {
+  flex: 1;
+  min-width: 0;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.row .code {
+  flex: 0 0 auto;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.flow {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.step {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.step h3 {
+  margin: 0 0 4px;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--muted);
+}
+
+.step .big {
+  font-size: 20px;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.step .small {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 13px;
+  font-family: var(--mono);
+  overflow-wrap: anywhere;
+}
+
+.step.allowed {
+  border-color: var(--ok);
+}
+
+.step.refused {
+  border-color: var(--refuse);
+}
+
+.step.stale {
+  border-color: var(--warn);
+}
+
+.step.replay {
+  border-color: var(--accent);
+}
+
+.arrow {
+  align-self: center;
+  color: var(--accent);
+  font-size: 26px;
+}
+
+.receipt {
+  margin: 0;
+  padding: 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font: 13px/1.45 var(--mono);
+  color: var(--text);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.receipt .k {
+  color: var(--muted);
+}
+
+.screen-wrap {
+  display: flex;
+  gap: var(--gap);
+}
+
+.screen {
+  flex: 0 0 auto;
+}
+
+.legend {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.legend li {
+  margin-bottom: 8px;
+}
+
+.legend b {
+  color: var(--text);
+}

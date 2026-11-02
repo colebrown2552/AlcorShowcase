@@ -11,7 +11,12 @@ The walk-through:
   promote with a fresh code -> the same code refused a second time -> rollback with no code ->
   a failing contract blocks promotion -> restore the pre-controller site -> tampered audit log.
 
-Usage:  python demo/run_demo.py [--keep]
+Usage:  python demo/run_demo.py [--keep] [--json PATH]
+
+``--json PATH`` also writes what the run did (each step, the real CLI commands with their exit codes
+and output, and the claims proved) for the viewer in ``viewer/``. A path ending in ``.js`` gets
+``window.ALCOR_RUN = ...;`` so the viewer opens from disk. Temporary paths, ports and times are
+replaced by the exporter itself. Without the flag nothing changes.
 """
 
 from __future__ import annotations
@@ -32,6 +37,10 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 sys.path.insert(0, str(ROOT))
 
+# What the run did, for ``--json``: one entry per numbered step, filled by heading/run/prove.
+RUN: dict = {"steps": [], "claims": [], "controller_decisions": []}
+ABSOLUTE_PATH = re.compile(r"(?:[A-Za-z]:[\\/]|/(?:tmp|var|home|Users|private)/)[^\s'\"]*")
+MAX_RECORDED_LINES = 40
 CODE_LINE = re.compile(r"^[0-9A-Z]{4}(?:-[0-9A-Z]{4}){3}$")
 STAMP = re.compile(r"\d{8}T\d{6}Z")
 EARLY = "Sourdough sells out by noon, so come early."
@@ -100,6 +109,7 @@ class Demo:
         print(f"\n  $ sitekit {self.scrub(shown)}")
         out = self.scrub(done.stdout + done.stderr)
         lines = [line for line in out.splitlines() if line.strip()]
+        self.record(f"sitekit {shown}", done.returncode, [] if quiet else lines)
         if quiet:
             print("      (output not shown)")
         else:
@@ -114,11 +124,30 @@ class Demo:
                 print(f"      {line[:120]}")
         return done.returncode, done.stdout + done.stderr
 
+    def record(self, command: str, exit_code: int, lines: list[str]) -> None:
+        """Remember a command, its exit code and its (already scrubbed) output for ``--json``.
+
+        The folder is renamed ``<tmp>`` here, not in ``scrub``, so the printed output is unchanged.
+        """
+        kept = [self.tidy(line)[:160] for line in lines[:MAX_RECORDED_LINES]]
+        if len(lines) > MAX_RECORDED_LINES:
+            kept.append(f"... ({len(lines) - MAX_RECORDED_LINES} more lines)")
+        step = RUN["steps"][-1]
+        step["commands"].append(
+            {"command": self.tidy(self.scrub(command)), "exit": exit_code, "output": kept}
+        )
+
+    def tidy(self, text: str) -> str:
+        """Replace the demo folder, and any other absolute path, with ``<tmp>``."""
+        return ABSOLUTE_PATH.sub("<tmp>", text.replace("<work>", "<tmp>"))
+
     def prove(self, claim: str, condition: bool) -> None:
         """Print a claim as proved, or stop the demo if it does not hold."""
         if not condition:
             raise DemoFailure(claim)
         self.proved += 1
+        RUN["claims"].append(claim)
+        RUN["steps"][-1]["claims"].append(claim)
         print(f"  [proved] {claim}")
 
     def remaining(self) -> int:
@@ -167,7 +196,8 @@ def build_versions(root: Path) -> dict:
 
 
 def heading(number: int, title: str) -> None:
-    """Print a step heading."""
+    """Print a step heading and start its entry in the ``--json`` record."""
+    RUN["steps"].append({"number": number, "title": title, "commands": [], "claims": []})
     print(f"\n== {number}. {title}")
 
 
@@ -383,10 +413,26 @@ def scenario(demo: Demo, world: World) -> None:
     demo.prove("restored, it carries on", controller_says("idle"))
 
 
+def write_summary(path: Path, summary: dict) -> None:
+    """Write the run summary as JSON, or as ``window.ALCOR_RUN = ...;`` when ``path`` ends in .js.
+
+    The script form lets the viewer load it from a file:// page, where fetch is not allowed.
+    """
+    text = json.dumps(summary, indent=2, sort_keys=True)
+    if path.suffix == ".js":
+        text = (
+            "/**\n * Real output of AlcorSiteKit/demo/run_demo.py, written by its --json flag.\n"
+            " * Generated: regenerate it instead of editing it.\n */\n"
+            f"// prettier-ignore\nwindow.ALCOR_RUN = {text};"
+        )
+    path.write_text(text + "\n", encoding="utf-8", newline="\n")
+
+
 def main() -> int:
     """Build the hosts and the site versions, run the scenario, always clean up."""
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     parser.add_argument("--keep", action="store_true", help="keep the temporary folder")
+    parser.add_argument("--json", metavar="PATH", help="also write a summary of the run as JSON")
     args = parser.parse_args()
 
     from sitekit.mock_transport import MockHost
@@ -438,7 +484,10 @@ def main() -> int:
         for line in (work / "controller.log").read_text(encoding="utf-8").splitlines():
             if decided.match(line):
                 print(f"  {demo.scrub(line)}")
+                RUN["controller_decisions"].append(demo.tidy(demo.scrub(line)))
         print(f"\nAll {demo.proved} claims proved in {time.monotonic() - started:.1f}s.")
+        if args.json:
+            write_summary(Path(args.json), {"component": "AlcorSiteKit", **RUN})
         return 0
     except DemoFailure as failure:
         print(f"\nDEMO FAILED: {failure}", file=sys.stderr)
