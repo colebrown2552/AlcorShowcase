@@ -54,18 +54,19 @@ def capture(command: list[str], cwd: Path) -> str:
 
 def fit_lines(text: str, width: int, max_lines: int) -> list[str]:
     """Strip colors, expand tabs, wrap to ``width`` and keep head and tail if too long."""
+    raw_lines = ANSI.sub("", text).expandtabs(4).rstrip().splitlines()
+    # Elide whole source lines before wrapping, so the cut never lands inside a wrapped line.
+    if len(raw_lines) > max_lines:
+        head = max_lines * 2 // 3
+        tail = max_lines - head - 1
+        omitted = len(raw_lines) - head - tail
+        raw_lines = raw_lines[:head] + [f"... ({omitted} lines omitted) ..."] + raw_lines[-tail:]
     lines: list[str] = []
-    for raw in ANSI.sub("", text).expandtabs(4).rstrip().splitlines():
+    for raw in raw_lines:
         while len(raw) > width:
             lines.append(raw[:width])
             raw = "  " + raw[width:]
         lines.append(raw)
-    if len(lines) > max_lines:
-        head = max_lines * 2 // 3
-        tail = max_lines - head - 1
-        lines = (
-            lines[:head] + [f"... ({len(lines) - head - tail} lines omitted) ..."] + lines[-tail:]
-        )
     return lines
 
 
