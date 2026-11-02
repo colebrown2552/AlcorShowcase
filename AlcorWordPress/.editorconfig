@@ -1,0 +1,5 @@
+# The repository default is four spaces. WordPress's PHP coding standard asks for tabs, and this
+# component's PHP follows it, so PHP files override the default here.
+[*.php]
+indent_style = tab
+indent_size = 4

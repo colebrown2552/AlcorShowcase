@@ -1,0 +1,13 @@
+{
+  "name": "alcor-wordpress",
+  "version": "1.0.0",
+  "private": true,
+  "description": "WordPress must-use plugins from Alcor Industries, with an end-to-end demo on WordPress Playground.",
+  "type": "module",
+  "engines": {
+    "node": ">=20.18"
+  },
+  "scripts": {
+    "demo": "node demo/run-demo.mjs"
+  }
+}

@@ -1,0 +1,1865 @@
+PROGRAM AlcorLangHost WITH profile=complete authority=conformance fuel=0
+LET $budget 100000
+LET $src ""
+LET $first 1
+READ $head
+BRANCH NE $head "%%COVERAGE%%" notcov
+CALL HostCoverage INTO $z
+JUMP fin
+LABEL notcov
+CALL StrStartsWith WITH $s=$head $p="%%ALCOR%% " $at=0 INTO $ish
+BRANCH NOT $ish sentinel
+CALL StrSlice WITH $s=$head $a=10 $b=LEN $head INTO $rest
+CALL StrTrim WITH $s=$rest INTO $rest
+CALL StrSplitNth WITH $s=$rest $sep=" " $n=0 INTO $f0
+CALL StrSplitNth WITH $s=$rest $sep=" " $n=1 INTO $f1
+CALL StrIsInt WITH $s=$f0 INTO $ok
+BRANCH NOT $ok badhdr
+LET $nlines INT $f0
+CALL StrIsInt WITH $s=$f1 INTO $ok
+BRANCH NOT $ok nobudget
+LET $budget INT $f1
+LABEL nobudget
+LET $k 0
+LABEL cntop
+BRANCH GE $k $nlines readdone
+READ $line
+BRANCH $first cntskip
+LET $src CAT $src "\n"
+LABEL cntskip
+LET $first 0
+LET $src CAT $src $line
+LET $k ADD $k 1
+JUMP cntop
+LABEL badhdr
+EMIT "HOST-BAD-TAPE the %%ALCOR%% header needs an integer line count"
+JUMP fin
+LABEL sentinel
+LET $line $head
+LABEL sentop
+BRANCH EQ $line "%%END%%" readdone
+BRANCH $first sentskip
+LET $src CAT $src "\n"
+LABEL sentskip
+LET $first 0
+LET $src CAT $src $line
+READ $line
+JUMP sentop
+LABEL readdone
+CALL HostLex WITH $src=$src INTO $toks
+BRANCH NE CHAR $toks 0 "!" lexok
+CALL StrSlice WITH $s=$toks $a=1 $b=LEN $toks INTO $e
+JUMP bail
+LABEL lexok
+CALL HostSplitStmts WITH $toks=$toks INTO $stmts
+CALL HostCheckShapes WITH $stmts=$stmts INTO $e
+BRANCH NE $e "" bail
+CALL HostScanBlocks WITH $stmts=$stmts INTO $blocks
+BRANCH EQ CHAR $blocks 0 "!" blocksbad
+CALL HostScanLabels WITH $stmts=$stmts INTO $labels
+BRANCH EQ CHAR $labels 0 "!" labelsbad
+CALL HostScanLoops WITH $stmts=$stmts INTO $loops
+CALL HostEntryProp WITH $stmts=$stmts $key="profile" INTO $profile
+BRANCH NE $profile "" haveprof
+LET $profile "default"
+LABEL haveprof
+CALL HostCheckJumps WITH $stmts=$stmts $labels=$labels $blocks=$blocks $profile=$profile INTO $e
+BRANCH NE $e "" bail
+BRANCH NE $profile "default" notdef
+CALL HostCheckCycles WITH $stmts=$stmts $blocks=$blocks INTO $e
+BRANCH NE $e "" bail
+LABEL notdef
+CALL HostEntryProp WITH $stmts=$stmts $key="authority" INTO $auth
+BRANCH EQ $profile "default" go
+BRANCH EQ $auth "conformance" go
+EMIT "REFUSED unsigned_complete"
+JUMP fin
+LABEL go
+CALL HostEntryStart WITH $stmts=$stmts INTO $start
+CALL HostExec WITH $stmts=$stmts $labels=$labels $blocks=$blocks $loops=$loops $start=$start $budget=$budget INTO $z
+JUMP fin
+LABEL blocksbad
+CALL StrSlice WITH $s=$blocks $a=1 $b=LEN $blocks INTO $e
+JUMP bail
+LABEL labelsbad
+CALL StrSlice WITH $s=$labels $a=1 $b=LEN $labels INTO $e
+LABEL bail
+EMIT $e
+LABEL fin
+END PROGRAM
+
+PROGRAM HostLex
+LET $out ""
+LET $i 0
+LET $n LEN $src
+LET $line 1
+LABEL top
+BRANCH GE $i $n fin
+LET $c CHAR $src $i
+BRANCH EQ $c "\n" tnl
+BRANCH EQ $c " " skipc
+BRANCH EQ $c "\t" skipc
+BRANCH EQ $c "\r" skipc
+BRANCH EQ $c ";" tsemi
+BRANCH EQ $c "=" teq
+BRANCH EQ $c "\"" tstr
+BRANCH EQ $c "$" tcell
+JUMP tword
+LABEL skipc
+LET $i ADD $i 1
+JUMP top
+LABEL tnl
+CALL NsPut WITH $value="n" INTO $r
+LET $out CAT $out $r
+LET $line ADD $line 1
+LET $i ADD $i 1
+JUMP top
+LABEL tsemi
+CALL NsPut WITH $value=";" INTO $r
+LET $out CAT $out $r
+LET $i ADD $i 1
+JUMP top
+LABEL teq
+CALL NsPut WITH $value="=" INTO $r
+LET $out CAT $out $r
+LET $i ADD $i 1
+JUMP top
+LABEL tstr
+LET $i ADD $i 1
+LET $buf ""
+LABEL strtop
+BRANCH GE $i $n eunterm
+LET $c CHAR $src $i
+BRANCH EQ $c "\"" strend
+BRANCH EQ $c "\n" enlstr
+BRANCH EQ $c "\\" sesc
+LET $buf CAT $buf $c
+LET $i ADD $i 1
+JUMP strtop
+LABEL sesc
+BRANCH GE ADD $i 1 $n ebadesc
+LET $e CHAR $src ADD $i 1
+BRANCH EQ $e "\"" escq
+BRANCH EQ $e "\\" escb
+BRANCH EQ $e "n" escn
+BRANCH EQ $e "t" esct
+BRANCH EQ $e "r" escr
+JUMP ebadesc
+LABEL escq
+LET $buf CAT $buf "\""
+JUMP escdone
+LABEL escb
+LET $buf CAT $buf "\\"
+JUMP escdone
+LABEL escn
+LET $buf CAT $buf "\n"
+JUMP escdone
+LABEL esct
+LET $buf CAT $buf "\t"
+JUMP escdone
+LABEL escr
+LET $buf CAT $buf "\r"
+LABEL escdone
+LET $i ADD $i 2
+JUMP strtop
+LABEL strend
+LET $i ADD $i 1
+CALL NsPut WITH $value=CAT "s" $buf INTO $r
+LET $out CAT $out $r
+JUMP top
+LABEL tcell
+LET $i ADD $i 1
+LET $buf ""
+LABEL ctop
+LET $c CHAR $src $i
+CALL StrIsIdentChar WITH $c=$c INTO $d
+BRANCH NOT $d cend
+LET $buf CAT $buf $c
+LET $i ADD $i 1
+JUMP ctop
+LABEL cend
+CALL HostIsName WITH $w=$buf INTO $d
+BRANCH NOT $d ebadcell
+CALL NsPut WITH $value=CAT "c" $buf INTO $r
+LET $out CAT $out $r
+JUMP top
+LABEL tword
+LET $buf ""
+LABEL wtop
+LET $c CHAR $src $i
+CALL StrIsWordBreak WITH $c=$c INTO $d
+BRANCH $d wend
+LET $buf CAT $buf $c
+LET $i ADD $i 1
+JUMP wtop
+LABEL wend
+CALL NsPut WITH $value=CAT "w" $buf INTO $r
+LET $out CAT $out $r
+JUMP top
+LABEL eunterm
+RETURN CAT CAT "!COMPILE-ERROR line " STR $line ": unterminated string literal"
+LABEL enlstr
+RETURN CAT CAT "!COMPILE-ERROR line " STR $line ": newline inside string literal"
+LABEL ebadesc
+RETURN CAT CAT "!COMPILE-ERROR line " STR $line ": unknown escape in string literal"
+LABEL ebadcell
+RETURN CAT CAT CAT "!COMPILE-ERROR line " STR $line ": bad cell name $" $buf
+LABEL fin
+RETURN $out
+END PROGRAM
+
+PROGRAM HostSplitStmts
+LET $out ""
+LET $cur ""
+LET $p 0
+LABEL top
+BRANCH GE $p LEN $toks flush
+CALL NsBody WITH $blob=$toks $pos=$p INTO $t
+CALL NsNext WITH $blob=$toks $pos=$p INTO $p
+BRANCH EQ $t "n" brk
+BRANCH EQ $t ";" brk
+CALL NsPut WITH $value=$t INTO $r
+LET $cur CAT $cur $r
+JUMP top
+LABEL brk
+BRANCH EQ $cur "" top
+CALL NsPut WITH $value=$cur INTO $r
+LET $out CAT $out $r
+LET $cur ""
+JUMP top
+LABEL flush
+BRANCH EQ $cur "" fin
+CALL NsPut WITH $value=$cur INTO $r
+LET $out CAT $out $r
+LABEL fin
+RETURN $out
+END PROGRAM
+
+PROGRAM HostIsReserved
+RETURN INT GE FIND "|PROGRAM|END|LABEL|JUMP|BRANCH|LOOP|WHILE|CALL|LET|INTO|ELSE|RETURN|EMIT|READ|" CAT CAT "|" $w "|" 0
+END PROGRAM
+
+PROGRAM HostIsStmtHead
+RETURN INT GE FIND "|LET|EMIT|READ|LABEL|JUMP|BRANCH|LOOP|CALL|RETURN|" CAT CAT "|" $w "|" 0
+END PROGRAM
+
+PROGRAM HostOpArity
+BRANCH GE FIND "|NEG|LEN|STR|INT|NOT|" CAT CAT "|" $op "|" 0 un
+BRANCH GE FIND "|ADD|SUB|MUL|DIV|MOD|CAT|CHAR|FIND|EQ|NE|LT|LE|GT|GE|AND|OR|" CAT CAT "|" $op "|" 0 bin
+RETURN 0
+LABEL un
+RETURN 1
+LABEL bin
+RETURN 2
+END PROGRAM
+
+PROGRAM HostIsName
+LET $n LEN $w
+BRANCH EQ $n 0 no
+BRANCH GT $n 32 no
+LET $c CHAR $w 0
+BRANCH NOT AND GE $c "a" LE $c "z" no
+LET $i 1
+LABEL top
+BRANCH GE $i $n yes
+LET $c CHAR $w $i
+BRANCH AND GE $c "A" LE $c "Z" no
+CALL StrIsIdentChar WITH $c=$c INTO $d
+BRANCH NOT $d no
+LET $i ADD $i 1
+JUMP top
+LABEL yes
+RETURN 1
+LABEL no
+RETURN 0
+END PROGRAM
+
+PROGRAM HostIsProgName
+LET $n LEN $w
+BRANCH EQ $n 0 no
+BRANCH GT $n 32 no
+CALL StrIsAlpha WITH $c=CHAR $w 0 INTO $d
+BRANCH NOT $d no
+LET $i 1
+LABEL top
+BRANCH GE $i $n yes
+CALL StrIsIdentChar WITH $c=CHAR $w $i INTO $d
+BRANCH NOT $d no
+LET $i ADD $i 1
+JUMP top
+LABEL yes
+RETURN 1
+LABEL no
+RETURN 0
+END PROGRAM
+
+PROGRAM HostPos
+LET $bar FIND $r "|"
+CALL StrSlice WITH $s=$r $a=0 $b=$bar INTO $d
+RETURN INT $d
+END PROGRAM
+
+PROGRAM HostVal
+LET $bar FIND $r "|"
+CALL StrSlice WITH $s=$r $a=ADD $bar 1 $b=LEN $r INTO $v
+RETURN $v
+END PROGRAM
+
+PROGRAM HostCheckShapes
+LET $p 0
+LET $blk -1
+LET $inb 0
+LET $depth 0
+LET $count 0
+LABEL top
+BRANCH GE $p LEN $stmts fin
+LET $count ADD $count 1
+CALL NsBody WITH $blob=$stmts $pos=$p INTO $st
+CALL NsNext WITH $blob=$stmts $pos=$p INTO $p
+CALL NsNth WITH $blob=$st $n=0 INTO $t0
+LET $k0 CHAR $t0 0
+CALL StrSlice WITH $s=$t0 $a=1 $b=LEN $t0 INTO $w0
+BRANCH $inb inb
+BRANCH NE $k0 "w" ehead
+BRANCH EQ $w0 "PROGRAM" hdr
+BRANCH EQ $w0 "INCLUDE" einc
+CALL HostIsReserved WITH $w=$w0 INTO $d
+BRANCH $d ereserved
+JUMP emod
+LABEL hdr
+LET $blk ADD $blk 1
+LET $inb 1
+CALL HostCheckHeader WITH $st=$st $isentry=INT EQ $blk 0 INTO $e
+BRANCH NE $e "" out
+JUMP top
+LABEL inb
+BRANCH NE $k0 "w" ehead
+BRANCH EQ $w0 "END" isend
+CALL HostIsStmtHead WITH $w=$w0 INTO $d
+BRANCH $d isstmt
+CALL HostIsReserved WITH $w=$w0 INTO $d
+BRANCH $d ereserved
+JUMP eeffect
+LABEL isstmt
+BRANCH NE $w0 "LOOP" checkit
+LET $depth ADD $depth 1
+LABEL checkit
+CALL HostCheckStmt WITH $st=$st INTO $e
+BRANCH NE $e "" out
+JUMP top
+LABEL isend
+CALL NsCount WITH $blob=$st INTO $nt
+CALL NsNth WITH $blob=$st $n=1 INTO $t1
+BRANCH NE CHAR $t1 0 "w" eendtarget
+CALL StrSlice WITH $s=$t1 $a=1 $b=LEN $t1 INTO $w1
+BRANCH EQ $w1 "PROGRAM" endprog
+BRANCH EQ $w1 "LOOP" endloop
+JUMP eendtarget
+LABEL endprog
+BRANCH GT $nt 2 ejunk
+BRANCH GT $depth 0 eunterml
+LET $inb 0
+JUMP top
+LABEL endloop
+BRANCH GT $nt 2 ejunk
+BRANCH LE $depth 0 eendloop
+LET $depth SUB $depth 1
+JUMP top
+LABEL fin
+BRANCH EQ $count 0 eempty
+BRANCH $inb eunterm
+RETURN ""
+LABEL out
+RETURN $e
+LABEL emod
+RETURN CAT CAT CAT "UNSUPPORTED v1-effect-statement '" $w0 "': a module whose statements are not PROGRAM blocks is a v1 effect program (§1.1/§6.4). " "An effect's meaning is the host gate adapter's answer and no AlcorLang expression can reach the gate, so a hosted interpreter must refuse rather than fake a receipt."
+LABEL eeffect
+RETURN CAT CAT CAT "UNSUPPORTED v1-effect-statement '" $w0 "': §6.4 defines an embedded v1 statement as an EFFECT whose semantics are the host gate adapter's answer. " "A hosted interpreter can only inline it (breaks §8.1) or drop it (breaks §8.2), so it refuses instead."
+LABEL einc
+RETURN "UNSUPPORTED INCLUDE: §12 resolves a library from the filesystem before the lexer runs, and AlcorLang has no filesystem door. Inline the library instead."
+LABEL ehead
+RETURN CAT CAT "COMPILE-ERROR statement must start with a keyword or a v1 verb, got '" $w0 "'"
+LABEL ereserved
+RETURN CAT CAT "COMPILE-ERROR reserved word '" $w0 "' is not a statement head"
+LABEL eendtarget
+RETURN "COMPILE-ERROR END must be followed by PROGRAM or LOOP"
+LABEL ejunk
+RETURN "COMPILE-ERROR unexpected token after END"
+LABEL eunterml
+RETURN "COMPILE-ERROR unterminated block: expected END LOOP"
+LABEL eendloop
+RETURN "COMPILE-ERROR END LOOP does not close PROGRAM"
+LABEL eunterm
+RETURN "COMPILE-ERROR unterminated block: expected END PROGRAM"
+LABEL eempty
+RETURN "COMPILE-ERROR empty program: expected a v1 statement or a PROGRAM block"
+END PROGRAM
+
+PROGRAM HostCheckHeader
+CALL NsCount WITH $blob=$st INTO $n
+LET $i 1
+CALL NsNth WITH $blob=$st $n=$i INTO $t
+BRANCH EQ $t "" nameskip
+BRANCH NE CHAR $t 0 "w" nameskip
+CALL StrSlice WITH $s=$t $a=1 $b=LEN $t INTO $w
+BRANCH EQ $w "WITH" nameskip
+CALL HostIsProgName WITH $w=$w INTO $d
+BRANCH NOT $d ebadname
+CALL HostIsReserved WITH $w=$w INTO $d
+BRANCH $d ebadname
+LET $i 2
+LABEL nameskip
+LET $props ""
+CALL NsNth WITH $blob=$st $n=$i INTO $t
+BRANCH EQ $t "" tail
+BRANCH NE CHAR $t 0 "w" tail
+CALL StrSlice WITH $s=$t $a=1 $b=LEN $t INTO $w
+BRANCH NE $w "WITH" tail
+LET $i ADD $i 1
+LABEL ptop
+CALL NsNth WITH $blob=$st $n=$i INTO $ta
+BRANCH EQ $ta "" pdone
+BRANCH NE CHAR $ta 0 "w" pdone
+CALL NsNth WITH $blob=$st $n=ADD $i 1 INTO $tb
+BRANCH NE CHAR $tb 0 "=" pdone
+CALL StrSlice WITH $s=$ta $a=1 $b=LEN $ta INTO $key
+CALL NsNth WITH $blob=$st $n=ADD $i 2 INTO $tv
+BRANCH EQ $tv "" enoval
+LET $kv CHAR $tv 0
+BRANCH EQ $kv "w" valok
+BRANCH EQ $kv "s" valok
+JUMP enoval
+LABEL valok
+CALL StrSlice WITH $s=$tv $a=1 $b=LEN $tv INTO $val
+CALL PairFind WITH $blob=$props $key=$key INTO $f
+BRANCH GE $f 0 edupprop
+CALL NsPut WITH $value=$key INTO $r
+LET $props CAT $props $r
+CALL NsPut WITH $value=$val INTO $r
+LET $props CAT $props $r
+LET $i ADD $i 3
+JUMP ptop
+LABEL pdone
+BRANCH EQ $props "" enoprops
+LABEL tail
+BRANCH GE $i $n propcheck
+CALL NsNth WITH $blob=$st $n=$i INTO $t
+CALL StrSlice WITH $s=$t $a=1 $b=LEN $t INTO $w
+RETURN CAT CAT "COMPILE-ERROR expected end of PROGRAM header, got '" $w "'"
+LABEL propcheck
+LET $j 0
+LABEL keytop
+BRANCH GE $j LEN $props keysdone
+CALL NsBody WITH $blob=$props $pos=$j INTO $k
+BRANCH LT FIND "|profile|authority|fuel|" CAT CAT "|" $k "|" 0 eunknownprop
+CALL NsNext WITH $blob=$props $pos=$j INTO $j
+CALL NsNext WITH $blob=$props $pos=$j INTO $j
+JUMP keytop
+LABEL keysdone
+BRANCH NOT $isentry okret
+CALL PairGet WITH $blob=$props $key="profile" INTO $prof
+BRANCH EQ $prof "" defprof
+BRANCH EQ $prof "default" profok
+BRANCH EQ $prof "complete" profok
+RETURN CAT CAT "COMPILE-ERROR unknown profile '" $prof "' (want default|complete)"
+LABEL defprof
+LET $prof "default"
+LABEL profok
+CALL PairFind WITH $blob=$props $key="fuel" INTO $ff
+BRANCH LT $ff 0 nofuel
+BRANCH NE $prof "complete" efuelprofile
+CALL PairGet WITH $blob=$props $key="fuel" INTO $fv
+CALL StrIsInt WITH $s=$fv INTO $d
+BRANCH NOT $d efuelint
+BRANCH LT INT $fv 0 efuelint
+BRANCH NE INT $fv 0 efuelunsup
+LABEL nofuel
+BRANCH NE $prof "default" okret
+CALL PairGet WITH $blob=$props $key="authority" INTO $av
+BRANCH NE $av "" eauthdefault
+LABEL okret
+RETURN ""
+LABEL ebadname
+RETURN CAT CAT "COMPILE-ERROR bad program name '" $w "'"
+LABEL enoval
+RETURN CAT CAT "COMPILE-ERROR property " $key "= needs a value"
+LABEL edupprop
+RETURN CAT CAT "COMPILE-ERROR duplicate property '" $key "'"
+LABEL enoprops
+RETURN "COMPILE-ERROR WITH needs at least one prop=value"
+LABEL eunknownprop
+RETURN CAT CAT "COMPILE-ERROR unknown PROGRAM property '" $k "' (want authority|fuel|profile)"
+LABEL efuelprofile
+RETURN "COMPILE-ERROR fuel= is a complete-profile setting only"
+LABEL efuelint
+RETURN "COMPILE-ERROR fuel must be a non-negative integer"
+LABEL efuelunsup
+RETURN CAT CAT "UNSUPPORTED fuel=" $fv ": the host counts guest statements, not ALCORCORE instructions, so it cannot reproduce the guest's own fuel wall. fuel=0 (unbounded) is accepted."
+LABEL eauthdefault
+RETURN "COMPILE-ERROR authority= is meaningless on the default profile"
+END PROGRAM
+
+PROGRAM HostCheckLabelTok
+CALL NsNth WITH $blob=$st $n=$i INTO $t
+BRANCH NE CHAR $t 0 "w" bad
+CALL StrSlice WITH $s=$t $a=1 $b=LEN $t INTO $w
+CALL HostIsName WITH $w=$w INTO $d
+BRANCH NOT $d bad
+CALL HostIsReserved WITH $w=$w INTO $d
+BRANCH $d bad
+RETURN ""
+LABEL bad
+RETURN "COMPILE-ERROR BRANCH needs a label name"
+END PROGRAM
+
+PROGRAM HostCheckExpr
+CALL NsNth WITH $blob=$st $n=$i INTO $t
+BRANCH EQ $t "" eearly
+LET $k CHAR $t 0
+CALL StrSlice WITH $s=$t $a=1 $b=LEN $t INTO $x
+LET $j ADD $i 1
+BRANCH EQ $k "s" ok
+BRANCH EQ $k "c" ok
+BRANCH NE $k "w" eearly
+CALL StrIsInt WITH $s=$x INTO $d
+BRANCH $d ok
+CALL HostOpArity WITH $op=$x INTO $ar
+BRANCH EQ $ar 0 enotop
+CALL HostCheckExpr WITH $st=$st $i=$j INTO $r
+CALL HostVal WITH $r=$r INTO $m
+BRANCH NE $m "" prop
+CALL HostPos WITH $r=$r INTO $j
+BRANCH EQ $ar 1 ok
+CALL HostCheckExpr WITH $st=$st $i=$j INTO $r
+CALL HostVal WITH $r=$r INTO $m
+BRANCH NE $m "" prop
+CALL HostPos WITH $r=$r INTO $j
+LABEL ok
+RETURN CAT CAT STR $j "|" ""
+LABEL prop
+RETURN $r
+LABEL eearly
+RETURN CAT STR $i "|COMPILE-ERROR expression ended early"
+LABEL enotop
+RETURN CAT CAT CAT STR $i "|COMPILE-ERROR '" $x "' is not an operator, an integer, a string or a $cell"
+END PROGRAM
+
+PROGRAM HostCheckStmt
+CALL NsCount WITH $blob=$st INTO $n
+CALL NsNth WITH $blob=$st $n=0 INTO $t0
+CALL StrSlice WITH $s=$t0 $a=1 $b=LEN $t0 INTO $h
+LET $pos 1
+BRANCH EQ $h "LET" dolet
+BRANCH EQ $h "EMIT" doexpr
+BRANCH EQ $h "READ" doread
+BRANCH EQ $h "LABEL" dolabel
+BRANCH EQ $h "JUMP" dolabel
+BRANCH EQ $h "BRANCH" dobranch
+BRANCH EQ $h "LOOP" doloop
+BRANCH EQ $h "CALL" docall
+BRANCH EQ $h "RETURN" doret
+RETURN ""
+LABEL dolet
+CALL NsNth WITH $blob=$st $n=1 INTO $t1
+BRANCH NE CHAR $t1 0 "c" ecell
+LET $pos 2
+JUMP doexpr
+LABEL doread
+CALL NsNth WITH $blob=$st $n=1 INTO $t1
+BRANCH NE CHAR $t1 0 "c" ecell
+LET $pos 2
+JUMP tailck
+LABEL dolabel
+CALL NsNth WITH $blob=$st $n=1 INTO $t1
+BRANCH NE CHAR $t1 0 "w" elabel
+CALL StrSlice WITH $s=$t1 $a=1 $b=LEN $t1 INTO $w
+CALL HostIsName WITH $w=$w INTO $d
+BRANCH NOT $d elabel
+CALL HostIsReserved WITH $w=$w INTO $d
+BRANCH $d elabel
+LET $pos 2
+JUMP tailck
+LABEL doret
+BRANCH GE 1 $n okret
+LET $pos 1
+JUMP doexpr
+LABEL doloop
+CALL NsNth WITH $blob=$st $n=1 INTO $t1
+BRANCH NE $t1 "wWHILE" ewhile
+LET $pos 2
+JUMP doexpr
+LABEL doexpr
+CALL HostCheckExpr WITH $st=$st $i=$pos INTO $r
+CALL HostVal WITH $r=$r INTO $m
+BRANCH NE $m "" outm
+CALL HostPos WITH $r=$r INTO $pos
+JUMP tailck
+LABEL dobranch
+CALL HostCheckExpr WITH $st=$st $i=1 INTO $r
+CALL HostVal WITH $r=$r INTO $m
+BRANCH NE $m "" outm
+CALL HostPos WITH $r=$r INTO $pos
+CALL HostCheckLabelTok WITH $st=$st $i=$pos INTO $m
+BRANCH NE $m "" outm
+LET $pos ADD $pos 1
+CALL NsNth WITH $blob=$st $n=$pos INTO $t
+BRANCH NE $t "wELSE" tailck
+LET $pos ADD $pos 1
+CALL HostCheckLabelTok WITH $st=$st $i=$pos INTO $m
+BRANCH NE $m "" outm
+LET $pos ADD $pos 1
+JUMP tailck
+LABEL docall
+CALL NsNth WITH $blob=$st $n=1 INTO $t1
+BRANCH NE CHAR $t1 0 "w" ecalltarget
+CALL StrSlice WITH $s=$t1 $a=1 $b=LEN $t1 INTO $w
+CALL HostIsProgName WITH $w=$w INTO $d
+BRANCH NOT $d ecalltarget
+CALL HostIsReserved WITH $w=$w INTO $d
+BRANCH $d ecalltarget
+LET $pos 2
+LET $seen ""
+CALL NsNth WITH $blob=$st $n=$pos INTO $t
+BRANCH NE $t "wWITH" callinto
+LET $pos ADD $pos 1
+LABEL argtop
+CALL NsNth WITH $blob=$st $n=$pos INTO $t
+BRANCH NE CHAR $t 0 "c" argdone
+CALL StrSlice WITH $s=$t $a=1 $b=LEN $t INTO $ac
+CALL NsNth WITH $blob=$st $n=ADD $pos 1 INTO $t
+BRANCH NE CHAR $t 0 "=" eargeq
+CALL PairFind WITH $blob=$seen $key=$ac INTO $f
+BRANCH GE $f 0 eduparg
+CALL NsPut WITH $value=$ac INTO $r
+LET $seen CAT $seen $r
+CALL NsPut WITH $value="1" INTO $r
+LET $seen CAT $seen $r
+LET $pos ADD $pos 2
+CALL HostCheckExpr WITH $st=$st $i=$pos INTO $r
+CALL HostVal WITH $r=$r INTO $m
+BRANCH NE $m "" outm
+CALL HostPos WITH $r=$r INTO $pos
+JUMP argtop
+LABEL argdone
+BRANCH EQ $seen "" enoargs
+LABEL callinto
+CALL NsNth WITH $blob=$st $n=$pos INTO $t
+BRANCH NE $t "wINTO" tailck
+LET $pos ADD $pos 1
+CALL NsNth WITH $blob=$st $n=$pos INTO $t
+BRANCH NE CHAR $t 0 "c" ecell
+LET $pos ADD $pos 1
+LABEL tailck
+BRANCH GE $pos $n okret
+CALL NsNth WITH $blob=$st $n=$pos INTO $t
+CALL StrSlice WITH $s=$t $a=1 $b=LEN $t INTO $w
+RETURN CAT CAT "COMPILE-ERROR unexpected '" $w "' after statement"
+LABEL okret
+RETURN ""
+LABEL outm
+RETURN $m
+LABEL ecell
+RETURN CAT CAT "COMPILE-ERROR " $h " needs a $cell (bare identifiers are not cells)"
+LABEL elabel
+RETURN CAT CAT "COMPILE-ERROR " $h " needs a label name matching [a-z][a-z0-9_]{0,31}"
+LABEL ewhile
+RETURN "COMPILE-ERROR LOOP must be followed by WHILE"
+LABEL ecalltarget
+RETURN "COMPILE-ERROR bad CALL target"
+LABEL eargeq
+RETURN CAT CAT "COMPILE-ERROR CALL arg $" $ac " needs '=' then an expr"
+LABEL eduparg
+RETURN CAT CAT "COMPILE-ERROR duplicate CALL arg $" $ac ""
+LABEL enoargs
+RETURN "COMPILE-ERROR CALL ... WITH needs at least one $cell=expr"
+END PROGRAM
+
+PROGRAM HostScanBlocks
+LET $out ""
+LET $p 0
+LET $blk -1
+LABEL top
+BRANCH GE $p LEN $stmts fin
+CALL NsBody WITH $blob=$stmts $pos=$p INTO $st
+CALL NsNext WITH $blob=$stmts $pos=$p INTO $np
+CALL NsNth WITH $blob=$st $n=0 INTO $t0
+BRANCH NE $t0 "wPROGRAM" skip
+LET $blk ADD $blk 1
+LET $name ""
+CALL NsNth WITH $blob=$st $n=1 INTO $t1
+BRANCH NE CHAR $t1 0 "w" noname
+CALL StrSlice WITH $s=$t1 $a=1 $b=LEN $t1 INTO $w1
+BRANCH EQ $w1 "WITH" noname
+LET $name $w1
+LABEL noname
+BRANCH EQ $name "" unnamed
+CALL HostFindRec WITH $blob=$out $key=$name INTO $f
+BRANCH GE $f 0 edup
+CALL NsPut WITH $value=$name INTO $r
+LET $out CAT $out $r
+CALL NsPut WITH $value=CAT CAT STR $blk "/" STR $np INTO $r
+LET $out CAT $out $r
+JUMP named
+LABEL unnamed
+BRANCH GT $blk 0 eunnamed
+LET $name "<entry>"
+LABEL named
+CALL NsPut WITH $value=CAT "#" STR $blk INTO $r
+LET $out CAT $out $r
+CALL NsPut WITH $value=$name INTO $r
+LET $out CAT $out $r
+LABEL skip
+LET $p $np
+JUMP top
+LABEL fin
+RETURN $out
+LABEL edup
+RETURN CAT CAT "!COMPILE-ERROR duplicate PROGRAM name '" $name "'"
+LABEL eunnamed
+RETURN "!COMPILE-ERROR only the entry block may be unnamed (a nameless later block can never be CALLed)"
+END PROGRAM
+
+PROGRAM HostScanLabels
+LET $out ""
+LET $p 0
+LET $blk -1
+LABEL top
+BRANCH GE $p LEN $stmts fin
+CALL NsBody WITH $blob=$stmts $pos=$p INTO $st
+CALL NsNth WITH $blob=$st $n=0 INTO $t0
+BRANCH EQ $t0 "wPROGRAM" isprog
+BRANCH NE $t0 "wLABEL" skip
+CALL NsNth WITH $blob=$st $n=1 INTO $t1
+CALL StrSlice WITH $s=$t1 $a=1 $b=LEN $t1 INTO $name
+LET $key CAT CAT STR $blk "/" $name
+CALL HostFindRec WITH $blob=$out $key=$key INTO $f
+BRANCH GE $f 0 edup
+CALL NsPut WITH $value=$key INTO $r
+LET $out CAT $out $r
+CALL NsPut WITH $value=STR $p INTO $r
+LET $out CAT $out $r
+JUMP skip
+LABEL isprog
+LET $blk ADD $blk 1
+LABEL skip
+CALL NsNext WITH $blob=$stmts $pos=$p INTO $p
+JUMP top
+LABEL fin
+RETURN $out
+LABEL edup
+RETURN CAT CAT "!COMPILE-ERROR duplicate label '" $name "'"
+END PROGRAM
+
+PROGRAM HostScanLoops
+LET $out ""
+LET $stack ""
+LET $p 0
+LABEL top
+BRANCH GE $p LEN $stmts fin
+CALL NsBody WITH $blob=$stmts $pos=$p INTO $st
+CALL NsNth WITH $blob=$st $n=0 INTO $t0
+BRANCH EQ $t0 "wLOOP" push
+BRANCH NE $t0 "wEND" skip
+CALL NsNth WITH $blob=$st $n=1 INTO $t1
+BRANCH NE $t1 "wLOOP" skip
+CALL HostStackTop WITH $stack=$stack INTO $lp
+CALL HostStackPop WITH $stack=$stack INTO $stack
+CALL NsPut WITH $value=CAT "L" $lp INTO $r
+LET $out CAT $out $r
+CALL NsPut WITH $value=STR $p INTO $r
+LET $out CAT $out $r
+CALL NsPut WITH $value=CAT "E" STR $p INTO $r
+LET $out CAT $out $r
+CALL NsPut WITH $value=$lp INTO $r
+LET $out CAT $out $r
+JUMP skip
+LABEL push
+LET $stack CAT $stack CAT STR $p ","
+LABEL skip
+CALL NsNext WITH $blob=$stmts $pos=$p INTO $p
+JUMP top
+LABEL fin
+RETURN $out
+END PROGRAM
+
+PROGRAM HostStackTop
+LET $i SUB LEN $stack 2
+LABEL top
+BRANCH LT $i 0 fin
+BRANCH EQ CHAR $stack $i "," fin
+LET $i SUB $i 1
+JUMP top
+LABEL fin
+CALL StrSlice WITH $s=$stack $a=ADD $i 1 $b=SUB LEN $stack 1 INTO $v
+RETURN $v
+END PROGRAM
+
+PROGRAM HostStackPop
+LET $i SUB LEN $stack 2
+LABEL top
+BRANCH LT $i 0 fin
+BRANCH EQ CHAR $stack $i "," fin
+LET $i SUB $i 1
+JUMP top
+LABEL fin
+CALL StrSlice WITH $s=$stack $a=0 $b=ADD $i 1 INTO $v
+RETURN $v
+END PROGRAM
+
+PROGRAM HostEntryStart
+LET $p 0
+LABEL top
+BRANCH GE $p LEN $stmts fin
+CALL NsNext WITH $blob=$stmts $pos=$p INTO $np
+CALL NsBody WITH $blob=$stmts $pos=$p INTO $st
+CALL NsNth WITH $blob=$st $n=0 INTO $t0
+BRANCH EQ $t0 "wPROGRAM" got
+LET $p $np
+JUMP top
+LABEL got
+RETURN $np
+LABEL fin
+RETURN 0
+END PROGRAM
+
+PROGRAM HostEntryProp
+LET $p 0
+LABEL find
+BRANCH GE $p LEN $stmts miss
+CALL NsBody WITH $blob=$stmts $pos=$p INTO $st
+CALL NsNth WITH $blob=$st $n=0 INTO $t0
+BRANCH EQ $t0 "wPROGRAM" got
+CALL NsNext WITH $blob=$stmts $pos=$p INTO $p
+JUMP find
+LABEL got
+CALL NsCount WITH $blob=$st INTO $n
+LET $i 1
+LABEL scan
+BRANCH GE ADD $i 2 $n miss
+CALL NsNth WITH $blob=$st $n=ADD $i 1 INTO $tb
+BRANCH NE CHAR $tb 0 "=" nextt
+CALL NsNth WITH $blob=$st $n=$i INTO $ta
+CALL StrSlice WITH $s=$ta $a=1 $b=LEN $ta INTO $k
+BRANCH NE $k $key nextt
+CALL NsNth WITH $blob=$st $n=ADD $i 2 INTO $tv
+CALL StrSlice WITH $s=$tv $a=1 $b=LEN $tv INTO $v
+RETURN $v
+LABEL nextt
+LET $i ADD $i 1
+JUMP scan
+LABEL miss
+RETURN ""
+END PROGRAM
+
+PROGRAM HostCheckJumps
+LET $p 0
+LET $blk -1
+LABEL top
+BRANCH GE $p LEN $stmts fin
+CALL NsBody WITH $blob=$stmts $pos=$p INTO $st
+CALL NsNth WITH $blob=$st $n=0 INTO $t0
+BRANCH EQ $t0 "wPROGRAM" isprog
+BRANCH EQ $t0 "wJUMP" isjump
+BRANCH EQ $t0 "wBRANCH" isbranch
+BRANCH EQ $t0 "wLOOP" isloop
+BRANCH EQ $t0 "wCALL" iscall
+JUMP skip
+LABEL isprog
+LET $blk ADD $blk 1
+JUMP skip
+LABEL isjump
+CALL NsNth WITH $blob=$st $n=1 INTO $t1
+CALL StrSlice WITH $s=$t1 $a=1 $b=LEN $t1 INTO $name
+CALL HostLabelCheck WITH $labels=$labels $blk=$blk $name=$name $pos=$p $profile=$profile INTO $e
+BRANCH NE $e "" out
+JUMP skip
+LABEL isbranch
+CALL HostCheckExpr WITH $st=$st $i=1 INTO $r
+CALL HostPos WITH $r=$r INTO $q
+CALL NsNth WITH $blob=$st $n=$q INTO $t1
+CALL StrSlice WITH $s=$t1 $a=1 $b=LEN $t1 INTO $name
+CALL HostLabelCheck WITH $labels=$labels $blk=$blk $name=$name $pos=$p $profile=$profile INTO $e
+BRANCH NE $e "" out
+CALL NsNth WITH $blob=$st $n=ADD $q 1 INTO $t1
+BRANCH NE $t1 "wELSE" skip
+CALL NsNth WITH $blob=$st $n=ADD $q 2 INTO $t1
+CALL StrSlice WITH $s=$t1 $a=1 $b=LEN $t1 INTO $name
+CALL HostLabelCheck WITH $labels=$labels $blk=$blk $name=$name $pos=$p $profile=$profile INTO $e
+BRANCH NE $e "" out
+JUMP skip
+LABEL isloop
+BRANCH EQ $profile "default" eloop
+JUMP skip
+LABEL iscall
+CALL NsNth WITH $blob=$st $n=1 INTO $t1
+CALL StrSlice WITH $s=$t1 $a=1 $b=LEN $t1 INTO $name
+CALL HostFindRec WITH $blob=$blocks $key=$name INTO $f
+BRANCH LT $f 0 ecall
+LABEL skip
+CALL NsNext WITH $blob=$stmts $pos=$p INTO $p
+JUMP top
+LABEL fin
+RETURN ""
+LABEL out
+RETURN $e
+LABEL eloop
+RETURN "COMPILE-ERROR LOOP is rejected by the default profile: declare PROGRAM WITH profile=complete and hold authority"
+LABEL ecall
+RETURN CAT CAT "COMPILE-ERROR CALL target '" $name "' is not a PROGRAM in this module"
+END PROGRAM
+
+PROGRAM HostLabelCheck
+LET $key CAT CAT STR $blk "/" $name
+CALL HostFindRec WITH $blob=$labels $key=$key INTO $f
+BRANCH LT $f 0 unknown
+BRANCH NE $profile "default" ok
+CALL NsBody WITH $blob=$labels $pos=$f INTO $d
+BRANCH LE INT $d $pos back
+LABEL ok
+RETURN ""
+LABEL unknown
+RETURN CAT CAT "COMPILE-ERROR unknown label '" $name "'"
+LABEL back
+RETURN CAT CAT "COMPILE-ERROR backward jump to label '" $name "' is rejected by the default profile (default programs are finite DAGs)"
+END PROGRAM
+
+PROGRAM HostCheckCycles
+LET $nb 0
+LET $adj ""
+LET $rm ""
+LET $p 0
+LET $blk -1
+LABEL top
+BRANCH GE $p LEN $stmts built
+CALL NsBody WITH $blob=$stmts $pos=$p INTO $st
+CALL NsNth WITH $blob=$st $n=0 INTO $t0
+BRANCH EQ $t0 "wPROGRAM" isprog
+BRANCH NE $t0 "wCALL" skip
+CALL NsNth WITH $blob=$st $n=1 INTO $t1
+CALL StrSlice WITH $s=$t1 $a=1 $b=LEN $t1 INTO $name
+CALL HostGetRec WITH $blob=$blocks $key=$name INTO $bv
+BRANCH EQ $bv "" skip
+CALL StrSplitNth WITH $s=$bv $sep="/" $n=0 INTO $j
+CALL PairGet WITH $blob=$adj $key=STR $blk INTO $cur
+BRANCH NE $cur "" haveadj
+LET $cur "|"
+LABEL haveadj
+BRANCH GE FIND $cur CAT CAT "|" $j "|" 0 skip
+LET $cur CAT $cur CAT $j "|"
+CALL HostEnvSet WITH $env=$adj $key=STR $blk $val=$cur INTO $adj
+JUMP skip
+LABEL isprog
+LET $blk ADD $blk 1
+LET $nb ADD $nb 1
+LABEL skip
+CALL NsNext WITH $blob=$stmts $pos=$p INTO $p
+JUMP top
+LABEL built
+LET $left $nb
+LABEL round
+BRANCH EQ $left 0 clean
+LET $prog 0
+LET $i 0
+LABEL each
+BRANCH GE $i $nb roundend
+CALL PairGet WITH $blob=$rm $key=STR $i INTO $g
+BRANCH NE $g "" nexti
+CALL PairGet WITH $blob=$adj $key=STR $i INTO $cur
+LET $ok 1
+CALL StrFieldCount WITH $s=$cur $sep="|" INTO $fc
+LET $f 1
+LABEL fld
+BRANCH GE $f SUB $fc 1 flddone
+CALL StrSplitNth WITH $s=$cur $sep="|" $n=$f INTO $jj
+BRANCH EQ $jj "" fldnext
+CALL PairGet WITH $blob=$rm $key=$jj INTO $g2
+BRANCH EQ $g2 "" notok
+LABEL fldnext
+LET $f ADD $f 1
+JUMP fld
+LABEL notok
+LET $ok 0
+LABEL flddone
+BRANCH NOT $ok nexti
+CALL HostEnvSet WITH $env=$rm $key=STR $i $val="1" INTO $rm
+LET $left SUB $left 1
+LET $prog 1
+LABEL nexti
+LET $i ADD $i 1
+JUMP each
+LABEL roundend
+BRANCH $prog round
+LET $i 0
+LABEL findleft
+BRANCH GE $i $nb clean
+CALL PairGet WITH $blob=$rm $key=STR $i INTO $g
+BRANCH EQ $g "" gotcycle
+LET $i ADD $i 1
+JUMP findleft
+LABEL gotcycle
+CALL HostGetRec WITH $blob=$blocks $key=CAT "#" STR $i INTO $nm
+RETURN CAT CAT "COMPILE-ERROR recursion is rejected by the default profile: call cycle through program " $nm ""
+LABEL clean
+RETURN ""
+END PROGRAM
+
+PROGRAM HostExec
+LET $env ""
+LET $stk ""
+LET $fp -1
+LET $blk 0
+LET $pc $start
+LET $steps 0
+LABEL top
+BRANCH GE $pc LEN $stmts halt
+LET $steps ADD $steps 1
+BRANCH GT $steps $budget overrun
+CALL NsBody WITH $blob=$stmts $pos=$pc INTO $st
+CALL NsNext WITH $blob=$stmts $pos=$pc INTO $npc
+CALL NsBody WITH $blob=$st $pos=0 INTO $t0
+CALL NsNext WITH $blob=$st $pos=0 INTO $a1
+BRANCH EQ $t0 "wLET" dolet
+BRANCH EQ $t0 "wEMIT" doemit
+BRANCH EQ $t0 "wBRANCH" dobranch
+BRANCH EQ $t0 "wJUMP" dojump
+BRANCH EQ $t0 "wLABEL" skip
+BRANCH EQ $t0 "wREAD" doread
+BRANCH EQ $t0 "wCALL" docall
+BRANCH EQ $t0 "wRETURN" doret
+BRANCH EQ $t0 "wLOOP" doloop
+BRANCH EQ $t0 "wEND" doend
+BRANCH EQ $t0 "wPROGRAM" skip
+CALL StrSlice WITH $s=$t0 $a=1 $b=LEN $t0 INTO $h
+EMIT CAT CAT "UNSUPPORTED statement head '" $h "' reached at run time (the static pass should have refused it)"
+RETURN 0
+LABEL skip
+LET $pc $npc
+JUMP top
+LABEL dolet
+CALL NsBody WITH $blob=$st $pos=$a1 INTO $ct
+CALL StrSlice WITH $s=$ct $a=1 $b=LEN $ct INTO $cell
+CALL NsNext WITH $blob=$st $pos=$a1 INTO $a2
+CALL HostEval WITH $toks=$st $i=$a2 $env=$env INTO $r
+CALL HostVal WITH $r=$r INTO $v
+BRANCH EQ CHAR $v 0 "!" trap
+CALL HostEnvSet WITH $env=$env $key=$cell $val=$v INTO $env
+LET $pc $npc
+JUMP top
+LABEL doemit
+CALL HostEval WITH $toks=$st $i=$a1 $env=$env INTO $r
+CALL HostVal WITH $r=$r INTO $v
+BRANCH EQ CHAR $v 0 "!" trap
+CALL HostRender WITH $v=$v INTO $o
+EMIT $o
+LET $pc $npc
+JUMP top
+LABEL doread
+CALL NsBody WITH $blob=$st $pos=$a1 INTO $ct
+CALL StrSlice WITH $s=$ct $a=1 $b=LEN $ct INTO $cell
+READ $line
+CALL HostEnvSet WITH $env=$env $key=$cell $val=CAT "s" $line INTO $env
+LET $pc $npc
+JUMP top
+LABEL dojump
+CALL NsBody WITH $blob=$st $pos=$a1 INTO $lt
+CALL StrSlice WITH $s=$lt $a=1 $b=LEN $lt INTO $name
+LABEL gotolbl
+CALL HostGetRec WITH $blob=$labels $key=CAT CAT STR $blk "/" $name INTO $d
+LET $pc INT $d
+JUMP top
+LABEL dobranch
+CALL HostEval WITH $toks=$st $i=$a1 $env=$env INTO $r
+CALL HostPos WITH $r=$r INTO $lp
+CALL HostVal WITH $r=$r INTO $v
+BRANCH EQ CHAR $v 0 "!" trap
+CALL HostTruthy WITH $v=$v INTO $t
+CALL NsBody WITH $blob=$st $pos=$lp INTO $lt
+CALL StrSlice WITH $s=$lt $a=1 $b=LEN $lt INTO $name
+BRANCH $t gotolbl
+CALL NsNext WITH $blob=$st $pos=$lp INTO $ep
+BRANCH GE $ep LEN $st skip
+CALL NsBody WITH $blob=$st $pos=$ep INTO $et
+BRANCH NE $et "wELSE" skip
+CALL NsNext WITH $blob=$st $pos=$ep INTO $ep2
+CALL NsBody WITH $blob=$st $pos=$ep2 INTO $lt2
+CALL StrSlice WITH $s=$lt2 $a=1 $b=LEN $lt2 INTO $name
+JUMP gotolbl
+LABEL doloop
+CALL NsNext WITH $blob=$st $pos=$a1 INTO $a2
+CALL HostEval WITH $toks=$st $i=$a2 $env=$env INTO $r
+CALL HostVal WITH $r=$r INTO $v
+BRANCH EQ CHAR $v 0 "!" trap
+CALL HostTruthy WITH $v=$v INTO $t
+BRANCH $t skip
+CALL HostGetRec WITH $blob=$loops $key=CAT "L" STR $pc INTO $d
+CALL NsNext WITH $blob=$stmts $pos=INT $d INTO $pc
+JUMP top
+LABEL doend
+CALL NsBody WITH $blob=$st $pos=$a1 INTO $t1
+BRANCH NE $t1 "wLOOP" doret0
+CALL HostGetRec WITH $blob=$loops $key=CAT "E" STR $pc INTO $d
+LET $pc INT $d
+JUMP top
+LABEL doret
+BRANCH GE $a1 LEN $st doret0
+CALL HostEval WITH $toks=$st $i=$a1 $env=$env INTO $r
+CALL HostVal WITH $r=$r INTO $v
+BRANCH EQ CHAR $v 0 "!" trap
+JUMP doretv
+LABEL doret0
+LET $v "i0"
+LABEL doretv
+BRANCH LT $fp 0 halt
+CALL NsBody WITH $blob=$stk $pos=$fp INTO $f0
+CALL NsNext WITH $blob=$stk $pos=$fp INTO $q1
+CALL NsBody WITH $blob=$stk $pos=$q1 INTO $f1
+CALL NsNext WITH $blob=$stk $pos=$q1 INTO $q2
+CALL NsBody WITH $blob=$stk $pos=$q2 INTO $f2
+CALL NsNext WITH $blob=$stk $pos=$q2 INTO $q3
+CALL NsBody WITH $blob=$stk $pos=$q3 INTO $f3
+CALL NsNext WITH $blob=$stk $pos=$q3 INTO $q4
+CALL NsBody WITH $blob=$stk $pos=$q4 INTO $f4
+LET $fp INT $f0
+LET $pc INT $f1
+LET $blk INT $f3
+LET $env $f4
+BRANCH EQ $f2 "" top
+CALL HostEnvSet WITH $env=$env $key=$f2 $val=$v INTO $env
+JUMP top
+LABEL docall
+CALL NsBody WITH $blob=$st $pos=$a1 INTO $tt
+CALL StrSlice WITH $s=$tt $a=1 $b=LEN $tt INTO $target
+CALL HostGetRec WITH $blob=$blocks $key=$target INTO $bv
+CALL StrSplitNth WITH $s=$bv $sep="/" $n=0 INTO $bi
+CALL StrSplitNth WITH $s=$bv $sep="/" $n=1 INTO $bs
+LET $newenv ""
+LET $into ""
+CALL NsNext WITH $blob=$st $pos=$a1 INTO $q
+BRANCH GE $q LEN $st pushframe
+CALL NsBody WITH $blob=$st $pos=$q INTO $tw
+BRANCH NE $tw "wWITH" chkinto
+CALL NsNext WITH $blob=$st $pos=$q INTO $q
+LABEL argtop
+BRANCH GE $q LEN $st pushframe
+CALL NsBody WITH $blob=$st $pos=$q INTO $ta
+BRANCH NE CHAR $ta 0 "c" chkinto
+CALL StrSlice WITH $s=$ta $a=1 $b=LEN $ta INTO $acell
+CALL NsNext WITH $blob=$st $pos=$q INTO $q
+CALL NsNext WITH $blob=$st $pos=$q INTO $q
+CALL HostEval WITH $toks=$st $i=$q $env=$env INTO $r
+CALL HostVal WITH $r=$r INTO $v
+BRANCH EQ CHAR $v 0 "!" trap
+CALL HostPos WITH $r=$r INTO $q
+CALL HostEnvSet WITH $env=$newenv $key=$acell $val=$v INTO $newenv
+JUMP argtop
+LABEL chkinto
+BRANCH GE $q LEN $st pushframe
+CALL NsBody WITH $blob=$st $pos=$q INTO $tw
+BRANCH NE $tw "wINTO" pushframe
+CALL NsNext WITH $blob=$st $pos=$q INTO $q
+CALL NsBody WITH $blob=$st $pos=$q INTO $ta
+CALL StrSlice WITH $s=$ta $a=1 $b=LEN $ta INTO $into
+LABEL pushframe
+LET $nf LEN $stk
+CALL NsPut WITH $value=STR $fp INTO $r
+LET $stk CAT $stk $r
+CALL NsPut WITH $value=STR $npc INTO $r
+LET $stk CAT $stk $r
+CALL NsPut WITH $value=$into INTO $r
+LET $stk CAT $stk $r
+CALL NsPut WITH $value=STR $blk INTO $r
+LET $stk CAT $stk $r
+CALL NsPut WITH $value=$env INTO $r
+LET $stk CAT $stk $r
+LET $fp $nf
+LET $env $newenv
+LET $blk INT $bi
+LET $pc INT $bs
+JUMP top
+LABEL trap
+CALL StrSlice WITH $s=$v $a=1 $b=LEN $v INTO $code
+EMIT CAT "TRAP " $code
+RETURN 0
+LABEL overrun
+EMIT CAT CAT "HOST-STEP-LIMIT " STR $budget " guest statements: the hosted interpreter stopped here, the guest program did not finish"
+RETURN 0
+LABEL halt
+RETURN 0
+END PROGRAM
+
+PROGRAM HostEval
+CALL NsBody WITH $blob=$toks $pos=$i INTO $t
+CALL NsNext WITH $blob=$toks $pos=$i INTO $nx
+LET $k CHAR $t 0
+CALL StrSlice WITH $s=$t $a=1 $b=LEN $t INTO $text
+BRANCH EQ $k "s" isstr
+BRANCH EQ $k "c" iscell
+CALL StrIsInt WITH $s=$text INTO $d
+BRANCH $d isint
+CALL HostOpArity WITH $op=$text INTO $ar
+BRANCH EQ $ar 1 isun
+BRANCH EQ $ar 2 isbin
+RETURN CAT CAT STR $nx "|" "!bad_expression"
+LABEL isstr
+RETURN CAT CAT STR $nx "|" CAT "s" $text
+LABEL isint
+RETURN CAT CAT STR $nx "|" CAT "i" STR INT $text
+LABEL iscell
+CALL HostEnvGet WITH $env=$env $key=$text INTO $v
+RETURN CAT CAT STR $nx "|" $v
+LABEL isun
+CALL HostEval WITH $toks=$toks $i=$nx $env=$env INTO $r1
+CALL HostPos WITH $r=$r1 INTO $p1
+CALL HostVal WITH $r=$r1 INTO $v1
+BRANCH EQ CHAR $v1 0 "!" fail1
+CALL HostApplyUn WITH $op=$text $x=$v1 INTO $res
+RETURN CAT CAT STR $p1 "|" $res
+LABEL fail1
+RETURN CAT CAT STR $p1 "|" $v1
+LABEL isbin
+CALL HostEval WITH $toks=$toks $i=$nx $env=$env INTO $r1
+CALL HostPos WITH $r=$r1 INTO $p1
+CALL HostVal WITH $r=$r1 INTO $v1
+BRANCH EQ CHAR $v1 0 "!" fail1
+CALL HostEval WITH $toks=$toks $i=$p1 $env=$env INTO $r2
+CALL HostPos WITH $r=$r2 INTO $p2
+CALL HostVal WITH $r=$r2 INTO $v2
+BRANCH EQ CHAR $v2 0 "!" fail2
+CALL HostApplyBin WITH $op=$text $x=$v1 $y=$v2 INTO $res
+RETURN CAT CAT STR $p2 "|" $res
+LABEL fail2
+RETURN CAT CAT STR $p2 "|" $v2
+END PROGRAM
+
+PROGRAM HostEnvGet
+CALL HostEnvFind WITH $env=$env $key=$key INTO $v
+BRANCH LT $v 0 miss
+CALL NsBody WITH $blob=$env $pos=$v INTO $r
+RETURN $r
+LABEL miss
+RETURN "!undefined_cell"
+END PROGRAM
+
+PROGRAM HostEnvSet
+CALL HostEnvFind WITH $env=$env $key=$key INTO $v
+CALL NsPut WITH $value=$val INTO $rec
+BRANCH LT $v 0 append
+CALL StrSlice WITH $s=$env $a=0 $b=$v INTO $head
+CALL NsNext WITH $blob=$env $pos=$v INTO $after
+CALL StrSlice WITH $s=$env $a=$after $b=LEN $env INTO $tail
+RETURN CAT CAT $head $rec $tail
+LABEL append
+CALL NsPut WITH $value=$key INTO $kr
+RETURN CAT CAT $env $kr $rec
+END PROGRAM
+
+PROGRAM HostRender
+LET $tag CHAR $v 0
+CALL StrSlice WITH $s=$v $a=1 $b=LEN $v INTO $body
+BRANCH EQ $tag "b" bool
+RETURN $body
+LABEL bool
+BRANCH EQ $body "1" yes
+RETURN "false"
+LABEL yes
+RETURN "true"
+END PROGRAM
+
+PROGRAM HostTruthy
+LET $tag CHAR $v 0
+CALL StrSlice WITH $s=$v $a=1 $b=LEN $v INTO $body
+BRANCH EQ $tag "i" num
+BRANCH EQ $tag "b" flag
+RETURN INT NE $body ""
+LABEL num
+RETURN INT NE INT $body 0
+LABEL flag
+RETURN INT EQ $body "1"
+END PROGRAM
+
+PROGRAM HostApplyUn
+LET $tag CHAR $x 0
+CALL StrSlice WITH $s=$x $a=1 $b=LEN $x INTO $b
+BRANCH EQ $op "NEG" doneg
+BRANCH EQ $op "LEN" dolen
+BRANCH EQ $op "STR" dostr
+BRANCH EQ $op "INT" doint
+BRANCH EQ $op "NOT" donot
+RETURN "!bad_operator"
+LABEL doneg
+BRANCH NE $tag "i" tm
+RETURN CAT "i" STR NEG INT $b
+LABEL dolen
+BRANCH NE $tag "s" tm
+RETURN CAT "i" STR LEN $b
+LABEL dostr
+CALL HostRender WITH $v=$x INTO $r
+RETURN CAT "s" $r
+LABEL doint
+BRANCH EQ $tag "i" asis
+BRANCH EQ $tag "b" frombool
+CALL StrIsInt WITH $s=$b INTO $ok
+BRANCH NOT $ok badint
+RETURN CAT "i" STR INT $b
+LABEL asis
+RETURN $x
+LABEL frombool
+BRANCH EQ $b "1" one
+RETURN "i0"
+LABEL one
+RETURN "i1"
+LABEL badint
+RETURN "!bad_int"
+LABEL donot
+CALL HostTruthy WITH $v=$x INTO $t
+BRANCH $t no
+RETURN "b1"
+LABEL no
+RETURN "b0"
+LABEL tm
+RETURN "!type_mismatch"
+END PROGRAM
+
+PROGRAM HostApplyBin
+LET $tx CHAR $x 0
+LET $ty CHAR $y 0
+CALL StrSlice WITH $s=$x $a=1 $b=LEN $x INTO $bx
+CALL StrSlice WITH $s=$y $a=1 $b=LEN $y INTO $by
+BRANCH GE FIND "|ADD|SUB|MUL|DIV|MOD|" CAT CAT "|" $op "|" 0 arith
+BRANCH EQ $op "CAT" docat
+BRANCH EQ $op "CHAR" dochar
+BRANCH EQ $op "FIND" dofind
+BRANCH EQ $op "EQ" doeq
+BRANCH EQ $op "NE" doeq
+BRANCH GE FIND "|LT|LE|GT|GE|" CAT CAT "|" $op "|" 0 docmp
+BRANCH EQ $op "AND" dobool
+BRANCH EQ $op "OR" dobool
+RETURN "!bad_operator"
+LABEL arith
+BRANCH NE $tx "i" tm
+BRANCH NE $ty "i" tm
+LET $a INT $bx
+LET $c INT $by
+BRANCH EQ $op "ADD" oadd
+BRANCH EQ $op "SUB" osub
+BRANCH EQ $op "MUL" omul
+BRANCH EQ $c 0 dz
+BRANCH EQ $op "DIV" odiv
+RETURN CAT "i" STR MOD $a $c
+LABEL odiv
+RETURN CAT "i" STR DIV $a $c
+LABEL oadd
+RETURN CAT "i" STR ADD $a $c
+LABEL osub
+RETURN CAT "i" STR SUB $a $c
+LABEL omul
+RETURN CAT "i" STR MUL $a $c
+LABEL dz
+BRANCH EQ $op "DIV" dzdiv
+RETURN "!mod_zero"
+LABEL dzdiv
+RETURN "!div_zero"
+LABEL docat
+BRANCH NE $tx "s" tm
+BRANCH NE $ty "s" tm
+RETURN CAT "s" CAT $bx $by
+LABEL dochar
+BRANCH NE $tx "s" tm
+BRANCH NE $ty "i" tm
+RETURN CAT "s" CHAR $bx INT $by
+LABEL dofind
+BRANCH NE $tx "s" tm
+BRANCH NE $ty "s" tm
+RETURN CAT "i" STR FIND $bx $by
+LABEL doeq
+LET $same 0
+BRANCH NE $tx $ty diff
+LET $same INT EQ $bx $by
+LABEL diff
+BRANCH EQ $op "NE" flip
+BRANCH $same t1
+RETURN "b0"
+LABEL t1
+RETURN "b1"
+LABEL flip
+BRANCH $same f1
+RETURN "b1"
+LABEL f1
+RETURN "b0"
+LABEL docmp
+BRANCH NE $tx $ty tm
+BRANCH EQ $tx "b" tm
+LET $r 0
+BRANCH EQ $tx "i" cmpint
+BRANCH EQ $op "LT" slt
+BRANCH EQ $op "LE" sle
+BRANCH EQ $op "GT" sgt
+LET $r INT GE $bx $by
+JUMP cmpout
+LABEL slt
+LET $r INT LT $bx $by
+JUMP cmpout
+LABEL sle
+LET $r INT LE $bx $by
+JUMP cmpout
+LABEL sgt
+LET $r INT GT $bx $by
+JUMP cmpout
+LABEL cmpint
+LET $ix INT $bx
+LET $iy INT $by
+BRANCH EQ $op "LT" ilt
+BRANCH EQ $op "LE" ile
+BRANCH EQ $op "GT" igt
+LET $r INT GE $ix $iy
+JUMP cmpout
+LABEL ilt
+LET $r INT LT $ix $iy
+JUMP cmpout
+LABEL ile
+LET $r INT LE $ix $iy
+JUMP cmpout
+LABEL igt
+LET $r INT GT $ix $iy
+LABEL cmpout
+BRANCH $r ctrue
+RETURN "b0"
+LABEL ctrue
+RETURN "b1"
+LABEL dobool
+CALL HostTruthy WITH $v=$x INTO $a
+CALL HostTruthy WITH $v=$y INTO $c
+LET $r 0
+BRANCH EQ $op "AND" band
+LET $r INT OR $a $c
+JUMP bout
+LABEL band
+LET $r INT AND $a $c
+LABEL bout
+BRANCH $r btrue
+RETURN "b0"
+LABEL btrue
+RETURN "b1"
+LABEL tm
+RETURN "!type_mismatch"
+END PROGRAM
+
+PROGRAM HostFindRec
+LET $needle CAT CAT STR LEN $key ":" CAT $key ","
+LET $at FIND $blob $needle
+BRANCH LT $at 0 miss
+RETURN ADD $at LEN $needle
+LABEL miss
+RETURN -1
+END PROGRAM
+
+PROGRAM HostGetRec
+CALL HostFindRec WITH $blob=$blob $key=$key INTO $at
+BRANCH LT $at 0 miss
+CALL NsBody WITH $blob=$blob $pos=$at INTO $v
+RETURN $v
+LABEL miss
+RETURN ""
+END PROGRAM
+
+PROGRAM HostEnvFind
+LET $klen LEN $key
+LET $p 0
+LABEL top
+BRANCH GE $p LEN $env miss
+CALL NsColon WITH $blob=$env $pos=$p INTO $c
+CALL StrSlice WITH $s=$env $a=$p $b=$c INTO $d
+LET $n INT $d
+LET $v ADD ADD $c 1 ADD $n 1
+BRANCH NE $n $klen skip
+CALL StrSlice WITH $s=$env $a=ADD $c 1 $b=ADD ADD $c 1 $n INTO $k
+BRANCH EQ $k $key hit
+LABEL skip
+CALL NsNext WITH $blob=$env $pos=$v INTO $p
+JUMP top
+LABEL hit
+RETURN $v
+LABEL miss
+RETURN -1
+END PROGRAM
+
+PROGRAM HostCoverage
+EMIT "alcorlang.alcor - AlcorLang v2 interpreted by AlcorLang v2"
+EMIT ""
+EMIT "HOSTED (byte-identical to the reference run() where the reference runs at all):"
+EMIT "  statements  LET EMIT READ LABEL JUMP BRANCH [ELSE] LOOP WHILE / END LOOP"
+EMIT "              CALL [WITH $c=expr ...] [INTO $c] RETURN [expr]"
+EMIT "              PROGRAM [Name] [WITH profile= authority= fuel=0] / END PROGRAM"
+EMIT "  operators   ADD SUB MUL DIV MOD NEG CAT LEN STR INT CHAR FIND"
+EMIT "              EQ NE LT LE GT GE AND OR NOT   (§6.2 total semantics)"
+EMIT "  values      int (unbounded) str bool; cross-type EQ/NE false/true, no trap"
+EMIT "  traps       div_zero mod_zero type_mismatch undefined_cell bad_int input_exhausted"
+EMIT "  frames      one env per frame, args by value, RETURN into the caller cell,"
+EMIT "              recursion, falling off the end returns int 0"
+EMIT "  static      §5 profile+authority, REFUSED unsigned_complete, backward-JUMP and"
+EMIT "              LOOP rejection under default, call-cycle rejection under default,"
+EMIT "              unknown/duplicate label, duplicate PROGRAM name, unnamed non-entry"
+EMIT "              block, prop validity, statement shape, expression arity"
+EMIT ""
+EMIT "NOT HOSTED - refused out loud, never silently mis-run:"
+EMIT "  v1 EFFECT statements (embedded or bare). §6.4 defines an effect as the host"
+EMIT "    gate adapter's answer; no AlcorLang expression reaches the gate, so the"
+EMIT "    only options are inlining it (breaks §8.1) or dropping it (breaks §8.2)."
+EMIT "  INCLUDE. §12 reads the library off the filesystem before the lexer runs."
+EMIT "  fuel=N for N>0. The host counts guest statements, not ALCORCORE steps."
+EMIT "  lower_python / lower_c. Writable, but nothing here could execute the output,"
+EMIT "    so their correctness would be unfalsifiable in-language."
+EMIT ""
+EMIT "PARTIAL:"
+EMIT "  compile errors appear as one COMPILE-ERROR line on the tape; the reference"
+EMIT "    raises, so the text differs. What matches is accept-vs-reject."
+EMIT "  the host's own statement budget ends a runaway guest with HOST-STEP-LIMIT,"
+EMIT "    which is deliberately NOT the guest's TRAP fuel_exhausted."
+RETURN 0
+END PROGRAM
+
+PROGRAM StrSlice
+LET $n LEN $s
+LET $i $a
+BRANCH GE $i 0 lodone
+LET $i 0
+LABEL lodone
+LET $j $b
+BRANCH LE $j $n hidone
+LET $j $n
+LABEL hidone
+LET $out ""
+LABEL top
+BRANCH GE $i $j stop
+LET $out CAT $out CHAR $s $i
+LET $i ADD $i 1
+JUMP top
+LABEL stop
+RETURN $out
+END PROGRAM
+PROGRAM StrSubstr
+LET $from $a
+BRANCH GE $from 0 lodone
+LET $from 0
+LABEL lodone
+CALL StrSlice WITH $s=$s $a=$from $b=ADD $from $n INTO $out
+RETURN $out
+END PROGRAM
+PROGRAM StrStartsWith
+LET $i $at
+BRANCH GE $i 0 lodone
+LET $i 0
+LABEL lodone
+CALL StrSlice WITH $s=$s $a=$i $b=ADD $i LEN $p INTO $got
+RETURN INT EQ $got $p
+END PROGRAM
+PROGRAM StrEndsWith
+LET $start SUB LEN $s LEN $p
+BRANCH GE $start 0 fits
+RETURN 0
+LABEL fits
+CALL StrSlice WITH $s=$s $a=$start $b=LEN $s INTO $got
+RETURN INT EQ $got $p
+END PROGRAM
+PROGRAM StrIndexFrom
+LET $n LEN $s
+LET $i $from
+BRANCH GE $i 0 lodone
+LET $i 0
+LABEL lodone
+BRANCH LE $i $n hidone
+LET $i $n
+LABEL hidone
+CALL StrSlice WITH $s=$s $a=$i $b=$n INTO $tail
+LET $k FIND $tail $sub
+BRANCH GE $k 0 hit
+RETURN -1
+LABEL hit
+RETURN ADD $k $i
+END PROGRAM
+PROGRAM StrTrim
+LET $n LEN $s
+LET $lo 0
+LABEL front
+BRANCH GE $lo $n frontdone
+CALL StrIsSpaceNl WITH $c=CHAR $s $lo INTO $w
+BRANCH NOT $w frontdone
+LET $lo ADD $lo 1
+JUMP front
+LABEL frontdone
+LET $hi $n
+LABEL back
+BRANCH LE $hi $lo backdone
+CALL StrIsSpaceNl WITH $c=CHAR $s SUB $hi 1 INTO $w
+BRANCH NOT $w backdone
+LET $hi SUB $hi 1
+JUMP back
+LABEL backdone
+CALL StrSlice WITH $s=$s $a=$lo $b=$hi INTO $out
+RETURN $out
+END PROGRAM
+PROGRAM StrRepeat
+LET $out ""
+LET $k 0
+LABEL top
+BRANCH GE $k $n stop
+LET $out CAT $out $s
+LET $k ADD $k 1
+JUMP top
+LABEL stop
+RETURN $out
+END PROGRAM
+PROGRAM StrReplaceFirst
+LET $k FIND $s $find
+BRANCH GE $k 0 hit
+RETURN $s
+LABEL hit
+CALL StrSlice WITH $s=$s $a=0 $b=$k INTO $head
+CALL StrSlice WITH $s=$s $a=ADD $k LEN $find $b=LEN $s INTO $tail
+RETURN CAT $head CAT $rep $tail
+END PROGRAM
+PROGRAM StrSplitNth
+LET $w LEN $sep
+BRANCH LT $n 0 none
+BRANCH GT $w 0 seps
+BRANCH EQ $n 0 whole
+RETURN ""
+LABEL whole
+RETURN $s
+LABEL seps
+LET $pos 0
+LET $k 0
+LABEL skip
+BRANCH GE $k $n skipdone
+CALL StrIndexFrom WITH $s=$s $sub=$sep $from=$pos INTO $at
+BRANCH LT $at 0 none
+LET $pos ADD $at $w
+LET $k ADD $k 1
+JUMP skip
+LABEL skipdone
+CALL StrIndexFrom WITH $s=$s $sub=$sep $from=$pos INTO $end
+BRANCH GE $end 0 cut
+LET $end LEN $s
+LABEL cut
+CALL StrSlice WITH $s=$s $a=$pos $b=$end INTO $out
+RETURN $out
+LABEL none
+RETURN ""
+END PROGRAM
+PROGRAM StrFieldCount
+LET $w LEN $sep
+BRANCH GT $w 0 seps
+RETURN 1
+LABEL seps
+LET $fields 1
+LET $pos 0
+LABEL top
+CALL StrIndexFrom WITH $s=$s $sub=$sep $from=$pos INTO $at
+BRANCH LT $at 0 stop
+LET $fields ADD $fields 1
+LET $pos ADD $at $w
+JUMP top
+LABEL stop
+RETURN $fields
+END PROGRAM
+PROGRAM StrIsDigit
+RETURN INT AND GE $c "0" LE $c "9"
+END PROGRAM
+PROGRAM StrIsAlpha
+BRANCH AND GE $c "a" LE $c "z" yes
+BRANCH AND GE $c "A" LE $c "Z" yes
+RETURN 0
+LABEL yes
+RETURN 1
+END PROGRAM
+PROGRAM StrIsSpace
+BRANCH EQ $c " " yes
+BRANCH EQ $c "\t" yes
+BRANCH EQ $c "\r" yes
+RETURN 0
+LABEL yes
+RETURN 1
+END PROGRAM
+PROGRAM StrIsSpaceNl
+BRANCH EQ $c "\n" yes
+CALL StrIsSpace WITH $c=$c INTO $r
+RETURN $r
+LABEL yes
+RETURN 1
+END PROGRAM
+PROGRAM StrIsIdentChar
+CALL StrIsAlpha WITH $c=$c INTO $r
+BRANCH $r yes
+CALL StrIsDigit WITH $c=$c INTO $r
+BRANCH $r yes
+BRANCH EQ $c "_" yes
+RETURN 0
+LABEL yes
+RETURN 1
+END PROGRAM
+PROGRAM StrIsWordBreak
+BRANCH EQ $c "" yes
+BRANCH EQ $c " " yes
+BRANCH EQ $c "\t" yes
+BRANCH EQ $c "\r" yes
+BRANCH EQ $c "\n" yes
+BRANCH EQ $c ";" yes
+BRANCH EQ $c "=" yes
+BRANCH EQ $c "\"" yes
+RETURN 0
+LABEL yes
+RETURN 1
+END PROGRAM
+PROGRAM StrIsInt
+LET $n LEN $s
+LET $i 0
+BRANCH NE CHAR $s 0 "-" body
+LET $i 1
+LABEL body
+BRANCH GE $i $n no
+LABEL top
+BRANCH GE $i $n yes
+CALL StrIsDigit WITH $c=CHAR $s $i INTO $d
+BRANCH NOT $d no
+LET $i ADD $i 1
+JUMP top
+LABEL yes
+RETURN 1
+LABEL no
+RETURN 0
+END PROGRAM
+PROGRAM NsPut
+LET $t STR $value
+RETURN CAT CAT STR LEN $t ":" CAT $t ","
+END PROGRAM
+PROGRAM NsColon
+LET $i $pos
+LET $cap ADD $pos 12
+LABEL top
+BRANCH EQ CHAR $blob $i ":" stop
+BRANCH GE $i $cap stop
+LET $i ADD $i 1
+JUMP top
+LABEL stop
+RETURN $i
+END PROGRAM
+PROGRAM NsBody
+CALL NsColon WITH $blob=$blob $pos=$pos INTO $c
+CALL StrSlice WITH $s=$blob $a=$pos $b=$c INTO $d
+LET $start ADD $c 1
+CALL StrSlice WITH $s=$blob $a=$start $b=ADD $start INT $d INTO $body
+RETURN $body
+END PROGRAM
+PROGRAM NsNext
+CALL NsColon WITH $blob=$blob $pos=$pos INTO $c
+CALL StrSlice WITH $s=$blob $a=$pos $b=$c INTO $d
+RETURN ADD ADD $c 1 ADD INT $d 1
+END PROGRAM
+PROGRAM NsNth
+LET $p 0
+LET $k 0
+BRANCH LT $n 0 oob
+LABEL top
+BRANCH GE $k $n stop
+BRANCH GE $p LEN $blob oob
+CALL NsNext WITH $blob=$blob $pos=$p INTO $p
+LET $k ADD $k 1
+JUMP top
+LABEL stop
+BRANCH GE $p LEN $blob oob
+CALL NsBody WITH $blob=$blob $pos=$p INTO $body
+RETURN $body
+LABEL oob
+RETURN ""
+END PROGRAM
+PROGRAM NsCount
+LET $p 0
+LET $k 0
+LABEL top
+BRANCH GE $p LEN $blob stop
+CALL NsNext WITH $blob=$blob $pos=$p INTO $p
+LET $k ADD $k 1
+JUMP top
+LABEL stop
+RETURN $k
+END PROGRAM
+PROGRAM PairFind
+LET $p 0
+LABEL top
+BRANCH GE $p LEN $blob miss
+CALL NsBody WITH $blob=$blob $pos=$p INTO $k
+CALL NsNext WITH $blob=$blob $pos=$p INTO $v
+BRANCH EQ $k $key hit
+BRANCH GE $v LEN $blob miss
+CALL NsNext WITH $blob=$blob $pos=$v INTO $p
+JUMP top
+LABEL hit
+RETURN $v
+LABEL miss
+RETURN -1
+END PROGRAM
+PROGRAM PairGet
+CALL PairFind WITH $blob=$blob $key=$key INTO $at
+BRANCH GE $at 0 hit
+RETURN ""
+LABEL hit
+CALL NsBody WITH $blob=$blob $pos=$at INTO $v
+RETURN $v
+END PROGRAM
+PROGRAM StrCatalog
+RETURN "StrSlice,StrSubstr,StrStartsWith,StrEndsWith,StrIndexFrom,StrTrim,StrRepeat,StrReplaceFirst,StrSplitNth,StrFieldCount,StrIsDigit,StrIsAlpha,StrIsSpace,StrIsSpaceNl,StrIsIdentChar,StrIsWordBreak,StrIsInt,NsPut,NsColon,NsBody,NsNext,NsNth,NsCount,PairFind,PairGet,StrCatalog,StrWhy"
+END PROGRAM
+PROGRAM StrWhy
+BRANCH EQ $name "StrSlice" slice
+BRANCH EQ $name "StrSubstr" substr
+BRANCH EQ $name "StrStartsWith" starts
+BRANCH EQ $name "StrIndexFrom" indexfrom
+BRANCH EQ $name "StrTrim" trim
+BRANCH EQ $name "StrRepeat" repeat
+BRANCH EQ $name "StrReplaceFirst" replace
+BRANCH EQ $name "StrSplitNth" split
+BRANCH EQ $name "StrIsSpace" isspace
+BRANCH EQ $name "StrIsWordBreak" wordbreak
+BRANCH EQ $name "StrIsIdentChar" identchar
+BRANCH EQ $name "StrIsInt" isint
+BRANCH EQ $name "NsPut" nsput
+BRANCH EQ $name "NsColon" nscolon
+BRANCH EQ $name "NsNext" nsnext
+BRANCH EQ $name "NsNth" nsnth
+BRANCH EQ $name "PairFind" pairfind
+RETURN "no reason recorded. if this routine has a non-obvious shape, record it here."
+LABEL slice
+RETURN "clamps both ends instead of trapping. the only reason to slice inside a lexer is to ask what is there, and asking has to be safe past both ends -- the same argument that made CHAR total."
+LABEL substr
+RETURN "clamps the start BEFORE counting, so n characters means n characters. slicing to start+n first would silently hand back a short string whenever the start was negative."
+LABEL starts
+RETURN "returns int 1 or 0, never a bool. every predicate in this file does, so a caller may add them up, CAT STR them, or BRANCH on them without knowing which kind it got."
+LABEL indexfrom
+RETURN "exists only because native FIND has no start offset. it copies the tail to search it, so scanning a long blob with it is quadratic -- the Ns* walkers step by length prefix instead, and never call this."
+LABEL trim
+RETURN "asks StrIsSpaceNl, not StrIsSpace. trimming a line means the newline too; a lexer must never skip one. the two predicates exist so that difference is stated once, here."
+LABEL repeat
+RETURN "treats every n below 1 as zero rather than trapping, because the callers that want padding compute n by subtraction and a short string makes n negative."
+LABEL replace
+RETURN "replaces the leftmost match only, and an empty needle matches at 0, so it prepends. that is what Python does, and the differential harness compares against Python."
+LABEL split
+RETURN "returns the empty string both for an empty field and for a field past the last one. it cannot tell you which; StrFieldCount is how you ask."
+LABEL isspace
+RETURN "is the reference lexer skip set, space tab CR, exactly. newline is excluded on purpose: in AlcorLang a newline is a statement separator, so a lexer that skipped one would erase statement boundaries."
+LABEL wordbreak
+RETURN "answers yes for the empty string as well as for the six break characters. running off the end ends a word, so a scanner written against this predicate alone cannot spin forever."
+LABEL identchar
+RETURN "is ASCII only, while the reference scans a cell name with Python isalnum, which is Unicode-wide. both reject a non-ASCII cell name -- through different messages. that divergence is known and written down, not fixed."
+LABEL isint
+RETURN "exists because INT traps bad_int. a lexer has to ASK whether a word is a number before converting it, and there is no other way to ask without falling over."
+LABEL nsput
+RETURN "is the plain netstring encoding: decimal length, colon, bytes, comma. the tests decode a hand-written blob in exactly that form to prove it."
+LABEL nscolon
+RETURN "scans at most twelve characters, because a length prefix is decimal digits and nothing here is longer. a corrupt blob then shows up as a bad_int trap at the INT, which is loud, instead of as a scan of the whole tape."
+LABEL nsnext
+RETURN "never reads the payload, only the length prefix. that is what lets a program counter be a byte offset into a blob instead of a record index -- fetch stays O(1) where an index would rescan."
+LABEL nsnth
+RETURN "returns the empty string for an index past the end, which is also a perfectly legal payload. NsCount is how you tell those apart."
+LABEL pairfind
+RETURN "returns the byte offset of the VALUE record, not the value. the environment rewrites a binding in place by splicing around that offset, so it needs the position, not a copy."
+END PROGRAM

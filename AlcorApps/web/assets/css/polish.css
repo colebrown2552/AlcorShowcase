@@ -1,0 +1,786 @@
+/* Acquisition and accessibility polish layered after the canonical theme CSS. */
+html {
+  overflow-x: clip;
+}
+body {
+  overflow-x: clip;
+  max-width: 100%;
+  overflow-wrap: break-word;
+}
+img,
+svg,
+video,
+canvas,
+iframe,
+table,
+pre {
+  max-width: 100%;
+}
+pre,
+table {
+  overflow-x: auto;
+}
+h1 {
+  font-size: clamp(3.2rem, 8vw, 7.375rem);
+  text-wrap: balance;
+}
+h2 {
+  text-wrap: balance;
+}
+.section-lede {
+  text-wrap: pretty;
+}
+.audience-band {
+  border-block: 1px solid rgba(246, 240, 228, 0.1);
+  background: linear-gradient(
+    135deg,
+    rgba(83, 217, 212, 0.06),
+    transparent 45%,
+    rgba(179, 140, 255, 0.08)
+  );
+}
+.audience-grid {
+  margin-top: 2rem;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 1px;
+  background: rgba(246, 240, 228, 0.12);
+}
+.audience-card {
+  min-height: 210px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  background: #0b0d13;
+  border: 1px solid transparent;
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease;
+}
+.audience-card span {
+  color: var(--gold);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.audience-card strong {
+  font-size: 1.15rem;
+  line-height: 1.4;
+}
+.audience-card:hover,
+.audience-card:focus-visible {
+  transform: translateY(-3px);
+  border-color: var(--violet);
+  background: #11131d;
+}
+.product-disclosure {
+  max-width: 760px;
+  margin-top: 1.25rem;
+  color: var(--quiet);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+#how .how-steps {
+  list-style: none;
+  margin: 32px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  counter-reset: step;
+}
+#how .how-steps li {
+  padding: 1.1rem 1.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.02);
+}
+#how .how-steps li::before {
+  counter-increment: step;
+  content: counter(step);
+  display: inline-flex;
+  width: 1.6rem;
+  height: 1.6rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(120, 200, 255, 0.15);
+  color: #bfe3ff;
+  font-size: 0.85rem;
+  margin-bottom: 0.55rem;
+}
+#how .how-steps strong {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+#how .how-steps span {
+  display: block;
+  opacity: 0.72;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+:where(a, button, input, select, textarea, summary):focus-visible {
+  outline: 3px solid var(--cyan);
+  outline-offset: 3px;
+}
+@media (max-width: 1100px) {
+  .audience-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 680px) {
+  .audience-grid {
+    grid-template-columns: 1fr;
+  }
+  .audience-card {
+    min-height: 150px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .audience-card {
+    transition: none;
+  }
+}
+
+/* One site gutter and one content column (owner 2026-09-27: "Do a margin pass"). Sections already sit in
+   .section-inner (1180px inside a 72/34/16px gutter); heroes, bands and page shells line up to the same edge. */
+
+.hero-content {
+  width: min(var(--site-column), 100%);
+  margin-inline: auto;
+}
+/* Header, hero and footer share the content column's left and right edges (owner 2026-09-28: "funkyness"). */
+.site-header {
+  padding-inline: max(var(--site-gutter), calc((100% - var(--site-column)) / 2));
+}
+.footer-inner {
+  width: min(var(--site-column), calc(100% - 2 * var(--site-gutter)));
+  padding-inline: 0;
+}
+.screen-border {
+  display: none;
+}
+
+/* Client work (inc/client-work.php): copy left, the live site in a browser frame right, a phone view overlapping. */
+.client-work {
+  border-block: 1px solid rgba(246, 240, 228, 0.1);
+  background: radial-gradient(50% 70% at 85% 40%, rgba(239, 68, 68, 0.1), transparent 70%), #07080c;
+}
+.client-work__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: clamp(28px, 5vw, 72px);
+  align-items: center;
+}
+.client-work__copy {
+  display: grid;
+  gap: 18px;
+  justify-items: start;
+}
+.client-work__copy h2 {
+  margin: 0;
+  font-size: clamp(2rem, 1.3rem + 2.2vw, 3.4rem);
+  line-height: 1.04;
+}
+.client-work__copy .section-lede {
+  margin: 0;
+}
+.client-work__list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: rgba(246, 240, 228, 0.86);
+}
+.client-work__list li {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+}
+.client-work__list li::before {
+  content: '';
+  flex: none;
+  inline-size: 6px;
+  block-size: 6px;
+  border-radius: 50%;
+  background: var(--cyan);
+  box-shadow: 0 0 10px var(--cyan);
+  transform: translateY(-2px);
+}
+.client-work__shot {
+  position: relative;
+  margin: 0 0 clamp(24px, 4vw, 48px);
+  border: 1px solid rgba(246, 240, 228, 0.16);
+  border-radius: 12px;
+  overflow: visible;
+  background: #0b0d13;
+  box-shadow: 0 40px 90px -40px rgba(0, 0, 0, 0.9);
+}
+.client-work__browser {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-block-end: 1px solid rgba(246, 240, 228, 0.1);
+  border-radius: 12px 12px 0 0;
+  background: #11131b;
+}
+.client-work__dots {
+  display: flex;
+  gap: 6px;
+}
+.client-work__dots i {
+  inline-size: 9px;
+  block-size: 9px;
+  border-radius: 50%;
+  background: rgba(246, 240, 228, 0.22);
+}
+.client-work__url {
+  color: var(--muted);
+  font:
+    12px/1 Consolas,
+    'SFMono-Regular',
+    Menlo,
+    monospace;
+}
+.client-work__shot > img {
+  display: block;
+  inline-size: 100%;
+  block-size: auto;
+  border-radius: 0 0 12px 12px;
+}
+.client-work__shot > img.client-work__phone {
+  position: absolute;
+  inset: auto -18px -40px auto;
+  inline-size: 22%;
+  min-inline-size: 110px;
+  border: 6px solid #0b0b0d;
+  border-radius: 22px;
+  box-shadow:
+    0 24px 60px -20px rgba(0, 0, 0, 0.9),
+    0 0 0 1px rgba(246, 240, 228, 0.14);
+}
+@media (max-width: 900px) {
+  .client-work__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .client-work__shot > img.client-work__phone {
+    inset: auto -6px -30px auto;
+  }
+}
+.projects-head .section-inner {
+  display: grid;
+  gap: 18px;
+}
+.projects-head h1 {
+  margin: 0;
+  max-width: 16ch;
+  font-size: clamp(2.8rem, 1.4rem + 4.4vw, 5.4rem);
+  line-height: 0.98;
+}
+.projects-head .section-lede {
+  margin: 6px 0 0;
+}
+.client-work__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  margin: 0;
+}
+/* Keith Electric case page (/projects/keith-electric/). */
+.case-head .section-inner {
+  display: grid;
+  gap: 18px;
+}
+.case-head h1 {
+  margin: 0;
+  max-width: 17ch;
+  font-size: clamp(2.6rem, 1.4rem + 4vw, 5rem);
+  line-height: 0.98;
+}
+.case-head .section-lede {
+  margin: 0;
+  max-width: 60ch;
+}
+.case-crumbs {
+  color: var(--muted);
+  font-size: 14px;
+}
+.case-crumbs a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+.case-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 8px 0 0;
+}
+.case-hero .client-work__shot {
+  margin-block-end: 48px;
+}
+.case-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(28px, 5vw, 72px);
+}
+.case-block {
+  display: grid;
+  gap: 14px;
+  align-content: start;
+}
+.case-block h2 {
+  margin: 0;
+  font-size: clamp(1.8rem, 1.2rem + 1.8vw, 2.8rem);
+}
+.case-block .section-lede {
+  margin: 0;
+}
+.case-shots {
+  display: grid;
+  gap: 28px;
+  margin-top: 28px;
+}
+.case-shots figure {
+  margin: 0;
+  border: 1px solid rgba(246, 240, 228, 0.14);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #0b0d13;
+}
+.case-shots img {
+  display: block;
+  inline-size: 100%;
+  block-size: auto;
+}
+.case-shots figcaption {
+  padding: 12px 16px;
+  color: var(--muted);
+  font-size: 14px;
+}
+@media (max-width: 900px) {
+  .case-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.apps-demo-link {
+  margin: 14px 0 0;
+}
+
+/* ==================================================================
+   Signature: the Big Dipper with Alcor beside Mizar, and a soft
+   spotlight that follows the pointer across project cards.
+   Decorative only; static when motion is reduced.
+   ================================================================== */
+.alcor-constellation {
+  position: absolute;
+  pointer-events: none;
+  overflow: visible;
+}
+.alcor-constellation-line {
+  fill: none;
+  stroke: rgba(179, 140, 255, 0.42);
+  stroke-width: 1;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: alcor-draw 2.6s cubic-bezier(0.65, 0, 0.35, 1) 0.35s forwards;
+}
+.alcor-constellation-star {
+  fill: #f6f0e4;
+  opacity: 0;
+  animation:
+    alcor-star-in 0.5s ease calc(0.35s + var(--i) * 0.32s) forwards,
+    alcor-twinkle 5.5s ease-in-out calc(3.2s + var(--i) * 0.7s) infinite;
+}
+/* Star stagger without inline styles (CSP-safe): the seven stars are the SVG's direct <circle> children. */
+.alcor-constellation-star {
+  --i: 0;
+}
+.alcor-constellation > .alcor-constellation-star:nth-of-type(2) {
+  --i: 1;
+}
+.alcor-constellation > .alcor-constellation-star:nth-of-type(3) {
+  --i: 2;
+}
+.alcor-constellation > .alcor-constellation-star:nth-of-type(4) {
+  --i: 3;
+}
+.alcor-constellation > .alcor-constellation-star:nth-of-type(5) {
+  --i: 4;
+}
+.alcor-constellation > .alcor-constellation-star:nth-of-type(6) {
+  --i: 5;
+}
+.alcor-constellation > .alcor-constellation-star:nth-of-type(7) {
+  --i: 6;
+}
+.alcor-constellation-alcor {
+  fill: #ff5ec4;
+  opacity: 0;
+  animation: alcor-star-in 0.8s ease 2.9s forwards;
+}
+.alcor-constellation-halo {
+  fill: rgba(255, 94, 196, 0.22);
+  transform-origin: 101px 29px;
+  animation: alcor-halo 3.6s ease-in-out 3.4s infinite;
+}
+@keyframes alcor-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes alcor-star-in {
+  to {
+    opacity: 1;
+  }
+}
+@keyframes alcor-twinkle {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+@keyframes alcor-halo {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.9);
+    opacity: 0.25;
+  }
+}
+.alcor-constellation.is-mark {
+  position: static;
+  width: 46px;
+  height: 23px;
+  vertical-align: -6px;
+  margin-right: 8px;
+}
+.alcor-constellation.is-mark .alcor-constellation-line {
+  stroke-width: 6;
+  stroke: rgba(179, 140, 255, 0.55);
+}
+.alcor-constellation.is-mark .alcor-constellation-star {
+  transform: scale(1);
+}
+.has-constellation {
+  position: relative;
+  isolation: isolate;
+}
+.has-constellation > .alcor-constellation {
+  z-index: -1;
+  right: max(24px, calc((100% - 1180px) / 2));
+  top: 50%;
+  width: min(520px, 42vw);
+  transform: translateY(-46%);
+  opacity: 0.9;
+}
+@media (max-width: 760px) {
+  /* Just under the 66px header, above the kicker; never under the bar. */
+  .has-constellation > .alcor-constellation {
+    right: 16px;
+    top: 76px;
+    bottom: auto;
+    width: 124px;
+    transform: none;
+    opacity: 0.55;
+  }
+}
+
+/* Spotlight cards: a pointer-following glow and a gradient edge on hover.
+   Cards that already draw their own pseudo-elements keep them: motion.css gives
+   .package, .upgrade and .product a pointer glow on ::after (and the featured
+   price its gold orbit on ::before), and home.css puts the arrow on
+   .audience-card::after. Those cards skip the matching flair layer. */
+.flair-card {
+  position: relative;
+  isolation: isolate;
+  transition:
+    border-color 0.25s ease,
+    transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 0.25s ease;
+}
+.flair-card:not(.package, .upgrade, .product)::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  background: radial-gradient(
+    420px circle at var(--spot-x, 50%) var(--spot-y, 0%),
+    rgba(255, 94, 196, 0.1),
+    rgba(179, 140, 255, 0.06) 38%,
+    transparent 70%
+  );
+}
+.flair-card:not(.package, .upgrade, .product, .audience-card)::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  pointer-events: none;
+  border-radius: inherit;
+  padding: 1px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  background: radial-gradient(
+    260px circle at var(--spot-x, 50%) var(--spot-y, 0%),
+    rgba(255, 94, 196, 0.85),
+    rgba(179, 140, 255, 0.5) 40%,
+    rgba(83, 217, 212, 0.25) 70%,
+    transparent 100%
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+@media (hover: hover) and (pointer: fine) {
+  .flair-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 22px 50px -30px rgba(255, 94, 196, 0.45);
+  }
+  .flair-card:not(.package, .upgrade, .product):hover::before,
+  .flair-card:not(.package, .upgrade, .product, .audience-card):hover::after {
+    opacity: 1;
+  }
+}
+.flair-card:not(.package, .upgrade, .product, .audience-card):focus-within::after {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .alcor-constellation-line {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+  .alcor-constellation-star,
+  .alcor-constellation-alcor {
+    animation: none;
+    opacity: 1;
+  }
+  .alcor-constellation-halo {
+    animation: none;
+  }
+  .flair-card,
+  .flair-card:hover {
+    transition: none;
+    transform: none;
+  }
+}
+
+/* App cards: the copy column grows, and the links sit together on the card's
+   bottom edge, so every card in a row ends at the same line. */
+.product-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.product-copy > h3 {
+  margin: 0;
+}
+.product-actions {
+  margin-top: auto;
+  padding-top: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 22px;
+}
+.product-actions .package-cta {
+  margin-top: 0;
+}
+/* Products catalog only: keep Open on row one, About and Quote on row two,
+   regardless of card width. Do not reflow the distinct homepage app cards. */
+#apps .product-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 12px;
+}
+#apps .product-actions > .product-cta:first-child {
+  grid-column: 1 / -1;
+  justify-self: start;
+}
+#apps .product-actions > .product-cta[data-quote-product] {
+  grid-column: 2;
+  justify-self: end;
+}
+#apps .product-actions > .product-cta:nth-child(2):last-child {
+  grid-column: 1 / -1;
+  justify-self: start;
+}
+@media (max-width: 370px) {
+  #apps .product-actions {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  #apps .product-actions > .product-cta {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+  #apps .product-actions > .product-cta[data-quote-product] {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+}
+.footer-signature {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* ==================================================================
+   Theme QA sweep (2026-10-13): touch targets and overflow.
+   Scoped to the theme's own header, footer and content components,
+   never to app or editor surfaces.
+   ================================================================== */
+
+/* App titles in the app cards: a taller hit area without moving the type. */
+.product-copy > h3 > a {
+  display: inline-block;
+  padding-block: 8px;
+  margin-block: -8px;
+}
+
+/* Keith Electric breadcrumb. */
+.case-crumbs a {
+  display: inline-block;
+  padding-block: 13px;
+  margin-block: -13px;
+}
+
+/* Phones and touch screens: the header, footer and their links reach 44px. */
+@media (max-width: 760px), (pointer: coarse) {
+  .site-header .brand-lockup,
+  .site-header .nav-toggle,
+  .site-header .header-cta {
+    min-height: 44px;
+  }
+  .site-footer .footer-inner {
+    row-gap: 4px;
+  }
+  .site-footer .footer-inner a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
+  }
+  /* Inline phone and email links in running text: a taller hit area without moving the lines. Each link grows only away from its
+     neighbour (the first upward, the last downward), so when they wrap onto two lines neither box covers the other's text. */
+  .closing-email a,
+  .b2b-trust-band a {
+    display: inline-block;
+  }
+  .closing-email a:first-of-type,
+  .b2b-trust-band a:first-of-type {
+    padding-top: 12px;
+    margin-top: -12px;
+  }
+  .closing-email a:last-of-type,
+  .b2b-trust-band a:last-of-type {
+    padding-bottom: 12px;
+    margin-bottom: -12px;
+  }
+}
+@media (max-width: 760px) {
+  /* The bar stays 66px tall with the taller buttons in it. */
+  .site-header:not(.b2b-header) {
+    padding-block: 11px;
+  }
+}
+
+/* The phone view overlapping the client-work screenshot stays inside the content column. */
+.client-work__shot > img.client-work__phone {
+  inset: auto 0 -40px auto;
+}
+@media (max-width: 900px) {
+  .client-work__shot > img.client-work__phone {
+    inset: auto 0 -30px auto;
+  }
+}
+
+/* Skip link: hidden above the viewport until a keyboard user tabs to it, then a pill in the header's style. */
+.site-skip-link {
+  position: fixed;
+  top: 10px;
+  left: max(12px, env(safe-area-inset-left));
+  z-index: 2000;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid rgba(142, 216, 255, 0.62);
+  border-radius: 999px;
+  background: #050608;
+  color: #f6f0e4;
+  font:
+    700 12px/1.2 'Helvetica Neue',
+    Helvetica,
+    Arial,
+    sans-serif;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transform: translateY(calc(-100% - 20px));
+}
+.site-skip-link:focus,
+.site-skip-link:focus-visible {
+  transform: none;
+  outline: 2px solid #8ed8ff;
+  outline-offset: 2px;
+}
+
+/* Products & Projects catalog: page-scoped spacing; the home app grid is unchanged. */
+#apps .section-inner > .section-lede {
+  max-width: 62ch;
+}
+#apps .section-inner > .section-lede + .section-lede {
+  margin-top: 10px;
+}
+#apps .apps-demo-link {
+  margin-top: 22px;
+}
+#apps .product-grid {
+  gap: clamp(16px, 1.7vw, 24px);
+  margin-top: clamp(28px, 3vw, 40px);
+}
+#apps .product {
+  min-width: 0;
+}
+#apps .product-copy {
+  gap: 12px;
+  padding: clamp(18px, 2vw, 26px);
+}
+#apps .product-copy > p {
+  margin-bottom: 6px;
+}
+@media (min-width: 1180px) {
+  #apps .product-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 720px) {
+  #apps .product-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+  }
+  #apps .product-copy {
+    padding: 20px;
+  }
+}

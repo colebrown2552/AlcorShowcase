@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "AlcorBrowser",
+  "version": "2.2.1",
+  "description": "Lets local AI agents drive this browser profile through a local broker, over MCP.",
+  "minimum_chrome_version": "116",
+  "permissions": [
+    "storage",
+    "scripting",
+    "tabs",
+    "debugger",
+    "nativeMessaging",
+    "alarms",
+    "background"
+  ],
+  "host_permissions": ["<all_urls>"],
+  "background": { "service_worker": "background.js" },
+  "action": { "default_title": "AlcorBrowser", "default_popup": "popup.html" }
+}

@@ -1,0 +1,391 @@
+/*
+ * Alcor motion. The arrival grammar every Arcana subbrand already speaks (rise, draw,
+ * sheen, breathe), lifted onto the main site so the parent brand moves like its children.
+ *
+ * Rules:
+ * - Nothing is hidden unless the browser can animate it back. Reveals live inside
+ *   @supports (animation-timeline: view()) and use fill "backwards" only.
+ * - Never touches .abr-*, .ahub-* (archetype pages have their own reveals) or .amd-*
+ *   (the AlcorOS monitor measures itself).
+ * - prefers-reduced-motion: reduce switches all of it off.
+ */
+
+@property --ai-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes ai-rise {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+}
+/* The hero copy is readable on the first paint; keep its positional arrival. */
+@keyframes ai-hero-rise {
+  from {
+    transform: translateY(28px);
+  }
+}
+@keyframes ai-lift {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.97);
+  }
+}
+@keyframes ai-draw {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+@keyframes ai-slide {
+  from {
+    opacity: 0;
+    transform: translate(26%, 14%) rotate(5deg);
+  }
+}
+@keyframes ai-orbit {
+  to {
+    --ai-angle: 360deg;
+  }
+}
+@keyframes ai-sheen {
+  from {
+    transform: translateX(-120%) skewX(-18deg);
+  }
+  to {
+    transform: translateX(260%) skewX(-18deg);
+  }
+}
+@keyframes ai-breathe {
+  50% {
+    box-shadow:
+      0 0 0 1px rgba(215, 181, 109, 0.5),
+      0 30px 70px -30px rgba(215, 181, 109, 0.35);
+  }
+}
+
+/* ---------- Cards: one surface language for every card on the site ---------- */
+
+:is(.package, .upgrade, .product, .audience-card, .how-steps li, .client-work__shot) {
+  --mx: 50%;
+  --my: -30%;
+  position: relative;
+  isolation: isolate;
+  box-shadow: inset 0 0 0 1px rgba(246, 240, 228, 0.08);
+  transition:
+    transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1),
+    box-shadow 0.45s ease,
+    border-color 0.45s ease;
+}
+:is(.package, .upgrade, .product, .how-steps li)::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    520px circle at var(--mx) var(--my),
+    rgba(179, 140, 255, 0.16),
+    rgba(83, 217, 212, 0.05) 40%,
+    transparent 65%
+  );
+  transition: opacity 0.45s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :is(.package, .upgrade, .product, .how-steps li):hover {
+    transform: translateY(-6px);
+    box-shadow:
+      inset 0 0 0 1px rgba(179, 140, 255, 0.42),
+      0 36px 70px -36px rgba(0, 0, 0, 0.95),
+      0 0 48px -18px rgba(179, 140, 255, 0.35);
+  }
+  :is(.package, .upgrade, .product, .how-steps li):hover::after {
+    opacity: 1;
+  }
+  .package.is-featured:hover {
+    box-shadow:
+      inset 0 0 0 1px rgba(215, 181, 109, 0.6),
+      0 36px 70px -36px rgba(0, 0, 0, 0.95),
+      0 0 60px -16px rgba(215, 181, 109, 0.4);
+  }
+  .package.is-featured::after {
+    background: radial-gradient(
+      520px circle at var(--mx) var(--my),
+      rgba(215, 181, 109, 0.16),
+      transparent 60%
+    );
+  }
+  .client-work__shot:hover {
+    transform: translateY(-4px) rotate(-0.3deg);
+  }
+  .b2b-card {
+    transition:
+      transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1),
+      border-color 0.45s ease,
+      box-shadow 0.45s ease;
+  }
+  .b2b-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(179, 140, 255, 0.42);
+    box-shadow:
+      0 36px 70px -36px rgba(0, 0, 0, 0.95),
+      0 0 48px -18px rgba(179, 140, 255, 0.35);
+  }
+}
+
+@media (hover: none) {
+  :is(.package, .upgrade, .product, .audience-card, .how-steps li):active {
+    transform: scale(0.985);
+    transition-duration: 0.12s;
+  }
+}
+
+/* The featured price: a slow gold orbit around the edge, the one thing on the page that is always moving. */
+.package.is-featured {
+  box-shadow:
+    inset 0 0 0 1px rgba(215, 181, 109, 0.35),
+    0 30px 70px -40px rgba(215, 181, 109, 0.25);
+}
+.package.is-featured::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  padding: 1px;
+  border-radius: inherit;
+  pointer-events: none;
+  background: conic-gradient(
+    from var(--ai-angle),
+    transparent 0 62%,
+    rgba(215, 181, 109, 0.95) 76%,
+    rgba(246, 240, 228, 0.9) 80%,
+    transparent 90%
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box exclude,
+    linear-gradient(#000 0 0);
+}
+.package.is-featured .price {
+  background: linear-gradient(100deg, #f6f0e4 20%, #d7b56d 55%, #f6f0e4 90%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ---------- Buttons: the Judgement sheen on the primary action ---------- */
+
+.primary-link {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    filter 0.25s ease;
+}
+.primary-link::after {
+  content: '';
+  position: absolute;
+  inset: -2px auto -2px 0;
+  width: 38%;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+  transform: translateX(-120%) skewX(-18deg);
+}
+@media (hover: hover) and (pointer: fine) {
+  .primary-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 34px -14px rgba(83, 217, 212, 0.75);
+  }
+  .primary-link:hover::after {
+    animation: ai-sheen 0.8s cubic-bezier(0.3, 0.6, 0.2, 1);
+  }
+  .secondary-link {
+    transition:
+      transform 0.25s ease,
+      border-color 0.25s ease,
+      background-color 0.25s ease;
+  }
+  .secondary-link:hover {
+    transform: translateY(-2px);
+    border-color: rgba(246, 240, 228, 0.5);
+  }
+}
+.primary-link:active,
+.secondary-link:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* ---------- Home page rhythm: a lit seam between sections ---------- */
+
+.home main .section:not(.amd-showcase-section) {
+  background-image: linear-gradient(
+      90deg,
+      transparent,
+      rgba(179, 140, 255, 0.28) 30%,
+      rgba(83, 217, 212, 0.28) 70%,
+      transparent
+    ),
+    radial-gradient(ellipse 55% 90px at 50% 0, rgba(179, 140, 255, 0.09), transparent 75%);
+  background-repeat: no-repeat;
+  background-size:
+    100% 1px,
+    100% 180px;
+  background-position:
+    0 0,
+    0 0;
+}
+.home main .section.wordpress-band {
+  background-image: linear-gradient(
+      90deg,
+      transparent,
+      rgba(179, 140, 255, 0.28) 30%,
+      rgba(83, 217, 212, 0.28) 70%,
+      transparent
+    ),
+    linear-gradient(90deg, rgba(0, 94, 196, 0.08), rgba(5, 6, 8, 0.9));
+  background-size:
+    100% 1px,
+    100% 100%;
+}
+.home main .section.audience-band {
+  background-image: linear-gradient(
+      90deg,
+      transparent,
+      rgba(179, 140, 255, 0.28) 30%,
+      rgba(83, 217, 212, 0.28) 70%,
+      transparent
+    ),
+    linear-gradient(135deg, rgba(83, 217, 212, 0.06), transparent 60%);
+  background-size:
+    100% 1px,
+    100% 100%;
+}
+
+/* ---------- Motion that needs permission ---------- */
+
+@media (prefers-reduced-motion: no-preference) {
+  .package.is-featured::before {
+    animation: ai-orbit 7s linear infinite;
+  }
+  .package.is-featured {
+    animation: ai-breathe 5.5s ease-in-out infinite;
+  }
+
+  /* Hero: a staggered arrival on load, the same beat every subbrand hero opens with. */
+  .hero .hero-content > * {
+    animation: ai-rise 1s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+  }
+  .home .hero .hero-content > * {
+    animation-name: ai-hero-rise;
+  }
+  .hero .hero-content > :nth-child(2) {
+    animation-delay: 0.08s;
+  }
+  .hero .hero-content > :nth-child(3) {
+    animation-delay: 0.18s;
+  }
+  .hero .hero-content > :nth-child(4) {
+    animation-delay: 0.28s;
+  }
+  .hero .hero-content > :nth-child(5) {
+    animation-delay: 0.38s;
+  }
+  .hero .hero-content > :nth-child(n + 6) {
+    animation-delay: 0.46s;
+  }
+
+  /* On narrow screens text must be readable immediately, even if animation
+     frames are delayed by a busy mobile browser. Keep the starfield animation. */
+  @media (max-width: 560px) {
+    .home .hero .hero-content > * {
+      animation: none;
+    }
+  }
+
+  /* Scroll progress: a thin line under the header. No animation-range, which Safari mishandles. */
+  @supports (animation-timeline: scroll()) {
+    .site-header::after {
+      content: '';
+      position: absolute;
+      inset: auto 0 -1px 0;
+      height: 2px;
+      pointer-events: none;
+      transform-origin: 0 50%;
+      background: linear-gradient(90deg, #53d9d4, #b38cff 60%, #d7b56d);
+      animation: ai-draw linear both;
+      animation-timeline: scroll(root);
+    }
+  }
+
+  /*
+   * Scroll reveals are gone (launch standard 4.11): content renders visible and nothing waits for an
+   * observer. motion.js still tags targets with data-ai-reveal and adds html.ai-reveal / .is-in, but no
+   * rule styles those hooks any more, so the hidden state is a no-op. The reveal transition went with
+   * it: it would otherwise slow the hover transforms of every tagged card.
+   */
+}
+
+/* Header glass once the page leaves the top (class from motion.js). */
+.site-header {
+  transition:
+    background-color 0.35s ease,
+    box-shadow 0.35s ease;
+  -webkit-backdrop-filter: blur(18px);
+}
+.site-header.is-scrolled {
+  background-color: rgba(5, 6, 8, 0.82);
+  box-shadow:
+    0 1px 0 rgba(246, 240, 228, 0.08),
+    0 18px 40px -28px rgba(0, 0, 0, 0.9);
+}
+/* Phones get no header blur (site.css drops it), so at 82% big headings showed through. Go solid. */
+@media (max-width: 760px) {
+  .site-header.is-scrolled {
+    background-color: rgba(5, 6, 8, 0.97);
+  }
+}
+
+/* The floating quote button steps aside while an interactive demo is on screen, so it never covers the dock or the monitor. */
+.mobile-cta.ai-cta-aside {
+  transform: translateY(80px) !important;
+  opacity: 0 !important;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :is(
+      .package,
+      .upgrade,
+      .product,
+      .audience-card,
+      .how-steps li,
+      .client-work__shot,
+      .primary-link,
+      .secondary-link
+    ) {
+    transition: none;
+  }
+  :is(.package, .upgrade, .product, .how-steps li, .client-work__shot):hover {
+    transform: none;
+  }
+}
+
+/* Offscreen/hidden decoration keeps its animation phase without doing paint work. */
+.package.is-featured.ai-motion-paused,
+.package.is-featured.ai-motion-paused::before {
+  animation-play-state: paused;
+}

@@ -1,0 +1,19 @@
+Copyright (c) 2026 Cole Brown. All rights reserved.
+
+This repository is published so that employers, clients and collaborators can read and run the
+code to evaluate the author's work. You may view the source, clone it and run the included demos
+for that purpose.
+
+No other rights are granted. Copying, modifying, redistributing or using this code in another
+product requires the author's written permission.
+
+Exceptions, which keep their own terms:
+- MentalHealthAustin/ is a team project, copyright its authors. See MentalHealthAustin/NOTICE.md.
+- Third-party libraries bundled with AlcorApps (under AlcorApps/web/assets/lib/ and
+  AlcorApps/web/assets/js/vendor/) are distributed under their own licenses, whose texts sit next
+  to them.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY
+ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR ITS USE.

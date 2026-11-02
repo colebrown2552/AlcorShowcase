@@ -1,0 +1,4635 @@
+/* alcor-video */
+/* AlcorVideo 0.1 — namespaced product and editor UI. */
+body.alcor-video {
+  margin: 0;
+  background: #05070b;
+  color: #f4f7fb;
+  overflow-x: hidden;
+}
+body.alcor-video * {
+  box-sizing: border-box;
+}
+body.alcor-video button,
+body.alcor-video input,
+body.alcor-video select,
+body.alcor-video textarea {
+  font: inherit;
+}
+body.alcor-video button,
+body.alcor-video a,
+body.alcor-video input,
+body.alcor-video select,
+body.alcor-video textarea {
+  outline-offset: 3px;
+}
+body.alcor-video :focus-visible {
+  outline: 2px solid #73d6ff;
+}
+.av-page {
+  --av-bg: #05070b;
+  --av-panel: #0b0f16;
+  --av-panel-2: #101620;
+  --av-line: rgba(210, 230, 255, 0.14);
+  --av-line-strong: rgba(210, 230, 255, 0.28);
+  --av-text: #f4f7fb;
+  --av-muted: #98a6b7;
+  --av-cyan: #53d9d4;
+  --av-blue: #5188ff;
+  --av-violet: #a778ff;
+  --av-gold: #ffd47a;
+  --av-danger: #ff6f78;
+  min-height: 100vh;
+  background: var(--av-bg);
+  color: var(--av-text);
+  font-family:
+    'Segoe UI',
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    Inter,
+    sans-serif;
+  line-height: 1.5;
+}
+.av-page a {
+  color: inherit;
+}
+.av-site-header {
+  position: relative;
+  z-index: 30;
+  min-height: 68px;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  padding: 0 30px;
+  border-bottom: 1px solid var(--av-line);
+  background: rgba(5, 7, 11, 0.88);
+  backdrop-filter: blur(18px);
+}
+.av-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  font-size: 18px;
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+}
+.av-brand strong {
+  font-weight: 700;
+}
+.av-star {
+  color: var(--av-cyan);
+  filter: drop-shadow(0 0 12px rgba(103, 215, 255, 0.7));
+}
+.av-site-header nav {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+.av-site-header nav a {
+  color: var(--av-muted);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 700;
+}
+.av-site-header nav a:hover {
+  color: var(--av-text);
+}
+.av-header-action,
+.av-button {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  padding: 0 18px;
+  font-weight: 700;
+  font-size: 13px;
+  text-decoration: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+.av-header-action,
+.av-button-primary {
+  color: #061018 !important;
+  background: linear-gradient(135deg, #6fe6e1, #53d9d4 45%, #8f86ff);
+  box-shadow: 0 10px 35px rgba(83, 217, 212, 0.22);
+}
+.av-header-action:hover,
+.av-button-primary:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.06);
+}
+.av-button-secondary {
+  color: var(--av-text) !important;
+  border-color: var(--av-line-strong);
+  background: rgba(255, 255, 255, 0.035);
+}
+.av-button-secondary:hover {
+  border-color: rgba(103, 215, 255, 0.58);
+  background: rgba(103, 215, 255, 0.07);
+}
+
+/* Product landing */
+.av-hero {
+  position: relative;
+  min-height: 760px;
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(540px, 1.2fr);
+  gap: clamp(50px, 7vw, 110px);
+  align-items: center;
+  padding: 90px max(30px, calc((100vw - 1480px) / 2));
+  overflow: hidden;
+  background: radial-gradient(circle at 78% 22%, rgba(99, 132, 255, 0.18), transparent 31%),
+    radial-gradient(circle at 20% 35%, rgba(93, 212, 255, 0.1), transparent 30%),
+    linear-gradient(180deg, #070a11, #05070b 78%);
+}
+.av-hero-grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.18;
+  background-image: linear-gradient(rgba(130, 180, 255, 0.16) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(130, 180, 255, 0.16) 1px, transparent 1px);
+  background-size: 54px 54px;
+  mask-image: linear-gradient(to bottom, black, transparent 85%);
+}
+.av-hero-copy {
+  position: relative;
+  z-index: 2;
+  max-width: 660px;
+}
+.av-hero h1 {
+  margin: 20px 0 22px;
+  font-size: clamp(52px, 5.4vw, 88px);
+  line-height: 0.98;
+  letter-spacing: -0.065em;
+  max-width: 780px;
+}
+.av-hero-copy > p {
+  margin: 0;
+  max-width: 650px;
+  color: #b9c4d2;
+  font-size: clamp(18px, 1.45vw, 22px);
+  line-height: 1.65;
+}
+.av-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 34px;
+}
+.av-proof-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  list-style: none;
+  padding: 0;
+  margin: 26px 0 0;
+  color: var(--av-muted);
+  font-size: 12px;
+}
+.av-proof-list li::before {
+  content: '✓';
+  color: var(--av-cyan);
+  margin-right: 7px;
+}
+.av-editor-visual {
+  position: relative;
+  z-index: 3;
+  min-width: 0;
+  border: 1px solid rgba(170, 210, 255, 0.27);
+  border-radius: 14px;
+  overflow: hidden;
+  background: #080c12;
+  box-shadow:
+    0 40px 100px rgba(0, 0, 0, 0.52),
+    0 0 80px rgba(66, 141, 255, 0.12);
+  transform: perspective(1400px) rotateY(-4deg) rotateX(1.5deg);
+}
+.av-visual-topbar {
+  height: 38px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--av-line);
+  color: #8794a7;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+}
+.av-visual-topbar span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #314052;
+}
+.av-visual-topbar b {
+  margin-left: 10px;
+  font-weight: 700;
+}
+.av-visual-workspace {
+  display: grid;
+  grid-template-columns: 21% 58% 21%;
+  height: 330px;
+}
+.av-visual-bin,
+.av-visual-inspector {
+  padding: 16px;
+  border-right: 1px solid var(--av-line);
+  background: #0b1017;
+}
+.av-visual-inspector {
+  border-right: 0;
+  border-left: 1px solid var(--av-line);
+}
+.av-visual-bin i {
+  display: block;
+  height: 48px;
+  margin-bottom: 9px;
+  border-radius: 5px;
+  background: linear-gradient(90deg, #18283a 32%, #101822 32%);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+.av-visual-inspector i {
+  display: block;
+  height: 12px;
+  margin-bottom: 14px;
+  border-radius: 4px;
+  background: #182331;
+}
+.av-visual-inspector i:nth-child(even) {
+  width: 70%;
+}
+.av-visual-program {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  background: #070a0f;
+}
+.av-visual-frame {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  position: relative;
+  background: radial-gradient(circle at 40% 45%, #25354c, #111720 52%, #050608);
+  border: 1px solid #202b39;
+  overflow: hidden;
+}
+.av-visual-frame::before {
+  content: '';
+  width: 54%;
+  aspect-ratio: 16/10;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 65% 38%,
+    #b8efff 0 2%,
+    #6d9cff 3% 8%,
+    rgba(76, 91, 190, 0.46) 9% 26%,
+    transparent 48%
+  );
+  filter: blur(0.3px);
+}
+.av-visual-frame span {
+  position: absolute;
+  left: 14px;
+  bottom: 12px;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 8px;
+  letter-spacing: 0.16em;
+}
+.av-visual-controls {
+  height: 38px;
+  display: grid;
+  place-items: center;
+  color: #8190a3;
+  font-size: 9px;
+}
+.av-visual-timeline {
+  position: relative;
+  height: 250px;
+  padding-top: 26px;
+  background: #0a0e14;
+  border-top: 1px solid var(--av-line);
+}
+.av-visual-ruler {
+  position: absolute;
+  left: 42px;
+  right: 0;
+  top: 0;
+  height: 26px;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0 34px,
+    rgba(255, 255, 255, 0.18) 35px 36px
+  );
+}
+.av-visual-lane {
+  height: 66px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  position: relative;
+}
+.av-visual-lane b {
+  width: 42px;
+  text-align: center;
+  color: #6f7e92;
+  font-size: 9px;
+}
+.av-visual-lane span {
+  display: block;
+  height: 44px;
+  border-radius: 4px;
+}
+.av-vclip-title {
+  width: 28%;
+  margin-left: 29%;
+  background: linear-gradient(135deg, #805ee0, #b67aea);
+}
+.av-vclip-a {
+  width: 31%;
+  background: linear-gradient(135deg, #215ea5, #3f9bd0);
+}
+.av-vclip-b {
+  width: 39%;
+  background: linear-gradient(135deg, #3948a4, #6d67d5);
+}
+.av-aclip {
+  width: 62%;
+  background: repeating-linear-gradient(90deg, #225f52 0 3px, #1c8069 3px 5px);
+}
+.av-visual-playhead {
+  position: absolute;
+  left: 48%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: #ffbd66;
+  box-shadow: 0 0 10px rgba(255, 189, 102, 0.55);
+}
+.av-visual-playhead::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -5px;
+  border: 6px solid transparent;
+  border-top-color: #ffbd66;
+}
+.av-section {
+  max-width: 1480px;
+  margin: 0 auto;
+  padding: var(--section-y) 50px;
+}
+.av-section-heading {
+  max-width: 900px;
+  margin-bottom: 58px;
+}
+.av-section h2 {
+  margin: 16px 0 18px;
+  font-size: clamp(38px, 4vw, 66px);
+  line-height: 1.04;
+  letter-spacing: -0.055em;
+}
+.av-section-heading > p {
+  max-width: 58ch;
+  color: #aeb9c8;
+  font-size: 18px;
+  line-height: 1.6;
+}
+/* Cards on the launch standard: 16px radius, 24px padding, 20px gaps, 1rem muted text. */
+.av-step-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+.av-step-grid li {
+  padding: 24px;
+  border: 1px solid var(--av-line);
+  border-radius: var(--radius-card);
+  background: var(--av-card, #0b0d13);
+}
+.av-step-grid li > span {
+  color: var(--violet);
+  font:
+    700 11px/1 Consolas,
+    ui-monospace,
+    monospace;
+}
+.av-step-grid h3 {
+  margin: 12px 0 8px;
+  font-size: 23px;
+}
+.av-step-grid p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+.av-feature-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.av-feature-grid article {
+  padding: 24px;
+  border: 1px solid var(--av-line);
+  border-radius: var(--radius-card);
+  background: var(--av-card, #0b0d13);
+}
+
+.av-feature-grid h3 {
+  margin: 12px 0 8px;
+  font-size: 22px;
+}
+.av-feature-grid p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+.av-roadmap-note {
+  margin-top: 24px;
+  padding: 22px 24px;
+  border-left: 2px solid var(--av-cyan);
+  background: rgba(103, 215, 255, 0.05);
+  color: #acb8c7;
+}
+.av-roadmap-note strong {
+  color: var(--av-text);
+}
+.av-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 35px max(30px, calc((100vw - 1480px) / 2));
+  color: #7e8a99;
+  border-top: 1px solid var(--av-line);
+  font-size: 12px;
+}
+.av-footer a {
+  color: #bdc8d5;
+}
+
+/* Catalog insertion */
+.av-products-insert {
+  margin-top: 60px;
+  padding-top: 50px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+.av-products-insert > h2 {
+  max-width: 900px;
+}
+.av-catalog-card {
+  display: grid;
+  grid-template-columns: minmax(300px, 0.9fr) 1.1fr;
+  gap: 42px;
+  padding: 30px;
+  border: 1px solid rgba(160, 205, 255, 0.22);
+  border-radius: 12px;
+  background: linear-gradient(150deg, rgba(71, 135, 220, 0.09), rgba(255, 255, 255, 0.015));
+}
+.av-catalog-preview {
+  position: relative;
+  min-height: 260px;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 8px;
+  overflow: hidden;
+  background: #080c12;
+}
+.av-catalog-screen {
+  position: absolute;
+  left: 19%;
+  right: 9%;
+  top: 10%;
+  height: 48%;
+  background: radial-gradient(circle at 60% 42%, #4969bd, #151d2a 35%, #06080d 72%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.av-catalog-track {
+  position: absolute;
+  left: 10%;
+  height: 12%;
+  border-radius: 4px;
+}
+.av-catalog-track-one {
+  right: 23%;
+  bottom: 23%;
+  background: linear-gradient(90deg, #257ca3 0 40%, transparent 40% 42%, #6654b8 42%);
+}
+.av-catalog-track-two {
+  right: 10%;
+  bottom: 7%;
+  background: repeating-linear-gradient(90deg, #1b735f 0 4px, #245447 4px 7px);
+}
+.av-catalog-playhead {
+  position: absolute;
+  left: 55%;
+  top: 7%;
+  bottom: 4%;
+  width: 1px;
+  background: #ffc36f;
+}
+.av-catalog-copy {
+  align-self: center;
+}
+.av-catalog-copy h3 {
+  margin: 8px 0 12px;
+  font-size: 36px;
+}
+.av-catalog-copy p {
+  color: #aeb9c8;
+  line-height: 1.7;
+}
+.av-catalog-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  margin: 20px 0;
+  font-size: 13px;
+}
+.av-catalog-meta strong {
+  color: #f5d68d;
+}
+.av-catalog-meta span {
+  color: #8f9cad;
+}
+
+/* Editor application */
+.av-editor-page {
+  min-height: 100vh;
+  background: #05070a;
+}
+.av-editor-page .av-site-header {
+  min-height: 54px;
+  padding-inline: 18px;
+}
+.av-editor-page .av-brand {
+  font-size: 15px;
+}
+.av-editor-page .av-header-action {
+  min-height: 34px;
+  padding-inline: 13px;
+  font-size: 11px;
+}
+.av-app {
+  padding: 10px;
+}
+.av-visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+.av-appbar {
+  min-height: 54px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 8px 12px;
+  border: 1px solid var(--av-line);
+  background: #0a0e14;
+  border-radius: 7px 7px 0 0;
+}
+.av-project-identity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.av-project-identity label {
+  color: var(--av-muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.av-project-identity input {
+  width: min(29vw, 360px);
+  border: 0;
+  border-bottom: 1px solid transparent;
+  padding: 5px 4px;
+  color: var(--av-text);
+  background: transparent;
+  font-weight: 700;
+}
+.av-project-identity input:focus {
+  border-color: var(--av-cyan);
+}
+#av-save-state {
+  color: #708094;
+  font-size: 11px;
+  white-space: nowrap;
+}
+.av-app-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.av-app button,
+.av-file-button,
+.av-import-button {
+  border: 1px solid var(--av-line);
+  border-radius: 5px;
+  min-height: 31px;
+  padding: 0 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #c5ceda;
+  background: #111722;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.av-app button:hover:not(:disabled),
+.av-file-button:hover,
+.av-import-button:hover {
+  border-color: #506680;
+  color: #fff;
+  background: #172131;
+}
+.av-app button:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+.av-file-button input,
+.av-import-button input {
+  display: none;
+}
+.av-render-button {
+  color: #071018 !important;
+  border-color: transparent !important;
+  background: linear-gradient(135deg, #53d9d4, #8f86ff) !important;
+}
+.av-workspace {
+  display: grid;
+  grid-template-columns: minmax(220px, 24%) minmax(480px, 1fr) minmax(230px, 25%);
+  min-height: 390px;
+  height: min(48vh, 560px);
+}
+.av-panel {
+  min-width: 0;
+  min-height: 0;
+  border-left: 1px solid var(--av-line);
+  border-bottom: 1px solid var(--av-line);
+  background: #0b0f16;
+  overflow: hidden;
+}
+.av-panel:last-child {
+  border-right: 1px solid var(--av-line);
+}
+.av-panel-heading {
+  min-height: 54px;
+  padding: 9px 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--av-line);
+  background: #0d121a;
+}
+.av-panel-heading span,
+.av-timeline-toolbar > div:first-child > span {
+  display: block;
+  color: #6f8197;
+  font:
+    700 9px/1 Consolas,
+    ui-monospace,
+    monospace;
+  letter-spacing: 0.15em;
+}
+.av-panel-heading h2,
+.av-timeline-toolbar h2 {
+  margin: 5px 0 0;
+  font-size: 13px;
+  letter-spacing: -0.01em;
+}
+.av-panel-help {
+  margin: 0;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--av-line);
+  color: var(--av-muted);
+  font-size: 10px;
+  line-height: 1.45;
+}
+.av-media-bin {
+  height: calc(100% - 91px);
+  overflow: auto;
+  padding: 8px;
+}
+.av-empty-state {
+  min-height: 130px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 24px;
+  color: #8b9aae;
+  text-align: center;
+  font-size: 12px;
+}
+.av-empty-state strong {
+  color: #9eabba;
+}
+.av-media-item {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  gap: 9px;
+  padding: 7px;
+  margin-bottom: 6px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  background: #101620;
+}
+.av-media-item:hover {
+  border-color: #29384a;
+}
+.av-media-thumb {
+  height: 42px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 3px;
+  background: #07090d;
+  color: #7390aa;
+  font-size: 10px;
+}
+.av-media-thumb img,
+.av-media-thumb video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.av-media-info {
+  min-width: 0;
+}
+.av-media-info strong {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 11px;
+}
+.av-media-info > span {
+  display: block;
+  margin-top: 2px;
+  color: #718196;
+  font-size: 9px;
+}
+.av-media-actions {
+  display: flex;
+  gap: 4px;
+  margin-top: 5px;
+}
+.av-media-actions button {
+  min-height: 23px;
+  padding-inline: 7px;
+  font-size: 9px;
+}
+.av-program-panel {
+  background: #06080c;
+}
+.av-program-heading {
+  background: #0a0e14;
+}
+.av-timecode {
+  padding: 5px 8px;
+  border: 1px solid var(--av-line);
+  border-radius: 4px;
+  color: #b8c8da;
+  background: #070a0e;
+  font:
+    700 11px/1 Consolas,
+    ui-monospace,
+    monospace;
+}
+.av-monitor-wrap {
+  position: relative;
+  height: calc(100% - 105px);
+  display: grid;
+  place-items: center;
+  padding: 12px;
+  background: #030405;
+  overflow: hidden;
+}
+#av-preview {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  aspect-ratio: 16 / 9;
+  background: #090b0f;
+  box-shadow:
+    0 0 0 1px #1d2733,
+    0 18px 50px rgba(0, 0, 0, 0.45);
+}
+.av-monitor-message {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #657386;
+  font-size: 11px;
+  pointer-events: none;
+}
+.av-safe-guides {
+  position: absolute;
+  width: min(70%, calc((100% - 24px) * 0.8));
+  aspect-ratio: 16/9;
+  border: 1px dashed rgba(255, 255, 255, 0.09);
+  pointer-events: none;
+}
+.av-transport {
+  min-height: 51px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 8px;
+  border-top: 1px solid var(--av-line);
+  background: #0a0e14;
+}
+.av-transport button {
+  min-width: 33px;
+  padding: 0 7px;
+}
+.av-transport .av-play {
+  min-width: 44px;
+  color: var(--av-cyan);
+}
+.av-transport label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: 8px;
+  color: #748398;
+  font-size: 9px;
+}
+.av-transport input,
+.av-transport select {
+  width: 72px;
+  height: 28px;
+  border: 1px solid var(--av-line);
+  border-radius: 4px;
+  padding: 0 6px;
+  color: #c4ceda;
+  background: #080b10;
+}
+.av-transport select {
+  width: 58px;
+}
+.av-inspector-panel {
+  overflow-y: auto;
+}
+.av-danger-button {
+  color: #ff9097 !important;
+}
+.av-editor-page [hidden] {
+  display: none !important;
+}
+.av-inspector-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 12px;
+}
+.av-inspector-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  color: #718196;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.av-inspector-form input:not([type='range']):not([type='checkbox']),
+.av-inspector-form select,
+.av-inspector-form textarea {
+  width: 100%;
+  min-height: 30px;
+  border: 1px solid var(--av-line);
+  border-radius: 4px;
+  padding: 5px 7px;
+  color: #d7dee8;
+  background: #070a0f;
+  text-transform: none;
+}
+.av-inspector-form textarea {
+  resize: vertical;
+}
+.av-inspector-form input[type='range'] {
+  width: 100%;
+  accent-color: var(--av-cyan);
+}
+.av-inspector-form input[type='color'] {
+  width: 100%;
+  min-height: 30px;
+  border: 1px solid var(--av-line);
+  background: #070a0f;
+}
+.av-field-wide {
+  grid-column: 1 / -1;
+}
+.av-checkbox {
+  grid-column: 1 / -1;
+  flex-direction: row !important;
+  align-items: center;
+  color: #a6b2c0 !important;
+  text-transform: none !important;
+}
+.av-inspector-actions {
+  display: flex;
+  gap: 6px;
+}
+.av-inspector-actions button {
+  flex: 1;
+}
+.av-timeline-panel {
+  border: 1px solid var(--av-line);
+  border-top: 0;
+  background: #080c12;
+}
+.av-timeline-toolbar {
+  min-height: 53px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--av-line);
+  background: #0c1119;
+}
+.av-timeline-tools {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.av-timeline-tools label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding-left: 7px;
+  color: #718196;
+  font-size: 9px;
+}
+.av-timeline-tools input[type='range'] {
+  width: 100px;
+  accent-color: var(--av-cyan);
+}
+.av-timeline-tools input[type='checkbox'] {
+  accent-color: var(--av-cyan);
+}
+.av-timeline-scroll {
+  height: min(32vh, 340px);
+  min-height: 240px;
+  overflow: auto;
+  background: #070a0e;
+}
+.av-timeline {
+  --av-px-per-second: 72px;
+  position: relative;
+  min-width: 100%;
+  width: max(100%, calc(var(--av-duration, 30) * var(--av-px-per-second) + 88px));
+  user-select: none;
+}
+.av-ruler-row,
+.av-track-row {
+  display: grid;
+  grid-template-columns: 88px minmax(0, 1fr);
+}
+.av-ruler-row {
+  position: sticky;
+  top: 0;
+  z-index: 13;
+  height: 30px;
+  background: #0b1017;
+}
+.av-track-row {
+  height: 68px;
+  border-top: 1px solid var(--av-line);
+}
+.av-track-label {
+  position: sticky;
+  left: 0;
+  z-index: 12;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 10px;
+  border-right: 1px solid var(--av-line);
+  color: #6f8094;
+  background: #0b1017;
+  font:
+    700 9px/1.2 Consolas,
+    ui-monospace,
+    monospace;
+}
+.av-track-label strong {
+  color: #b9c5d3;
+  font-size: 11px;
+}
+.av-track-label span {
+  margin-top: 3px;
+}
+.av-ruler {
+  position: relative;
+  min-width: calc(var(--av-duration, 30) * var(--av-px-per-second));
+  cursor: pointer;
+  background-image: repeating-linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.16) 0 1px,
+    transparent 1px calc(var(--av-px-per-second) / 2)
+  );
+}
+.av-ruler-mark {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-left: 1px solid rgba(255, 255, 255, 0.27);
+  padding: 4px 0 0 4px;
+  color: #718196;
+  font:
+    8px/1 Consolas,
+    ui-monospace,
+    monospace;
+  pointer-events: none;
+}
+.av-track-lane {
+  position: relative;
+  min-width: calc(var(--av-duration, 30) * var(--av-px-per-second));
+  background-image: repeating-linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.025) 0 1px,
+    transparent 1px var(--av-px-per-second)
+  );
+}
+.av-track-row[data-track='V2'] .av-track-lane {
+  background-color: rgba(135, 99, 211, 0.025);
+}
+.av-track-row[data-track='A1'] .av-track-lane {
+  background-color: rgba(45, 141, 112, 0.025);
+}
+.av-timeline-clip {
+  position: absolute;
+  top: 8px;
+  height: 50px;
+  min-width: 10px;
+  display: flex;
+  align-items: stretch;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 4px;
+  overflow: hidden;
+  color: #ecf5ff;
+  background: linear-gradient(135deg, #234f8d, #2d76a5);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  cursor: grab;
+}
+.av-timeline-clip[data-kind='image'] {
+  background: linear-gradient(135deg, #4d4f9e, #7164b8);
+}
+.av-timeline-clip[data-kind='audio'] {
+  background: linear-gradient(135deg, #1d6254, #208269);
+}
+.av-timeline-clip[data-kind='title'] {
+  background: linear-gradient(135deg, #7049a6, #a366c2);
+}
+.av-timeline-clip.is-missing {
+  background: repeating-linear-gradient(135deg, #5a3037 0 9px, #3c242a 9px 18px);
+}
+.av-timeline-clip.is-selected {
+  border-color: #effaff;
+  box-shadow:
+    0 0 0 2px var(--av-cyan),
+    0 5px 18px rgba(0, 0, 0, 0.4);
+  z-index: 6;
+}
+.av-timeline-clip:active {
+  cursor: grabbing;
+}
+.av-clip-body {
+  min-width: 0;
+  flex: 1;
+  padding: 6px 8px;
+  overflow: hidden;
+  pointer-events: none;
+}
+.av-clip-body strong {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 10px;
+}
+.av-clip-body span {
+  display: block;
+  margin-top: 3px;
+  opacity: 0.72;
+  font:
+    8px/1 Consolas,
+    ui-monospace,
+    monospace;
+}
+.av-trim-handle {
+  width: 7px;
+  flex: 0 0 7px;
+  border: 0 !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  min-height: 0 !important;
+  background: rgba(255, 255, 255, 0.16) !important;
+  cursor: ew-resize !important;
+}
+.av-trim-handle:hover {
+  background: rgba(255, 255, 255, 0.4) !important;
+}
+.av-playhead {
+  position: absolute;
+  z-index: 20;
+  top: 0;
+  bottom: 0;
+  left: calc(88px + var(--av-playhead, 0) * var(--av-px-per-second));
+  width: 1px;
+  min-height: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: #ffc061 !important;
+  box-shadow: 0 0 8px rgba(255, 192, 97, 0.55);
+  cursor: ew-resize !important;
+}
+.av-playhead span {
+  position: absolute;
+  top: 0;
+  left: -6px;
+  width: 13px;
+  height: 9px;
+  background: #ffc061;
+  clip-path: polygon(0 0, 100% 0, 72% 100%, 28% 100%);
+}
+.av-statusbar {
+  min-height: 28px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: center;
+  gap: 12px;
+  padding: 0 12px;
+  border-top: 1px solid var(--av-line);
+  color: #8b9aae;
+  background: #0b1017;
+  font-size: 12px;
+}
+.av-statusbar span:nth-child(2) {
+  text-align: center;
+  color: #94a8bc;
+}
+.av-statusbar span:last-child {
+  text-align: right;
+}
+.av-render-dialog {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 30px;
+  background: rgba(0, 0, 0, 0.74);
+  backdrop-filter: blur(7px);
+}
+.av-render-dialog[hidden] {
+  display: none;
+}
+.av-render-card {
+  width: min(520px, 100%);
+  padding: 34px;
+  border: 1px solid rgba(103, 215, 255, 0.35);
+  border-radius: 12px;
+  background: #0d131c;
+  box-shadow: 0 30px 100px rgba(0, 0, 0, 0.6);
+}
+.av-render-card > span {
+  color: var(--av-cyan);
+  font:
+    700 10px/1 Consolas,
+    ui-monospace,
+    monospace;
+  letter-spacing: 0.15em;
+}
+.av-render-card h2 {
+  margin: 15px 0 8px;
+  font-size: 30px;
+}
+.av-render-card p {
+  color: var(--av-muted);
+}
+.av-render-card progress {
+  width: 100%;
+  height: 12px;
+  margin: 15px 0 22px;
+  accent-color: var(--av-cyan);
+}
+
+@media (max-width: 1120px) {
+  .av-hero {
+    grid-template-columns: 1fr;
+    padding-top: 75px;
+  }
+  .av-editor-visual {
+    max-width: 900px;
+    transform: none;
+  }
+  .av-step-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .av-step-grid li:nth-child(2) {
+    border-right: 0;
+  }
+  .av-step-grid li:nth-child(-n + 2) {
+    border-bottom: 1px solid var(--av-line);
+  }
+  .av-feature-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 760px) {
+  .av-site-header {
+    padding: 0 16px;
+    gap: 12px;
+  }
+  .av-site-header nav {
+    display: none;
+  }
+  .av-header-action {
+    margin-left: auto;
+  }
+  .av-hero {
+    min-height: auto;
+    padding: 75px 20px 55px;
+  }
+  .av-hero h1 {
+    font-size: clamp(43px, 14vw, 68px);
+  }
+  .av-editor-visual {
+    display: none;
+  }
+  .av-section {
+    padding: var(--section-y) 20px;
+  }
+  .av-section-heading {
+    margin-bottom: 40px;
+  }
+  .av-step-grid,
+  .av-feature-grid,
+  .av-catalog-card {
+    grid-template-columns: 1fr;
+  }
+  .av-catalog-card {
+    padding: 18px;
+  }
+  .av-catalog-preview {
+    min-height: 210px;
+  }
+  .av-footer {
+    flex-direction: column;
+    padding: 28px 20px;
+  }
+}
+/* Phone/tablet editor: one column, monitor first; only the timeline scrolls sideways. */
+@media (max-width: 979px) {
+  .av-editor-page .av-site-header {
+    padding-inline: 12px;
+  }
+  .av-app {
+    padding: 8px;
+  }
+  .av-app button,
+  .av-file-button,
+  .av-import-button {
+    min-height: 44px;
+  }
+  .av-app input:not([type='range']):not([type='checkbox']):not([type='color']),
+  .av-app select,
+  .av-app textarea {
+    font-size: 16px;
+  }
+  .av-appbar {
+    flex-wrap: wrap;
+    gap: 8px 10px;
+    padding: 10px;
+  }
+  .av-project-identity {
+    flex: 1 1 100%;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+  }
+  .av-project-identity input {
+    flex: 1 1 160px;
+    width: auto;
+    min-width: 0;
+  }
+  .av-app-actions {
+    margin-left: 0;
+    flex: 1 1 100%;
+    flex-wrap: wrap;
+  }
+  .av-app-actions > * {
+    flex: 1 1 auto;
+  }
+  .av-workspace {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    min-height: 0;
+  }
+  .av-panel {
+    border-right: 1px solid var(--av-line);
+  }
+  .av-program-panel {
+    order: -1;
+  }
+  .av-monitor-wrap {
+    height: auto;
+    padding: 8px;
+  }
+  #av-preview {
+    width: 100%;
+    height: auto;
+  }
+  .av-transport {
+    flex-wrap: wrap;
+  }
+  .av-transport button {
+    min-width: 44px;
+  }
+  .av-transport label {
+    margin-left: 0;
+  }
+  .av-transport input,
+  .av-transport select {
+    height: 44px;
+  }
+  .av-media-bin {
+    height: auto;
+    max-height: 280px;
+  }
+  .av-inspector-panel {
+    overflow: visible;
+  }
+  .av-app [hidden] {
+    display: none !important;
+  }
+  .av-timeline-toolbar {
+    flex-wrap: wrap;
+    gap: 8px 12px;
+  }
+  .av-timeline-tools {
+    margin-left: 0;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+  body.alcor-video-editor .av-app .av-caption-button,
+  body.alcor-video-editor .av-app #av-caption-export,
+  body.alcor-video-editor .av-app #av-install-app {
+    min-height: 44px;
+    font-size: 11px;
+  }
+  .av-timeline-scroll {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+  }
+  .av-timeline-clip,
+  .av-playhead {
+    touch-action: none;
+  }
+  .av-statusbar {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 4px;
+    padding: 8px 12px;
+  }
+  .av-statusbar span:nth-child(2),
+  .av-statusbar span:last-child {
+    text-align: left;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .av-page *,
+  .av-page *::before,
+  .av-page *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .av-editor-visual {
+    transform: none;
+  }
+}
+
+/* Product page: real screenshots, gallery and closing call to action. */
+.av-hero-shot {
+  position: relative;
+  z-index: 3;
+  min-width: 0;
+  margin: 0;
+}
+.av-hero-shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid rgba(170, 210, 255, 0.27);
+  border-radius: var(--radius-control);
+  background: #080c12;
+  box-shadow:
+    0 40px 100px rgba(0, 0, 0, 0.52),
+    0 0 80px rgba(83, 217, 212, 0.12);
+}
+.av-hero-shot figcaption {
+  margin-top: 12px;
+  color: var(--av-muted);
+  font-size: 13px;
+  line-height: 1.55;
+}
+/* Screenshot cards: media full-bleed on top (16:10, cropped from the top), caption in a 24px body. */
+.av-shot-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+.av-shot-grid figure {
+  margin: 0;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--av-line);
+  border-radius: var(--radius-card);
+  background: var(--av-card, #0b0d13);
+}
+.av-shot-grid img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  object-position: top left;
+  border: 0;
+  border-bottom: 1px solid var(--av-line);
+  border-radius: 0;
+  background: #080c12;
+}
+.av-shot-grid figcaption {
+  margin: 0;
+  padding: 24px;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+.av-shot-grid figcaption strong {
+  color: var(--av-text);
+}
+.av-button-large {
+  min-height: 58px;
+  padding: 0 34px;
+  font-size: 16px;
+}
+@media (max-width: 1120px) {
+  .av-shot-grid {
+    grid-template-columns: 1fr;
+  }
+  .av-shot-grid img {
+    aspect-ratio: auto;
+  }
+}
+
+.av-star-icon {
+  display: inline-block;
+  width: 0.9em;
+  height: 0.9em;
+  fill: currentColor;
+  vertical-align: -0.05em;
+}
+
+/* Product page (/alcor-video/) on the homepage tokens: one 1180px container (x=130 at 1440,
+   16px phone gutter), paper headings with zero tracking, gold kickers, magenta/warm buttons,
+   square cards. Every rule is scoped to .av-landing, so the editor (.av-editor-page) is untouched. */
+.av-landing {
+  --av-text: #f6f0e4;
+  --av-muted: #b8bec8;
+  --av-line: rgba(246, 240, 228, 0.14);
+  --av-line-strong: rgba(246, 240, 228, 0.22);
+  --av-card: #0b0d13;
+  font-family:
+    'Segoe UI',
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    Arial,
+    sans-serif;
+}
+.av-landing h1,
+.av-landing h2,
+.av-landing h3 {
+  color: var(--av-text);
+  letter-spacing: 0;
+}
+
+/* Container: 1240px boxes with 30px padding put content at x=130 on a 1440 screen. No frame: spacing alone
+   separates sections. The copy column of the split hero gets the room. */
+.av-landing .av-hero {
+  min-height: 0;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: clamp(28px, 4vw, 56px);
+  padding: 64px max(30px, calc((100% - 1180px) / 2));
+}
+@media (max-width: 1120px) {
+  .av-landing .av-hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.av-landing .av-section {
+  max-width: 1240px;
+  padding: 64px 30px;
+}
+.av-landing .av-footer {
+  padding-inline: max(30px, calc((100% - 1180px) / 2));
+}
+
+/* Signature constellation: behind the hero copy, clear of the screenshot. */
+.av-landing .av-hero.has-constellation > .alcor-constellation {
+  left: max(30px, calc((100% - 1180px) / 2));
+  right: auto;
+  top: 18px;
+  width: min(400px, 34vw);
+  transform: none;
+  opacity: 0.36;
+}
+
+/* Type */
+.av-landing .av-hero h1 {
+  margin: 14px 0 18px;
+  font-size: var(--type-h1);
+  font-weight: 700;
+  line-height: 1;
+}
+/* The id out-ranks the shared app-landing h1 size and 15ch cap in the standard layer. */
+.av-landing .av-hero #av-hero-title {
+  max-width: none;
+  font-size: clamp(2.375rem, 1rem + 3.2vw, 3.5rem);
+} /* 94%: Sora sets wider */
+.av-landing .av-hero-copy > p {
+  color: var(--av-muted);
+  font-size: 18px;
+}
+.av-landing .av-section h2 {
+  font-size: var(--type-h2);
+  font-weight: 700;
+  line-height: 1.04;
+}
+.av-landing .av-section h2 {
+  margin: 14px 0 18px;
+}
+.av-landing .av-section-heading {
+  margin-bottom: 40px;
+}
+.av-landing .av-section-heading > h2:last-child {
+  margin-bottom: 0;
+}
+/* A label or step number sits 12px above its card title. */
+.av-landing .av-feature-grid h3,
+.av-landing .av-step-grid h3 {
+  margin: 12px 0 8px;
+}
+
+/* Facts: homepage hero pills with a small cyan dot. */
+.av-landing .av-proof-list {
+  gap: 8px;
+  margin-top: 22px;
+}
+.av-landing .av-proof-list li {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid rgba(246, 240, 228, 0.14);
+  border-radius: 999px;
+  background: rgba(5, 6, 8, 0.5);
+  color: rgba(246, 240, 228, 0.82);
+  font-size: 13px;
+}
+.av-landing .av-proof-list li::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  margin: 0;
+  border-radius: 50%;
+  background: #53d9d4;
+  box-shadow: 0 0 10px #53d9d4;
+}
+
+/* Buttons: homepage .primary-link / .secondary-link tokens. */
+.av-landing main .av-button {
+  min-height: var(--button-height);
+  padding: 0 18px;
+  border-radius: var(--radius-control);
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.18;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  text-align: center;
+  transform: none;
+  filter: none;
+}
+.av-landing main .av-button-primary {
+  border-color: var(--action-primary);
+  background: var(--action-primary);
+  color: var(--action-ink) !important;
+  box-shadow: var(--button-shadow);
+}
+.av-landing main .av-button-primary:hover {
+  background: var(--action-primary-hover);
+}
+.av-landing main .av-button-secondary {
+  border-color: rgba(246, 240, 228, 0.22);
+  background: rgba(246, 240, 228, 0.05);
+  color: var(--av-text) !important;
+}
+.av-landing main .av-button-secondary:hover {
+  border-color: var(--line-hover);
+  background: rgba(246, 240, 228, 0.05);
+}
+.av-landing main .av-button:focus-visible {
+  outline: 3px solid var(--av-text);
+  outline-offset: 3px;
+}
+
+/* Cards and screenshots: warm hairline, 16px card radius, static (no lift or glow on hover: this undoes
+   the spotlight site.js + polish.css add to every [data-flair-card]). The repeated class lifts the
+   screenshot rule over the media radius in the standard layer, so the image meets the card's own corners. */
+.av-landing .av-hero-shot img {
+  border-color: rgba(246, 240, 228, 0.12);
+}
+.av-landing .av-shot-grid.av-shot-grid.av-shot-grid img {
+  border-radius: 0;
+}
+.av-landing .av-hero-shot img {
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.52);
+}
+.av-landing .av-feature-grid article {
+  background: var(--av-card);
+}
+.av-landing .av-feature-grid article:hover {
+  transform: none;
+  box-shadow: none;
+}
+.av-landing .av-feature-grid article::before,
+.av-landing .av-feature-grid article::after {
+  content: none;
+}
+
+/* Good to know: the standard layer lays out the dl (two columns, term 600 paper, description muted). */
+.av-landing .av-faq .av-section-heading {
+  margin-bottom: 40px;
+}
+
+@media (max-width: 760px) {
+  .av-landing .av-hero {
+    padding: 48px 16px;
+  }
+  .av-landing .av-section {
+    padding: 48px 16px;
+  }
+  .av-landing .av-footer {
+    padding-inline: 16px;
+  }
+
+  .av-landing .av-hero.has-constellation > .alcor-constellation {
+    left: auto;
+    right: 12px;
+    top: 2px;
+    width: 120px;
+    opacity: 0.5;
+  }
+  .av-landing .av-actions {
+    display: grid;
+    gap: 10px;
+  }
+  .av-landing main .av-button {
+    width: 100%;
+    min-height: var(--button-height);
+    padding: 0 14px;
+  }
+  .av-landing .av-proof-list li {
+    min-height: 36px;
+    font-size: 12px;
+  }
+}
+
+/* Landing header: the wordmark and the action sit on the page column (the bar itself stays full width).
+   The action is the outlined .btn--secondary.btn--compact, so the hero keeps the only cyan primary; the
+   editor's header keeps .av-header-action. */
+.av-landing .av-site-header {
+  padding-inline: var(--site-pad-x);
+}
+@media (max-width: 760px) {
+  .av-landing .av-site-header .btn {
+    margin-left: auto;
+  }
+}
+
+/* Touch targets on the landing: brand link and the footer's home link. */
+body.alcor-video-landing .av-brand {
+  min-height: 44px;
+}
+.av-landing .av-footer a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-block: -14px;
+}
+
+/* alcor-video-enhancements */
+body.alcor-video-editor .av-enhancement-field input {
+  font-variant-numeric: tabular-nums;
+}
+
+body.alcor-video-editor .av-fade-presets {
+  padding-top: 2px;
+}
+
+body.alcor-video-editor .av-fade-presets button {
+  min-width: 0;
+  padding-inline: 7px;
+  font-size: 9px;
+}
+
+body.alcor-video-editor .av-timeline-clip {
+  --av-fade-in: 0px;
+  --av-fade-out: 0px;
+}
+
+body.alcor-video-editor .av-timeline-clip::after {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(to right, rgba(3, 5, 8, 0.8) 0, transparent var(--av-fade-in)),
+    linear-gradient(to left, rgba(3, 5, 8, 0.8) 0, transparent var(--av-fade-out));
+}
+
+body.alcor-video-editor .av-timeline-clip .av-clip-body,
+body.alcor-video-editor .av-timeline-clip .av-trim-handle {
+  position: relative;
+  z-index: 1;
+}
+
+body.alcor-video-editor .av-caption-button {
+  margin: 0;
+  padding: 0 8px !important;
+  color: #c5ceda !important;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+body.alcor-video-editor .av-caption-button input {
+  display: none;
+}
+
+body.alcor-video-editor .av-offline-state {
+  max-width: 132px;
+  color: #718196;
+  font:
+    700 8px/1.25 Consolas,
+    ui-monospace,
+    SFMono-Regular,
+    monospace;
+  text-align: right;
+}
+
+body.alcor-video-editor[data-offline-shell='registered'] .av-offline-state,
+body.alcor-video-editor [data-offline-shell='registered'] .av-offline-state {
+  color: #79cfae;
+}
+
+@media (max-width: 1120px) {
+  body.alcor-video-editor .av-timeline-tools {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  body.alcor-video-editor .av-offline-state {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  body.alcor-video-editor .av-caption-button,
+  body.alcor-video-editor #av-caption-export,
+  body.alcor-video-editor #av-install-app {
+    min-height: 28px;
+    font-size: 9px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.alcor-video-editor .av-timeline-clip::after {
+    transition: none;
+  }
+}
+
+/* alcor-video-transforms */
+body.alcor-video-editor .av-transform-section {
+  margin: 4px 0 10px;
+  padding: 10px;
+  border: 1px solid rgba(126, 227, 255, 0.15);
+  border-radius: 7px;
+  background: rgba(126, 227, 255, 0.035);
+}
+
+body.alcor-video-editor .av-transform-section legend {
+  padding: 0 5px;
+  color: #a7dff0;
+  font:
+    700 9px/1.2 Consolas,
+    ui-monospace,
+    SFMono-Regular,
+    monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+body.alcor-video-editor .av-transform-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+body.alcor-video-editor .av-transform-field {
+  min-width: 0;
+}
+
+body.alcor-video-editor .av-transform-field input,
+body.alcor-video-editor .av-transform-field select {
+  width: 100%;
+  font-variant-numeric: tabular-nums;
+}
+
+body.alcor-video-editor .av-transform-fit {
+  grid-column: 1 / -1;
+}
+
+body.alcor-video-editor .av-transform-presets {
+  padding-top: 8px;
+}
+
+body.alcor-video-editor .av-transform-presets button {
+  min-width: 0;
+  padding-inline: 7px;
+  font-size: 9px;
+}
+
+@media (max-width: 760px) {
+  body.alcor-video-editor .av-transform-grid {
+    grid-template-columns: 1fr;
+  }
+
+  body.alcor-video-editor .av-transform-fit {
+    grid-column: auto;
+  }
+}
+
+/* alcor-video-transitions */
+/* AlcorVideo bounded cut-transition timeline indicators. */
+.av-timeline-clip.has-cross-dissolve {
+  isolation: isolate;
+}
+
+.av-cross-dissolve-handle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 1;
+  min-width: 4px;
+  max-width: 50%;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.18) 0 4px,
+    rgba(255, 255, 255, 0.05) 4px 8px
+  );
+}
+
+.av-cross-dissolve-handle[data-role='outgoing'] {
+  right: 0;
+  border-left: 1px solid rgba(255, 255, 255, 0.48);
+}
+
+.av-cross-dissolve-handle[data-role='incoming'] {
+  left: 0;
+  border-right: 1px solid rgba(255, 255, 255, 0.48);
+}
+
+.av-timeline-clip .av-clip-body .av-cross-dissolve-label {
+  position: relative;
+  z-index: 2;
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  opacity: 0.92;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+@media (max-width: 760px) {
+  .av-timeline-clip .av-clip-body .av-cross-dissolve-label {
+    font-size: 7px;
+  }
+}
+
+/* alcor-video-color */
+.av-color-section {
+  min-width: 0;
+}
+
+.av-color-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.av-color-field {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.av-color-field > span {
+  font-size: 0.78rem;
+  opacity: 0.82;
+}
+
+.av-color-field input {
+  width: 100%;
+  min-width: 0;
+}
+
+.av-color-actions {
+  margin-top: 0.55rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.av-color-actions [data-av-color-status] {
+  font-size: 0.76rem;
+  opacity: 0.8;
+}
+
+@media (max-width: 760px) {
+  .av-color-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* alcor-video-waveform */
+/* AlcorVideo bounded local waveform layer. */
+.av-timeline-clip[data-kind='audio'] .av-clip-body {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+.av-timeline-clip[data-kind='audio'] .av-clip-body > strong,
+.av-timeline-clip[data-kind='audio'] .av-clip-body > span:not(.av-waveform-status) {
+  position: relative;
+  z-index: 2;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.88);
+}
+.av-waveform-canvas {
+  position: absolute;
+  z-index: 1;
+  inset: 3px 4px;
+  width: calc(100% - 8px);
+  height: calc(100% - 6px);
+  pointer-events: none;
+  opacity: 0.88;
+}
+.av-timeline-clip.is-selected .av-waveform-canvas {
+  opacity: 1;
+}
+.av-waveform-status {
+  position: absolute;
+  z-index: 3;
+  left: 5px;
+  right: 5px;
+  bottom: 3px;
+  overflow: hidden;
+  color: rgba(231, 238, 246, 0.8);
+  font-size: 9px;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.av-timeline-clip.is-waveform-loading .av-waveform-status {
+  opacity: 0.72;
+}
+.av-timeline-clip.is-waveform-unavailable .av-waveform-status {
+  color: rgba(255, 211, 161, 0.88);
+}
+@media (max-width: 760px) {
+  .av-waveform-status {
+    font-size: 8px;
+  }
+}
+
+/* alcor-video-editor */
+/* AlcorVideo editor: tools, dynamic tracks, markers, panels, meters, export dialog. */
+.av-editor-page .av-app :focus-visible {
+  outline: 2px solid var(--av-cyan, #67d7ff);
+  outline-offset: 2px;
+}
+.av-editor-page .av-timeline-clip:focus-visible {
+  outline-offset: -2px;
+}
+
+/* One control type size everywhere (body.alcor-video button { font: inherit } would otherwise win). */
+body.alcor-video .av-app button,
+body.alcor-video .av-app .av-file-button,
+body.alcor-video .av-app .av-import-button {
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+/* App bar */
+.av-recovery-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 8px;
+  color: #8b9aad;
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.av-recovery-toggle input {
+  accent-color: var(--av-cyan, #67d7ff);
+}
+
+/* Panel tabs */
+.av-media-panel {
+  display: flex;
+  flex-direction: column;
+}
+.av-panel-tabs {
+  display: flex;
+  gap: 2px;
+  padding: 6px 8px 0;
+  border-bottom: 1px solid var(--av-line);
+  background: #0b1017;
+}
+.av-panel-tabs button {
+  min-height: 26px !important;
+  border-bottom-color: transparent !important;
+  border-radius: 5px 5px 0 0 !important;
+  font-size: 10px !important;
+}
+.av-panel-tabs button[aria-selected='true'] {
+  color: #fff !important;
+  background: #172131 !important;
+  border-color: var(--av-line) !important;
+}
+.av-panel-pane {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+.av-panel-pane h3 {
+  margin: 12px 12px 6px;
+  color: #9eb0c4;
+  font:
+    700 9px/1 Consolas,
+    ui-monospace,
+    monospace;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.av-media-bin {
+  height: auto;
+}
+.av-effect-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+  padding: 0 12px 6px;
+}
+.av-effect-list button {
+  justify-content: flex-start !important;
+}
+.av-marker-list,
+.av-history-list {
+  list-style: none;
+  margin: 0;
+  padding: 6px 8px;
+}
+.av-marker-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  gap: 5px;
+  align-items: center;
+  padding: 4px;
+  border-left: 3px solid var(--av-marker, #54d38a);
+  margin-bottom: 4px;
+  background: #0f151e;
+}
+.av-marker-item input,
+.av-marker-item select {
+  min-width: 0;
+  height: 26px;
+  border: 1px solid var(--av-line);
+  border-radius: 4px;
+  padding: 0 5px;
+  color: #d7dee8;
+  background: #070a0f;
+  font-size: 11px;
+}
+.av-marker-item button {
+  min-height: 26px !important;
+  font-family: Consolas, ui-monospace, monospace !important;
+}
+.av-list-empty {
+  padding: 14px 6px;
+  color: #647589;
+  font-size: 11px;
+}
+.av-history-list li button {
+  width: 100%;
+  justify-content: flex-start !important;
+  margin-bottom: 2px;
+  font-weight: 700 !important;
+}
+.av-history-list li button[aria-current='step'] {
+  color: #fff !important;
+  border-color: var(--av-cyan, #67d7ff) !important;
+}
+.av-history-list li button.is-future {
+  opacity: 0.45;
+}
+
+/* Monitor */
+.av-program-heading {
+  flex-wrap: nowrap;
+}
+.av-monitor-switch {
+  display: flex;
+  gap: 2px;
+  margin-left: auto;
+}
+.av-monitor-switch button {
+  min-height: 26px !important;
+  font-size: 10px !important;
+}
+.av-monitor-switch button[aria-pressed='true'] {
+  color: #071018 !important;
+  background: var(--av-cyan, #67d7ff) !important;
+  border-color: transparent !important;
+}
+/* Program panel: heading, a monitor that takes the remaining height, transport, sequence bar. */
+.av-program-panel {
+  display: flex;
+  flex-direction: column;
+}
+.av-program-panel > .av-monitor-wrap {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 120px;
+  height: auto;
+  display: block;
+}
+.av-editor-page #av-preview,
+.av-editor-page .av-source-media {
+  position: absolute;
+  inset: 12px;
+  margin: auto;
+  width: auto;
+  height: auto;
+  max-width: calc(100% - 24px);
+  max-height: calc(100% - 24px);
+  aspect-ratio: auto;
+}
+.av-source-media {
+  max-width: 100%;
+  max-height: 100%;
+  background: #000;
+}
+/* AlcorFrame clamps a stage canvas to 100% of the stage, but the monitor is absolutely positioned inside the stage's
+   12px padding: on phones it has to clamp to the padded box, or its right edge is cut off. */
+html.af-on .av-editor-page :is(#av-preview, .av-source-media) {
+  max-width: calc(100% - 24px) !important;
+  max-height: calc(100% - 24px) !important;
+}
+.av-source-info {
+  position: absolute;
+  left: 12px;
+  bottom: 10px;
+  margin: 0;
+  padding: 4px 8px;
+  border-radius: 4px;
+  color: #d9e6f5;
+  background: rgba(0, 0, 0, 0.6);
+  font:
+    700 10px/1.3 Consolas,
+    ui-monospace,
+    monospace;
+}
+.av-safe-guides {
+  display: none;
+}
+.show-safe-margins .av-safe-guides {
+  display: block;
+  position: absolute;
+  inset: 12px;
+  width: auto;
+  aspect-ratio: auto;
+  border: 0;
+  pointer-events: none;
+}
+.show-safe-margins .av-safe-guides span {
+  position: absolute;
+  border: 1px dashed rgba(255, 255, 255, 0.45);
+}
+.show-safe-margins .av-safe-action {
+  inset: 5%;
+}
+.show-safe-margins .av-safe-title {
+  inset: 10%;
+}
+.av-transport {
+  flex-wrap: wrap;
+}
+.av-transport input#av-time-input {
+  width: 104px;
+  font-family: Consolas, ui-monospace, monospace;
+}
+.av-meters {
+  display: flex;
+  gap: 3px;
+  height: 28px;
+  margin-left: 6px;
+}
+.av-meter {
+  --av-meter-level: 0;
+  position: relative;
+  width: 7px;
+  height: 100%;
+  border-radius: 2px;
+  background: #111a24;
+  overflow: hidden;
+}
+.av-meter::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: calc(var(--av-meter-level) * 100%);
+  background: linear-gradient(0deg, #2fd08c 0 70%, #f3d25a 70% 90%, #ff5d5d 90%);
+}
+.av-meter.is-clipping {
+  box-shadow: 0 0 0 1px #ff5d5d;
+}
+.av-sequence-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+  padding: 6px 10px;
+  border-top: 1px solid var(--av-line);
+  background: #0a0e14;
+  color: #748398;
+  font-size: 9px;
+}
+.av-sequence-bar label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.av-sequence-bar select {
+  height: 26px;
+  border: 1px solid var(--av-line);
+  border-radius: 4px;
+  padding: 0 5px;
+  color: #c4ceda;
+  background: #080b10;
+  font-size: 10px;
+}
+.av-sequence-bar .av-checkbox {
+  grid-column: auto;
+}
+
+/* Inspector sections */
+.av-speed-section,
+.av-audio-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 0;
+  padding: 10px;
+  border: 1px solid var(--av-line);
+  border-radius: 6px;
+}
+.av-speed-section legend,
+.av-audio-section legend {
+  padding: 0 4px;
+  color: #9eb0c4;
+  font:
+    700 9px/1 Consolas,
+    ui-monospace,
+    monospace;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+[data-selection-kind='image'] .av-speed-section,
+[data-selection-kind='image'] .av-audio-section {
+  display: none;
+}
+[data-selection-kind='video'] .av-audio-section {
+  display: none;
+}
+[data-selection-kind='audio'] .av-speed-section .av-inline-actions {
+  display: none;
+}
+.av-inline-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 6px;
+}
+.av-inline-actions button {
+  flex: 1;
+}
+[data-selection-kind='audio'] #av-clip-inspector > label:has(> input[name='opacity']) {
+  display: none;
+}
+
+/* Timeline tools and tracks */
+.av-timeline-toolbar {
+  flex-wrap: wrap;
+}
+.av-tools {
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--av-line);
+  border-radius: 6px;
+  background: #080b10;
+}
+.av-tools button {
+  min-width: 30px;
+  min-height: 28px !important;
+  font:
+    700 11px/1 Consolas,
+    ui-monospace,
+    monospace !important;
+}
+.av-tools button[aria-pressed='true'] {
+  color: #071018 !important;
+  background: var(--av-cyan, #67d7ff) !important;
+  border-color: transparent !important;
+}
+.av-timeline-tools {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.av-tracks {
+  position: relative;
+}
+.av-track-row {
+  height: 64px;
+}
+.av-track-row.av-track-audio {
+  height: 56px;
+}
+.av-track-row.is-locked .av-track-lane {
+  background-image: repeating-linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.035) 0 6px,
+    transparent 6px 12px
+  );
+}
+.av-track-row.is-off .av-track-lane {
+  opacity: 0.55;
+}
+.av-track-header {
+  flex-direction: row !important;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  padding: 0 6px !important;
+}
+.av-track-tools {
+  display: flex;
+  gap: 2px;
+}
+.av-track-toggle {
+  min-width: 18px;
+  min-height: 18px !important;
+  padding: 0 3px !important;
+  border-radius: 3px !important;
+  font-size: 9px !important;
+  line-height: 1 !important;
+}
+.av-track-toggle[aria-pressed='true'] {
+  color: #071018 !important;
+  background: #f3d25a !important;
+  border-color: transparent !important;
+}
+.av-track-audio .av-timeline-clip {
+  height: 42px;
+  top: 6px;
+}
+.av-track-video .av-timeline-clip {
+  height: 48px;
+  top: 7px;
+}
+.av-timeline-clip.is-linked .av-clip-body strong {
+  text-decoration: underline;
+  text-decoration-color: rgba(255, 255, 255, 0.45);
+  text-underline-offset: 2px;
+}
+.av-timeline-clip.is-disabled {
+  filter: saturate(0.25) brightness(0.7);
+}
+.av-timeline-clip.is-hold {
+  background: linear-gradient(135deg, #5c5231, #8a7a3d);
+}
+.av-timeline-clip.is-reverse .av-clip-body span {
+  color: #ffd98a;
+}
+.av-timeline-clip.is-selected:not(.is-primary) {
+  box-shadow: 0 0 0 1px var(--av-cyan, #67d7ff);
+}
+.av-clip-thumbs {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  opacity: 0.55;
+  pointer-events: none;
+}
+.av-clip-thumbs img {
+  height: 100%;
+  object-fit: cover;
+}
+.av-clip-body {
+  position: relative;
+}
+.av-clip-body strong,
+.av-clip-body > span {
+  position: relative;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+}
+.av-keyframe-dot {
+  position: absolute;
+  bottom: 3px;
+  width: 6px;
+  height: 6px;
+  margin-left: -3px;
+  background: #ffd98a;
+  transform: rotate(45deg);
+}
+.av-gap-selection {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  border: 1px dashed #7ee3ff;
+  border-radius: 4px;
+  background: rgba(126, 227, 255, 0.12);
+  pointer-events: none;
+}
+.av-snap-line {
+  position: absolute;
+  z-index: 19;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: #7ee3ff;
+  box-shadow: 0 0 6px #7ee3ff;
+  pointer-events: none;
+}
+/* Tool cursors are set on the hovered clip by the runtime: a root-level rule here would restyle every
+   clip and its thumbnails (cursor inherits) on each tool switch. */
+[data-active-tool='ripple'] .av-trim-handle,
+[data-active-tool='roll'] .av-trim-handle {
+  background: rgba(255, 217, 138, 0.35) !important;
+}
+
+/* Ruler: in/out and markers */
+.av-inout-range {
+  position: absolute;
+  top: 18px;
+  bottom: 0;
+  background: rgba(126, 227, 255, 0.18);
+  border-left: 2px solid #7ee3ff;
+  border-right: 2px solid #7ee3ff;
+  pointer-events: none;
+}
+.av-marker {
+  position: absolute;
+  top: 1px;
+  width: 10px !important;
+  min-width: 0 !important;
+  height: 14px;
+  min-height: 0 !important;
+  margin-left: -5px;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 2px 2px 0 0 !important;
+  background: var(--av-marker, #54d38a) !important;
+  clip-path: polygon(0 0, 100% 0, 100% 65%, 50% 100%, 0 65%);
+  cursor: pointer;
+}
+.av-marker-green {
+  --av-marker: #54d38a;
+}
+.av-marker-red {
+  --av-marker: #ff5d5d;
+}
+.av-marker-purple {
+  --av-marker: #b07cff;
+}
+.av-marker-orange {
+  --av-marker: #ff9d4d;
+}
+.av-marker-yellow {
+  --av-marker: #f3d25a;
+}
+.av-marker-white {
+  --av-marker: #f4f7fb;
+}
+.av-marker-blue {
+  --av-marker: #5d8dff;
+}
+.av-marker-cyan {
+  --av-marker: #5de0ff;
+}
+
+/* Curves, LUT, scopes */
+.av-grade-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 0;
+  padding: 10px;
+  border: 1px solid var(--av-line);
+  border-radius: 6px;
+}
+.av-grade-section legend {
+  padding: 0 4px;
+  color: #9eb0c4;
+  font:
+    700 9px/1 Consolas,
+    ui-monospace,
+    monospace;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.av-curve-canvas {
+  grid-column: 1 / -1;
+  width: 100%;
+  max-width: 260px;
+  aspect-ratio: 1;
+  justify-self: center;
+  border: 1px solid var(--av-line);
+  border-radius: 4px;
+  cursor: crosshair;
+  touch-action: none;
+}
+.av-lut-name,
+.av-grade-status {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: #9eb0c4;
+  font-size: 10px;
+}
+.av-lut-button {
+  flex: 1;
+}
+.av-scopes {
+  display: block;
+  width: calc(100% - 16px);
+  margin: 8px;
+  background: #05070a;
+  border: 1px solid var(--av-line);
+  border-radius: 4px;
+}
+
+/* Audio track mixer */
+.av-mixer {
+  display: grid;
+  gap: 6px;
+  padding: 8px;
+}
+.av-mixer-strip {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  gap: 4px 8px;
+  align-items: center;
+  padding: 8px;
+  border: 1px solid var(--av-line);
+  border-radius: 6px;
+  background: #0f151e;
+}
+.av-mixer-strip strong {
+  grid-row: span 3;
+  color: #b9c5d3;
+  font:
+    700 11px/1 Consolas,
+    ui-monospace,
+    monospace;
+}
+.av-mixer-strip label {
+  display: grid;
+  grid-template-columns: 34px 1fr auto;
+  align-items: center;
+  gap: 6px;
+  color: #8b9aad;
+  font-size: 10px;
+}
+.av-mixer-strip input[type='range'] {
+  width: 100%;
+  accent-color: var(--av-cyan, #67d7ff);
+}
+.av-mixer-strip output {
+  min-width: 58px;
+  color: #d7dee8;
+  font:
+    700 10px/1 Consolas,
+    ui-monospace,
+    monospace;
+  text-align: right;
+}
+.av-mixer-buttons {
+  display: flex;
+  gap: 4px;
+}
+
+/* Export dialog */
+.av-render-card {
+  width: min(560px, 100%);
+}
+.av-export-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 14px 0 4px;
+}
+.av-export-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  color: #8b9aad;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.av-export-form select {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  height: 34px;
+  border: 1px solid var(--av-line);
+  border-radius: 5px;
+  padding: 0 7px;
+  color: #d7dee8;
+  background: #070a0f;
+  font-size: 12px;
+  text-transform: none;
+}
+.av-export-support,
+.av-export-note {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.av-export-support {
+  color: #b9c9da;
+}
+.av-render-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+.av-render-dialog[data-stage='settings'] #av-render-progress,
+.av-render-dialog[data-stage='settings'] [data-action='cancel-render'] {
+  display: none;
+}
+.av-render-dialog[data-stage='rendering'] .av-export-form,
+.av-render-dialog[data-stage='rendering'] .av-export-close,
+.av-render-dialog[data-stage='rendering'] .av-export-start {
+  display: none;
+}
+.av-export-start {
+  color: #071018 !important;
+  border-color: transparent !important;
+  background: linear-gradient(135deg, #7ee3ff, #6d9bff) !important;
+}
+.av-render-result {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: 8px;
+  padding: 10px 12px;
+  border: 1px solid rgba(126, 227, 255, 0.35);
+  border-radius: 6px;
+  color: #b9c9da;
+  background: #0b1622;
+  font-size: 12px;
+}
+.av-render-result a {
+  color: var(--av-cyan, #67d7ff);
+  font-weight: 700;
+}
+
+@media (max-width: 979px) {
+  .av-program-panel > .av-monitor-wrap {
+    min-height: 0;
+    aspect-ratio: var(--av-aspect, 16 / 9);
+    max-height: 70vh;
+  }
+  .av-effect-list {
+    grid-template-columns: 1fr;
+  }
+  .av-tools button {
+    min-width: 44px;
+    min-height: 44px !important;
+  }
+  .av-track-toggle {
+    min-width: 30px;
+    min-height: 30px !important;
+  }
+  .av-export-form {
+    grid-template-columns: 1fr;
+  }
+  .av-shortcut-hint {
+    display: none;
+  }
+}
+
+/* Inspector columns never overflow the panel. */
+.av-editor-page .av-inspector-form {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.av-editor-page .av-inspector-form label,
+.av-editor-page .av-inspector-form fieldset {
+  min-width: 0;
+}
+.av-editor-page .av-inspector-form input,
+.av-editor-page .av-inspector-form select,
+.av-editor-page .av-inspector-form textarea {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.av-editor-page .av-inline-actions,
+.av-editor-page .av-inspector-actions {
+  flex-wrap: wrap;
+}
+.av-editor-page .av-inline-actions button,
+.av-editor-page .av-inspector-actions button {
+  min-width: 0;
+  white-space: normal;
+}
+
+/* ------------------------------------------------------------------ flair
+   House palette: near-black, cyan primary, violet and gold accents; 6px radii;
+   120-180 ms micro-interactions, none under prefers-reduced-motion. */
+.av-editor-page {
+  --av-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  font-family:
+    'Segoe UI',
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    Arial,
+    sans-serif;
+}
+.av-editor-page .av-app button,
+.av-editor-page .av-file-button,
+.av-editor-page .av-import-button {
+  border-radius: 6px;
+  transition:
+    background-color 0.15s var(--av-ease),
+    border-color 0.15s var(--av-ease),
+    color 0.15s var(--av-ease),
+    box-shadow 0.18s var(--av-ease),
+    transform 0.12s var(--av-ease);
+}
+.av-editor-page .av-app button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+.av-editor-page .av-tools button[aria-pressed='true'] {
+  box-shadow:
+    0 0 0 1px rgba(83, 217, 212, 0.65),
+    0 0 16px rgba(83, 217, 212, 0.45);
+}
+.av-editor-page .av-render-button:hover:not(:disabled) {
+  box-shadow: 0 0 18px rgba(83, 217, 212, 0.4);
+}
+.av-editor-page .av-panel-tabs [aria-selected='true'] {
+  box-shadow: inset 0 -2px 0 var(--av-cyan);
+}
+.av-editor-page .av-timeline-clip {
+  transition:
+    box-shadow 0.15s var(--av-ease),
+    border-color 0.15s var(--av-ease);
+}
+.av-editor-page .av-snap-line {
+  background: var(--av-gold);
+  box-shadow: 0 0 8px var(--av-gold);
+  transform-origin: center;
+}
+
+/* File menu */
+.av-menu {
+  position: relative;
+}
+.av-menu-button::after {
+  content: '';
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 7px;
+  border: solid currentColor;
+  border-width: 0 1.5px 1.5px 0;
+  transform: rotate(45deg);
+  opacity: 0.7;
+}
+.av-menu.is-open .av-menu-button {
+  color: #fff;
+  border-color: rgba(83, 217, 212, 0.6);
+}
+.av-menu-list {
+  position: absolute;
+  z-index: 60;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 230px;
+  display: none;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px;
+  border: 1px solid var(--av-line-strong);
+  border-radius: 6px;
+  background: #0c121b;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+}
+.av-menu.is-open .av-menu-list {
+  display: flex;
+  animation: av-pop 0.14s var(--av-ease);
+}
+.av-editor-page .av-menu-list > button,
+.av-editor-page .av-menu-list > .av-file-button,
+.av-editor-page .av-menu-list > .av-recovery-toggle {
+  justify-content: flex-start;
+  min-height: 32px;
+  padding: 0 10px;
+  border-color: transparent;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 700;
+  color: #d3dce7;
+}
+.av-editor-page .av-menu-list > button:hover:not(:disabled),
+.av-editor-page .av-menu-list > .av-file-button:hover,
+.av-editor-page .av-menu-list > :focus-visible {
+  background: rgba(83, 217, 212, 0.1);
+  color: #fff;
+}
+.av-menu-list kbd {
+  margin-left: auto;
+}
+.av-menu-rule {
+  height: 1px;
+  margin: 4px 6px;
+  background: var(--av-line);
+}
+html.af-on .av-menu-button {
+  display: none;
+}
+html.af-on .av-menu-list {
+  position: static;
+  display: flex;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+  background: none;
+}
+
+/* Keycaps */
+.av-editor-page kbd {
+  display: inline-block;
+  min-width: 18px;
+  padding: 2px 5px;
+  border: 1px solid rgba(210, 230, 255, 0.25);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  background: #121a25;
+  color: #e8f0f8;
+  font:
+    700 10px/1.2 Consolas,
+    Consolas,
+    ui-monospace,
+    monospace;
+  text-align: center;
+}
+.av-tip {
+  position: fixed;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 8px;
+  border: 1px solid var(--av-line-strong);
+  border-radius: 6px;
+  background: #0e1520;
+  color: #e8f0f8;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.5);
+  animation: av-pop 0.12s var(--av-ease);
+  visibility: visible;
+}
+.av-tip[hidden] {
+  display: none;
+}
+.av-tip kbd:first-of-type {
+  margin-left: 4px;
+}
+
+/* Start screen in the Program monitor */
+.av-monitor-message .av-start {
+  display: none;
+}
+.av-is-empty .av-monitor-message .av-monitor-idle {
+  display: none;
+}
+.av-is-empty .av-monitor-message .av-start {
+  display: flex;
+}
+.av-start {
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  max-width: 360px;
+  padding: 26px 30px;
+  border: 1.5px dashed rgba(83, 217, 212, 0.45);
+  border-radius: 6px;
+  background: radial-gradient(
+    120% 90% at 50% 0%,
+    rgba(83, 217, 212, 0.1),
+    rgba(143, 134, 255, 0.05) 55%,
+    rgba(3, 4, 5, 0.2)
+  );
+  color: #9fb0c3;
+  font-size: 12px;
+  text-align: center;
+  pointer-events: auto;
+}
+.av-start strong {
+  color: #f2f7fb;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.av-start-mark {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 210deg,
+    var(--av-cyan),
+    var(--av-violet),
+    var(--av-gold),
+    var(--av-cyan)
+  );
+  -webkit-mask: radial-gradient(circle, transparent 11px, #000 12px);
+  mask: radial-gradient(circle, transparent 11px, #000 12px);
+}
+.av-start-browse {
+  color: var(--av-cyan);
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.av-editor-page .av-sample-button {
+  margin-top: 6px;
+  min-height: 36px;
+  padding: 0 16px;
+  color: #071018;
+  border-color: transparent;
+  background: linear-gradient(135deg, #53d9d4, #8f86ff);
+  font-size: 12px;
+}
+.av-editor-page .av-sample-button:hover:not(:disabled) {
+  color: #071018;
+  background: linear-gradient(135deg, #6fe6e1, #a39bff);
+  box-shadow: 0 0 20px rgba(83, 217, 212, 0.35);
+}
+.av-editor-page .av-link-button {
+  min-height: 28px;
+  margin-top: 6px;
+  border-color: transparent;
+  background: none;
+  color: var(--av-cyan);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Whole-window drop target */
+.av-editor-page.av-drag-over::after {
+  content: 'Drop to import \00b7  files stay on this device';
+  position: fixed;
+  inset: 10px;
+  z-index: 95;
+  display: grid;
+  place-items: center;
+  border: 2px dashed var(--av-cyan);
+  border-radius: 6px;
+  background: rgba(5, 12, 16, 0.72);
+  color: #eafffe;
+  font:
+    700 18px/1.3 'Segoe UI',
+    system-ui,
+    sans-serif;
+  pointer-events: none;
+  animation: av-fade 0.14s var(--av-ease);
+  visibility: visible;
+}
+
+/* Shortcut sheet */
+.av-shortcuts {
+  position: fixed;
+  inset: 0;
+  z-index: 96;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(2, 4, 7, 0.66);
+  visibility: visible;
+  animation: av-fade 0.14s var(--av-ease);
+}
+.av-shortcuts[hidden] {
+  display: none;
+}
+.av-shortcuts-card {
+  width: min(560px, 100%);
+  max-height: calc(100dvh - 32px);
+  overflow: auto;
+  padding: 18px 20px;
+  border: 1px solid var(--av-line-strong);
+  border-radius: 6px;
+  background: #0b1118;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+  animation: av-pop 0.16s var(--av-ease);
+}
+.av-shortcuts-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.av-shortcuts-head h2 {
+  margin: 0;
+  color: #f2f7fb;
+  font-size: 16px;
+}
+.av-shortcuts dl {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 4px 18px;
+  margin: 0;
+}
+.av-shortcuts dl > div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(210, 230, 255, 0.06);
+}
+.av-shortcuts dt {
+  display: flex;
+  gap: 3px;
+  min-width: 92px;
+}
+.av-shortcuts dd {
+  margin: 0;
+  color: #b6c4d3;
+  font-size: 12px;
+}
+
+/* Export finished toast (keeps the download link) */
+.av-editor-page .av-render-result {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 80;
+  max-width: min(460px, calc(100vw - 32px));
+  margin: 0;
+  padding: 12px 12px 12px 16px;
+  border-color: rgba(83, 217, 212, 0.5);
+  border-left: 3px solid var(--av-cyan);
+  background: #0b1620;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+  animation: av-toast 0.18s var(--av-ease);
+  visibility: visible;
+}
+.av-editor-page .av-render-result strong {
+  color: var(--av-cyan);
+}
+.av-editor-page .av-render-result a {
+  white-space: nowrap;
+}
+.av-editor-page .av-render-result button {
+  min-height: 26px;
+  min-width: 26px;
+  padding: 0;
+  border-color: transparent;
+  background: none;
+  font-size: 16px;
+}
+.av-editor-page .av-render-result.is-dismissed {
+  display: none;
+}
+
+@keyframes av-pop {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+}
+@keyframes av-fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes av-toast {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+@keyframes av-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .av-editor-page *,
+  .av-editor-page *::before,
+  .av-editor-page *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Export dialog sits outside .av-app, so its controls get the editor button style here. */
+.av-render-card {
+  border-radius: 6px;
+  border-color: rgba(83, 217, 212, 0.35);
+  animation: av-pop 0.16s var(--av-ease, ease-out);
+}
+.av-render-card #av-render-message {
+  margin: 14px 0 12px;
+  font-size: 13px;
+}
+.av-render-actions button {
+  min-height: 36px;
+  padding: 0 16px;
+  border: 1px solid var(--av-line);
+  border-radius: 6px;
+  color: #c5ceda;
+  background: #111722;
+  font:
+    700 12px/1 'Segoe UI',
+    system-ui,
+    sans-serif;
+  cursor: pointer;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s,
+    color 0.15s,
+    box-shadow 0.18s;
+}
+.av-render-actions button:hover {
+  border-color: #506680;
+  color: #fff;
+  background: #172131;
+}
+.av-render-actions .av-export-start {
+  color: #071018;
+  border-color: transparent;
+  background: linear-gradient(135deg, #53d9d4, #8f86ff);
+}
+.av-render-actions .av-export-start:hover {
+  color: #071018;
+  background: linear-gradient(135deg, #6fe6e1, #a39bff);
+  box-shadow: 0 0 18px rgba(83, 217, 212, 0.4);
+}
+.av-render-card progress {
+  accent-color: var(--av-cyan);
+}
+
+/* Inspector status and help lines stay small (they inherited body size). */
+.av-editor-page
+  .av-inspector-panel
+  :is(
+    .av-transform-keyframe-state,
+    [data-av-transform-keyframe-state],
+    [data-av-transition-status]
+  ) {
+  font-size: 11px;
+  line-height: 1.45;
+  color: #8e9db0;
+}
+
+/* Inline SVG icons (no symbol-font fallback lookups). */
+.av-icon {
+  display: block;
+  width: 12px;
+  height: 12px;
+  fill: currentColor;
+}
+.av-transport .av-play .av-icon {
+  width: 14px;
+  height: 14px;
+}
+.av-track-toggle .av-icon {
+  width: 11px;
+  height: 11px;
+}
+
+/* Two Segoe UI faces only (400, 700): 500/800 map to Semibold/Black files on Windows, and
+   <strong> inside 700 text would resolve "bolder" to 900. Each extra face costs first-paint layout. */
+.av-editor-page strong,
+.av-editor-page b {
+  font-weight: 700;
+}
+.av-editor-page .af-chrome :is(small, span, strong, button) {
+  font-weight: 700;
+}
+html.af-on .av-editor-page [data-af-toolbar] button[data-af-name],
+html.af-on .av-editor-page [data-af-toolbar] button[data-af-name]::after {
+  font-weight: 700;
+}
+
+/* Phone first paint: until AlcorFrame takes over, skip layout and paint of the stacked panels below the fold.
+   Only before af-on: once panels become sheets, containment would trap their fixed-position children. */
+@media (max-width: 760px) {
+  html:not(.af-on) .av-editor-page :is(.av-media-panel, .av-inspector-panel, .av-sequence-bar) {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 500px;
+  }
+}
+.av-editor-page .av-playhead {
+  will-change: transform;
+}
+
+/* ------------------------------------------------------------------------------------------------
+   Flair round (owner 2026-09-29). Static finishes plus short press feedback, within the editor's
+   budget: Segoe UI 400/700 + Consolas only, SVG only, no idle animation, transitions of 180 ms or
+   less on transform/opacity, nothing animated on blur/shadow, reduced motion turns it all off.
+   ------------------------------------------------------------------------------------------------ */
+.av-editor-page {
+  --avf-sig: linear-gradient(135deg, #53d9d4, #b38cff 60%, #d7b56d);
+}
+
+/* Tools: an icon with its shortcut as a small key cap. */
+.av-editor-page .av-tools button {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-width: 42px;
+  padding: 0 8px !important;
+  border-radius: 8px !important;
+  transition:
+    transform 0.12s ease,
+    opacity 0.12s ease;
+}
+.av-editor-page .av-tools .av-tool-icon {
+  width: 16px;
+  height: 16px;
+  flex: none;
+}
+.av-editor-page .av-tools kbd {
+  font:
+    700 9px/1 Consolas,
+    ui-monospace,
+    monospace;
+  opacity: 0.62;
+}
+.av-editor-page .av-tools button[aria-pressed='true'] kbd {
+  opacity: 0.75;
+}
+.av-editor-page .av-tools button:active {
+  transform: scale(0.92);
+}
+
+/* Timeline clips: rounded, a light top edge, and a gold ring on the clip you are editing. */
+.av-editor-page .av-timeline-clip {
+  border-radius: 7px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 4px 12px -6px rgba(0, 0, 0, 0.7);
+}
+.av-editor-page .av-timeline-clip.is-selected {
+  border-color: #fff4dc;
+  box-shadow:
+    0 0 0 2px #d7b56d,
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    0 8px 20px -8px rgba(0, 0, 0, 0.8);
+}
+.av-editor-page .av-timeline-clip.is-selected:not(.is-primary) {
+  box-shadow:
+    0 0 0 1px rgba(215, 181, 109, 0.8),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* Playhead: a signature chip on top of a cyan line. */
+.av-editor-page .av-playhead {
+  background: #53d9d4;
+  width: 2px;
+  box-shadow: 0 0 0 1px rgba(7, 9, 14, 0.5);
+}
+.av-editor-page .av-playhead span {
+  left: -7px;
+  width: 16px;
+  height: 12px;
+  background: var(--avf-sig);
+  clip-path: polygon(0 0, 100% 0, 100% 55%, 50% 100%, 0 55%);
+}
+
+/* Ruler: quieter marks, steady numerals. */
+.av-editor-page .av-ruler-mark {
+  border-left-color: rgba(246, 240, 228, 0.14);
+  color: rgba(241, 243, 247, 0.45);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Panel headings: a gold kicker above a bold title. */
+.av-editor-page .av-panel-heading span {
+  color: #d7b56d;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
+.av-editor-page .av-panel-heading h2 {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* Program monitor: a lit stage behind the picture. */
+.av-editor-page .av-program-panel > .av-monitor-wrap {
+  background: radial-gradient(
+      ellipse 70% 70% at 50% 45%,
+      rgba(179, 140, 255, 0.09),
+      transparent 70%
+    ),
+    #05070b;
+}
+
+/* Transport and header actions: a clean press. */
+.av-editor-page :is(.av-transport button, .av-render-button, .av-app-actions > button) {
+  transition:
+    transform 0.12s ease,
+    opacity 0.12s ease;
+}
+.av-editor-page :is(.av-transport button, .av-render-button, .av-app-actions > button):active {
+  transform: scale(0.95);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .av-editor-page
+    :is(.av-tools button, .av-transport button, .av-render-button, .av-app-actions > button) {
+    transition: none;
+  }
+  .av-editor-page
+    :is(
+      .av-tools button,
+      .av-transport button,
+      .av-render-button,
+      .av-app-actions > button
+    ):active {
+    transform: none;
+  }
+}
+
+/* Readability: the sequence, frame-rate, preview-quality and zoom controls read at 12px or more (they were 9-10px). */
+.av-editor-page :is(#av-sequence-preset, #av-fps, #av-preview-quality, #av-zoom) {
+  font-size: 12px;
+}
+/* alcor-video-creator */
+.av-creator {
+  display: none;
+}
+
+@media (max-width: 979px) {
+  .av-editor-page .av-creator {
+    position: sticky;
+    z-index: 55;
+    bottom: 0;
+    display: block;
+    width: 100%;
+    border: 1px solid rgba(246, 240, 228, 0.12);
+    background: rgba(8, 11, 17, 0.96);
+    box-shadow: 0 -18px 44px -26px rgba(0, 0, 0, 0.95);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    visibility: visible;
+  }
+
+  .av-creator-rail {
+    display: flex;
+    align-items: stretch;
+    gap: 2px;
+    padding: 6px max(8px, env(safe-area-inset-left)) calc(6px + env(safe-area-inset-bottom));
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+  }
+  .av-creator-rail::-webkit-scrollbar {
+    display: none;
+  }
+
+  .av-editor-page .av-app .av-creator-button {
+    flex: 0 0 72px;
+    min-width: 72px;
+    min-height: 58px;
+    padding: 7px 5px 6px;
+    display: grid;
+    justify-items: center;
+    align-content: center;
+    gap: 5px;
+    scroll-snap-align: start;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: #eef3f8;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1.05;
+  }
+  .av-editor-page .av-app .av-creator-button svg {
+    width: 24px;
+    height: 24px;
+    color: #dbe7f1;
+  }
+  .av-editor-page .av-app .av-creator-button:active,
+  .av-editor-page .av-app .av-creator-button[aria-pressed='true'] {
+    background: rgba(83, 217, 212, 0.1);
+    color: #fff;
+  }
+  .av-editor-page .av-app .av-creator-button[aria-pressed='true'] svg {
+    color: #53d9d4;
+  }
+
+  .av-creator-sheet {
+    position: absolute;
+    z-index: 2;
+    left: 0;
+    right: 0;
+    bottom: 100%;
+    max-height: min(52dvh, 460px);
+    overflow: auto;
+    padding: 12px 12px 18px;
+    border: 1px solid rgba(246, 240, 228, 0.14);
+    border-bottom: 0;
+    border-radius: 16px 16px 0 0;
+    background: #0b1018;
+    box-shadow: 0 -28px 80px -34px rgba(0, 0, 0, 0.95);
+    color: #eef3f8;
+    overscroll-behavior: contain;
+  }
+  .av-creator-sheet[hidden] {
+    display: none !important;
+  }
+
+  .av-creator-sheet-head {
+    position: sticky;
+    z-index: 3;
+    top: -12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: -12px -12px 12px;
+    padding: 12px;
+    border-bottom: 1px solid rgba(246, 240, 228, 0.1);
+    background: rgba(11, 16, 24, 0.97);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+  }
+  .av-creator-sheet-head > div {
+    min-width: 0;
+    display: grid;
+    gap: 2px;
+  }
+  .av-creator-sheet-head strong {
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+  }
+  .av-creator-sheet-head span {
+    color: #8292a5;
+    font-size: 11px;
+    line-height: 1.35;
+  }
+  .av-editor-page .av-app .av-creator-close {
+    flex: none;
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    min-height: 44px;
+    padding: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .av-creator-note {
+    margin: 9px 2px;
+    color: #8f9fb1;
+    font-size: 11px;
+    line-height: 1.45;
+  }
+
+  .av-creator-chips,
+  .av-creator-fonts {
+    display: flex;
+    gap: 7px;
+    margin: 9px 0;
+    padding-bottom: 2px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .av-creator-chips::-webkit-scrollbar,
+  .av-creator-fonts::-webkit-scrollbar {
+    display: none;
+  }
+
+  .av-editor-page .av-app .av-creator-chip,
+  .av-editor-page .av-app .av-font-chip {
+    flex: none;
+    min-height: 44px;
+    padding: 0 13px;
+    border-radius: 999px;
+    white-space: nowrap;
+    font-weight: 700;
+  }
+  .av-editor-page .av-app .av-creator-chip.is-primary {
+    color: #06262a;
+    border-color: transparent;
+    background: #53d9d4;
+  }
+  .av-editor-page .av-app .av-creator-chip.is-selected,
+  .av-editor-page .av-app .av-font-chip.is-selected {
+    color: #fff;
+    border-color: rgba(179, 140, 255, 0.7);
+    background: rgba(179, 140, 255, 0.14);
+    box-shadow: inset 0 0 0 1px rgba(179, 140, 255, 0.22);
+  }
+
+  .av-editor-page .av-app .av-font-chip {
+    min-width: 86px;
+    border-radius: 9px;
+    font-size: 14px;
+  }
+
+  .av-creator-range,
+  .av-creator-color {
+    display: grid;
+    gap: 7px;
+    margin: 13px 2px;
+    color: #aebac8;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .av-creator-range > span {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .av-creator-range output {
+    color: #53d9d4;
+    font-variant-numeric: tabular-nums;
+  }
+  .av-creator-range input[type='range'] {
+    width: 100%;
+    min-height: 32px;
+    accent-color: #53d9d4;
+  }
+  .av-creator-color {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+  }
+  .av-creator-color input[type='color'] {
+    width: 52px;
+    height: 44px;
+    padding: 3px;
+    border: 1px solid rgba(246, 240, 228, 0.15);
+    border-radius: 8px;
+    background: #080b11;
+  }
+}
+
+@media (max-width: 760px) {
+  .av-editor-page .av-creator {
+    border-inline: 0;
+    border-bottom: 0;
+    border-radius: 0;
+  }
+}
+
+/* AlcorFrame hides the application root and restores named pieces. The mobile creator
+   intentionally replaces the dense desktop timeline-tool strip in that frame, using
+   the same reserved tool-strip height so the Program stage never gets covered. */
+@media (max-width: 760px) {
+  html.af-on [data-alcor-video-editor] [data-af-toolbar] {
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+  html.af-on [data-alcor-video-editor] .av-creator {
+    position: fixed !important;
+    z-index: 46;
+    left: 0;
+    right: 0;
+    bottom: var(--af-tabs);
+    height: var(--af-tools);
+    width: auto;
+    margin: 0;
+    border: 0;
+    border-top: 1px solid var(--af-line);
+    background: var(--af-surface);
+    box-shadow: none;
+    visibility: visible !important;
+  }
+  html.af-on [data-alcor-video-editor] .av-creator-rail {
+    height: 100%;
+    padding: 4px max(8px, env(safe-area-inset-right)) 4px max(8px, env(safe-area-inset-left));
+  }
+  html.af-on [data-alcor-video-editor] .av-creator-button {
+    flex-basis: 68px;
+    min-width: 68px;
+    min-height: 48px;
+  }
+  html.af-on [data-alcor-video-editor] .av-creator-sheet {
+    position: fixed;
+    z-index: 65;
+    left: 0;
+    right: 0;
+    bottom: calc(var(--af-tabs) + var(--af-tools));
+    max-height: min(56dvh, 480px);
+    border-inline: 0;
+    visibility: visible !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .av-creator *,
+  .av-creator *::before,
+  .av-creator *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* alcor-video-effects */
+/* Effect Controls: effect stack, audio effects, speed ramps, eyedroppers; the new-track
+   drop zone; and Basic mode (big thumb controls) beside the Premiere-style Advanced mode. */
+
+.av-effects-section,
+.av-audio-fx-section {
+  min-width: 0;
+}
+.av-effects-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+.av-effects-add {
+  margin: 0.55rem 0;
+}
+.av-effects-add select {
+  flex: 1 1 10rem;
+  min-width: 0;
+}
+.av-effect-stack {
+  display: grid;
+  gap: 0.5rem;
+}
+.av-effect-card {
+  display: grid;
+  gap: 0.4rem;
+  padding: 0.5rem;
+  border: 1px solid rgba(246, 240, 228, 0.14);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.03);
+}
+.av-effect-card.is-off {
+  opacity: 0.55;
+}
+.av-effect-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+}
+.av-effect-head .av-checkbox {
+  font-weight: 700;
+}
+.av-effect-tools {
+  display: flex;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+}
+.av-effect-tools button {
+  padding: 0 0.55rem;
+}
+.av-effect-params {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.45rem;
+}
+.av-effect-params label {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 4.6rem;
+  align-items: center;
+  gap: 0.3rem;
+}
+.av-effect-params label > input[type='range'] {
+  grid-column: 1 / 2;
+  width: 100%;
+  min-width: 0;
+}
+.av-effect-params label > input[type='number'] {
+  width: 100%;
+  min-width: 0;
+}
+.av-effect-params label > select,
+.av-effect-params label > input[type='color'] {
+  width: 100%;
+  min-width: 0;
+}
+.av-effect-keycount {
+  font-size: 0.74rem;
+  opacity: 0.75;
+  align-self: center;
+}
+.av-audio-fx {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.4rem 0;
+  border-top: 1px solid rgba(246, 240, 228, 0.08);
+}
+.av-audio-fx.is-off .av-effect-params {
+  opacity: 0.5;
+}
+.av-ramp {
+  display: grid;
+  gap: 0.45rem;
+  margin-top: 0.55rem;
+}
+.av-ramp-status {
+  font-size: 0.74rem;
+  opacity: 0.8;
+}
+.av-eyedropper-button {
+  padding: 0 0.55rem;
+}
+.av-editor-page.av-is-picking #av-preview {
+  cursor: crosshair;
+  outline: 2px dashed #53d9d4;
+  outline-offset: 2px;
+}
+
+/* Below the last track: drop media here to add it on new tracks. */
+.av-track-dropzone {
+  min-height: 34px;
+}
+.av-dropzone-lane {
+  flex: 1 1 auto;
+  min-width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  border: 1px dashed rgba(246, 240, 228, 0.16);
+  border-radius: 6px;
+  color: rgba(241, 243, 247, 0.7);
+  font-size: 11px;
+}
+.av-track-dropzone.is-drop-target .av-dropzone-lane {
+  border-color: #53d9d4;
+  color: #eafffe;
+  background: rgba(83, 217, 212, 0.08);
+}
+
+/* Mode switch (Basic / Advanced). */
+.av-mode-switch {
+  display: inline-flex;
+  padding: 2px;
+  border: 1px solid rgba(246, 240, 228, 0.16);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+}
+.av-editor-page .av-app .av-mode-switch button {
+  min-width: 72px;
+  border: 0;
+  background: transparent;
+}
+.av-editor-page .av-app .av-mode-switch button[aria-pressed='true'] {
+  color: #06262a;
+  background: #53d9d4;
+}
+
+/* ----------------------------------------------------------------- Basic mode
+   Monitor, a simple timeline and a big bottom toolbar; the panels stay in Advanced.
+   Inside the AlcorFrame phone shell the frame owns the panels, so only the toolbar changes. */
+html:not(.af-on) .av-editor-page[data-ui-mode='basic'] .av-media-panel,
+html:not(.af-on) .av-editor-page[data-ui-mode='basic'] .av-inspector-panel,
+html:not(.af-on) .av-editor-page[data-ui-mode='basic'] .av-tools,
+html:not(.af-on) .av-editor-page[data-ui-mode='basic'] .av-sequence-bar,
+html:not(.af-on) .av-editor-page[data-ui-mode='basic'] .av-shortcut-hint,
+html:not(.af-on) .av-editor-page[data-ui-mode='basic'] .av-monitor-switch,
+html:not(.af-on) .av-editor-page[data-ui-mode='basic'] .av-transport [data-action='mark-in'],
+html:not(.af-on) .av-editor-page[data-ui-mode='basic'] .av-transport [data-action='mark-out'],
+html:not(.af-on) .av-editor-page[data-ui-mode='basic'] .av-transport [data-action='insert-edit'],
+html:not(.af-on) .av-editor-page[data-ui-mode='basic'] .av-transport [data-action='overwrite-edit'],
+html:not(.af-on) .av-editor-page[data-ui-mode='basic'] .av-transport label,
+html:not(.af-on)
+  .av-editor-page[data-ui-mode='basic']
+  .av-timeline-tools
+  > :not([data-action='undo']):not([data-action='redo']):not([data-action='zoom-fit']) {
+  display: none !important;
+}
+html:not(.af-on) .av-editor-page[data-ui-mode='basic'] .av-workspace {
+  display: block;
+  height: auto;
+}
+html:not(.af-on) .av-editor-page[data-ui-mode='basic'] .av-program-panel {
+  max-width: 960px;
+  margin: 0 auto;
+}
+.av-editor-page[data-ui-mode='basic'] .av-app button:not(.av-playhead):not([data-track-action]) {
+  min-height: 44px;
+  min-width: 44px;
+}
+/* With a mouse the Basic controls and tracks can be slimmer, and the room goes to the picture. */
+@media (min-width: 980px) and (min-height: 560px) and (pointer: fine) {
+  html:not(.af-on)
+    .av-editor-page[data-ui-mode='basic']
+    .av-app
+    button:not(.av-playhead):not([data-track-action]):not(.av-creator-button):not(
+      .av-creator-chip
+    ) {
+    min-height: 32px;
+    min-width: 32px;
+  }
+  html:not(.af-on) .av-editor-page[data-ui-mode='basic'] .av-track-row .av-timeline-clip {
+    height: 38px;
+  }
+  html:not(.af-on) .av-editor-page[data-ui-mode='basic'] .av-track-video .av-track-lane,
+  html:not(.af-on) .av-editor-page[data-ui-mode='basic'] .av-track-audio .av-track-lane {
+    min-height: 44px;
+  }
+}
+/* Desktop Advanced fits the window too: the panels take what the bar and timeline leave. */
+@media (min-width: 980px) and (min-height: 640px) {
+  html:not(.af-on) .av-editor-page[data-ui-mode='advanced'] .av-app {
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    height: calc(100vh - var(--apx-h, 56px));
+    height: calc(100dvh - var(--apx-h, 56px));
+    padding: 6px 10px 8px;
+    overflow: hidden;
+  }
+  html:not(.af-on) .av-editor-page[data-ui-mode='advanced'] .av-app > * {
+    flex: none;
+  }
+  html:not(.af-on) .av-editor-page[data-ui-mode='advanced'] .av-app > .av-workspace {
+    flex: 1 1 0;
+    height: auto;
+    min-height: 0;
+  }
+  html:not(.af-on) .av-editor-page[data-ui-mode='advanced'] .av-timeline-scroll {
+    height: clamp(150px, 28vh, 340px);
+    min-height: 0;
+  }
+}
+/* Desktop Basic is one window: the monitor takes what the bar, timeline and toolbar leave. An open tool docks
+   beside the monitor and the toolbar sits under the tracks, so neither covers the picture or a track. */
+@media (min-width: 980px) and (min-height: 560px) {
+  html:not(.af-on) .av-editor-page[data-ui-mode='basic'] .av-app {
+    display: grid;
+    box-sizing: border-box;
+    height: calc(100vh - var(--apx-h, 56px));
+    height: calc(100dvh - var(--apx-h, 56px));
+    padding: 6px 10px 0;
+    overflow: hidden;
+    grid-template:
+      'bar bar' auto 'monitor tool' minmax(0, 1fr)
+      'timeline timeline' auto 'rail rail' auto / minmax(0, 1fr)
+      auto;
+  }
+  html:not(.af-on) .av-editor-page[data-ui-mode='basic'] .av-appbar {
+    grid-area: bar;
+    padding-top: 2px;
+    padding-bottom: 2px;
+  }
+  html:not(.af-on) .av-editor-page[data-ui-mode='basic'] .av-workspace {
+    grid-area: monitor;
+    display: flex;
+    min-height: 0;
+  }
+  html:not(.af-on) .av-editor-page[data-ui-mode='basic'] .av-program-panel {
+    position: relative;
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: none;
+    margin: 0;
+  }
+  html:not(.af-on) .av-editor-page[data-ui-mode='basic'] .av-program-panel > .av-monitor-wrap {
+    min-height: 0;
+  }
+  html:not(.af-on) .av-editor-page[data-ui-mode='basic'] .av-program-heading {
+    position: absolute;
+    z-index: 2;
+    top: 8px;
+    right: 8px;
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+  html:not(.af-on) .av-editor-page[data-ui-mode='basic'] .av-program-heading > div:first-child {
+    display: none;
+  }
+  html:not(.af-on) .av-editor-page[data-ui-mode='basic'] .av-transport {
+    padding-top: 2px;
+    padding-bottom: 2px;
+  }
+  html:not(.af-on) .av-editor-page[data-ui-mode='basic'] .av-timeline-panel {
+    grid-area: timeline;
+  }
+  html:not(.af-on) .av-editor-page[data-ui-mode='basic'] .av-timeline-toolbar {
+    min-height: 0;
+    padding-top: 2px;
+    padding-bottom: 2px;
+  }
+  html:not(.af-on) .av-editor-page[data-ui-mode='basic'] .av-timeline-scroll {
+    height: clamp(150px, 20vh, 300px);
+    min-height: 0;
+  }
+  html:not(.af-on) .av-editor-page[data-ui-mode='basic'] .av-timeline-toolbar > div:first-child {
+    display: none;
+  }
+  html:not(.af-on) .av-editor-page[data-ui-mode='basic'] .av-creator {
+    display: contents;
+  }
+  html:not(.af-on) .av-editor-page[data-ui-mode='basic'] .av-creator-rail {
+    grid-area: rail;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    border-top: 1px solid rgba(246, 240, 228, 0.12);
+  }
+  html:not(.af-on) .av-editor-page[data-ui-mode='basic'] .av-app .av-creator-button {
+    flex: 0 0 auto;
+    min-width: 72px;
+    padding-inline: 8px;
+    min-height: 52px;
+  }
+  html:not(.af-on) .av-editor-page[data-ui-mode='basic'] .av-creator-sheet {
+    grid-area: tool;
+    position: static;
+    box-sizing: border-box;
+    width: 360px;
+    max-height: none;
+    min-height: 0;
+    transform: none;
+    animation: none;
+    margin-left: 8px;
+    border: 1px solid rgba(246, 240, 228, 0.14);
+    border-radius: 8px;
+  }
+}
+/* Basic keeps track headers to their names; lock, output, mute and remove live in Advanced. */
+html:not(.af-on) .av-editor-page[data-ui-mode='basic'] .av-track-header [data-track-action] {
+  display: none !important;
+}
+.av-editor-page[data-ui-mode='basic'] .av-track-row .av-timeline-clip {
+  height: 56px;
+}
+.av-editor-page[data-ui-mode='basic'] .av-track-video .av-track-lane,
+.av-editor-page[data-ui-mode='basic'] .av-track-audio .av-track-lane {
+  min-height: 64px;
+}
+.av-editor-page[data-ui-mode='basic'] .av-timeline-scroll {
+  touch-action: pan-x pan-y;
+}
+/* Touch trimming: the selected clip shows large grab handles. */
+.av-editor-page[data-ui-mode='basic'] .av-timeline-clip.is-selected .av-trim-handle {
+  flex: 0 0 44px;
+  width: 44px;
+  max-width: 30%;
+  touch-action: none;
+  background: rgba(215, 181, 109, 0.45) !important;
+}
+.av-editor-page[data-ui-mode='basic'] .av-timeline-clip.is-selected .av-trim-handle::after {
+  content: '';
+  display: block;
+  width: 4px;
+  height: 24px;
+  margin: auto;
+  border-radius: 2px;
+  background: #fff4dc;
+}
+.av-editor-page[data-ui-mode='basic'] .av-timeline-clip.is-selected {
+  touch-action: none;
+}
+.av-editor-page[data-ui-mode='basic'] .av-creator {
+  display: block;
+  position: sticky;
+  bottom: 0;
+  z-index: 55;
+  border: 1px solid rgba(246, 240, 228, 0.12);
+  background: rgba(8, 11, 17, 0.96);
+}
+/* Thumb reach: the Basic toolbar is pinned to the bottom of the screen (AlcorFrame places it itself). */
+html:not(.af-on) .av-editor-page[data-ui-mode='basic'] .av-creator {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: auto;
+  margin: 0;
+}
+html:not(.af-on) .av-editor-page[data-ui-mode='basic'] .av-app {
+  padding-bottom: calc(84px + env(safe-area-inset-bottom));
+}
+.av-editor-page[data-ui-mode='basic'] .av-creator-rail {
+  display: flex;
+  gap: 2px;
+  padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
+  overflow-x: auto;
+  scrollbar-width: none;
+  justify-content: safe center;
+}
+.av-editor-page[data-ui-mode='basic'] .av-creator-button {
+  order: var(--basic-order, 50);
+}
+.av-editor-page[data-ui-mode='basic'] .av-app .av-creator-button {
+  flex: 0 0 64px;
+  min-width: 64px;
+  min-height: 60px;
+  padding: 6px 4px;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 4px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: #eef3f8;
+  font-size: 11px;
+  font-weight: 700;
+}
+.av-editor-page[data-ui-mode='basic'] .av-app .av-creator-button[aria-pressed='true'] {
+  background: rgba(83, 217, 212, 0.12);
+}
+.av-editor-page[data-ui-mode='basic'] .av-creator-sheet {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 100%;
+  max-height: min(56dvh, 480px);
+  overflow: auto;
+  padding: 12px 12px 18px;
+  border: 1px solid rgba(246, 240, 228, 0.14);
+  border-bottom: 0;
+  border-radius: 16px 16px 0 0;
+  background: #0b1018;
+  color: #eef3f8;
+}
+.av-editor-page[data-ui-mode='basic'] .av-creator-sheet[hidden] {
+  display: none !important;
+}
+.av-editor-page[data-ui-mode='basic'] .av-app .av-creator-button[data-modes='advanced'],
+.av-editor-page[data-ui-mode='advanced'] .av-app .av-creator-button[data-modes='basic'] {
+  display: none;
+}
+@media (min-width: 980px) {
+  .av-editor-page[data-ui-mode='advanced'] .av-creator {
+    display: none;
+  }
+  .av-editor-page[data-ui-mode='basic'] .av-creator-sheet {
+    left: 50%;
+    right: auto;
+    width: min(560px, 100%);
+    transform: translateX(-50%);
+  }
+}
+.av-editor-page[data-ui-mode='basic'] .av-creator-chips,
+.av-editor-page[data-ui-mode='basic'] .av-creator-fonts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 9px 0;
+}
+.av-editor-page[data-ui-mode='basic'] .av-app .av-creator-chip {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0 14px;
+  border-radius: 999px;
+  font-weight: 700;
+}
+.av-editor-page[data-ui-mode='basic'] .av-app .av-creator-chip.is-primary {
+  color: #06262a;
+  border-color: transparent;
+  background: #53d9d4;
+}
+.av-editor-page[data-ui-mode='basic'] .av-app .av-creator-chip.is-selected {
+  border-color: rgba(179, 140, 255, 0.7);
+  background: rgba(179, 140, 255, 0.14);
+}
+.av-editor-page[data-ui-mode='basic'] .av-creator-range {
+  display: grid;
+  gap: 6px;
+  margin: 12px 2px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.av-editor-page[data-ui-mode='basic'] .av-creator-range > span {
+  display: flex;
+  justify-content: space-between;
+}
+.av-editor-page[data-ui-mode='basic'] .av-creator-range input[type='range'] {
+  width: 100%;
+  min-height: 44px;
+  accent-color: #53d9d4;
+}
+.av-editor-page[data-ui-mode='basic'] .av-creator-sheet-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.av-editor-page[data-ui-mode='basic'] .av-creator-sheet-head > div {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.av-editor-page[data-ui-mode='basic'] .av-creator-note {
+  margin: 8px 2px;
+  font-size: 12px;
+  opacity: 0.8;
+}
+@media (max-width: 760px) {
+  .av-effects-row,
+  .av-effect-params {
+    grid-template-columns: 1fr;
+  }
+  .av-editor-page[data-ui-mode='basic'] .av-appbar {
+    gap: 8px;
+  }
+  .av-editor-page[data-ui-mode='basic'] .av-app-actions {
+    gap: 8px;
+  }
+  .av-editor-page[data-ui-mode='basic'] .av-creator {
+    border-inline: 0;
+    border-bottom: 0;
+  }
+  .av-editor-page[data-ui-mode='basic'] .av-creator-rail {
+    justify-content: flex-start;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .av-effect-card,
+  .av-mode-switch button {
+    transition: none !important;
+  }
+}
+
+/* ==================================================================
+   Alcor Studio look for Basic mode (shared with AlcorPhoto): one accent
+   gradient, pill controls, a tray with an active indicator, slide-up
+   sheets. Phones also drop headings the picture does not need.
+   ================================================================== */
+.av-editor-page {
+  --ab-grad: linear-gradient(135deg, #53d9d4 0%, #7fb6ff 52%, #9b8cff 100%);
+  --ab-accent: #53d9d4;
+  --ab-line-strong: rgba(255, 255, 255, 0.14);
+  --ab-muted: #98a2b3;
+  --ab-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.av-editor-page[data-ui-mode='basic'] .av-app .av-render-button {
+  border: 0;
+  border-radius: 999px;
+  background: var(--ab-grad) !important;
+  color: #051318 !important;
+  font-weight: 700;
+  padding: 0 18px;
+  box-shadow: 0 6px 22px -10px rgba(83, 217, 212, 0.9);
+}
+.av-editor-page[data-ui-mode='basic'] .av-app .av-render-button:hover {
+  filter: brightness(1.06);
+}
+.av-editor-page[data-ui-mode='basic'] .av-creator-rail {
+  scroll-snap-type: x proximity;
+  mask-image: linear-gradient(
+    90deg,
+    transparent 0,
+    #000 16px,
+    #000 calc(100% - 16px),
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent 0,
+    #000 16px,
+    #000 calc(100% - 16px),
+    transparent 100%
+  );
+}
+.av-editor-page[data-ui-mode='basic'] .av-app .av-creator-button {
+  position: relative;
+  scroll-snap-align: start;
+  border-radius: 14px;
+  color: #c9d1dd;
+  transition:
+    color 0.15s var(--ab-ease),
+    background-color 0.15s var(--ab-ease),
+    transform 0.12s var(--ab-ease);
+}
+.av-editor-page[data-ui-mode='basic'] .av-app .av-creator-button span {
+  white-space: nowrap;
+}
+.av-editor-page[data-ui-mode='basic'] .av-app .av-creator-button:active {
+  transform: scale(0.95);
+}
+.av-editor-page[data-ui-mode='basic'] .av-app .av-creator-button[aria-pressed='true'] {
+  color: #fff;
+}
+.av-editor-page[data-ui-mode='basic'] .av-app .av-creator-button[aria-pressed='true'] svg {
+  color: var(--ab-accent);
+}
+.av-editor-page[data-ui-mode='basic'] .av-app .av-creator-button[aria-pressed='true']::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 3px;
+  width: 18px;
+  height: 3px;
+  margin-left: -9px;
+  border-radius: 3px;
+  background: var(--ab-grad);
+}
+.av-editor-page[data-ui-mode='basic'] .av-creator-sheet {
+  background: linear-gradient(180deg, #121722 0%, #0d1119 100%);
+  animation: ab-video-sheet-in 0.24s var(--ab-ease);
+}
+.av-editor-page[data-ui-mode='basic'] .av-creator-sheet::before {
+  content: '';
+  display: block;
+  width: 38px;
+  height: 4px;
+  margin: -4px auto 10px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.18);
+}
+@keyframes ab-video-sheet-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (min-width: 980px) {
+  .av-editor-page[data-ui-mode='basic'] .av-creator-sheet {
+    animation-name: ab-video-sheet-in-centered;
+  }
+}
+@keyframes ab-video-sheet-in-centered {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%);
+  }
+}
+.av-editor-page[data-ui-mode='basic'] .av-app .av-creator-chip {
+  border-color: var(--ab-line-strong);
+  transition:
+    border-color 0.15s,
+    background-color 0.15s,
+    transform 0.12s var(--ab-ease);
+}
+.av-editor-page[data-ui-mode='basic'] .av-app .av-creator-chip:active {
+  transform: scale(0.96);
+}
+.av-editor-page[data-ui-mode='basic'] .av-app .av-creator-chip.is-primary {
+  background: var(--ab-grad);
+  box-shadow: 0 8px 24px -12px rgba(83, 217, 212, 0.9);
+}
+
+@media (max-width: 760px) {
+  /* One row of actions; the project name and labels live in Advanced. */
+  html:not(.af-on) .av-editor-page[data-ui-mode='basic'] .av-appbar {
+    padding: 6px 8px;
+    gap: 0;
+  }
+  html:not(.af-on) .av-editor-page[data-ui-mode='basic'] .av-project-identity {
+    display: none;
+  }
+  html:not(.af-on) .av-editor-page[data-ui-mode='basic'] .av-app-actions {
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    gap: 6px;
+  }
+  html:not(.af-on) .av-editor-page[data-ui-mode='basic'] .av-mode-switch {
+    border-radius: 999px;
+  }
+  html:not(.af-on) .av-editor-page[data-ui-mode='basic'] .av-program-heading {
+    min-height: 0;
+    padding: 4px 10px;
+    border: 0;
+    justify-content: flex-end;
+  }
+  html:not(.af-on) .av-editor-page[data-ui-mode='basic'] .av-program-heading > div:first-child,
+  html:not(.af-on) .av-editor-page[data-ui-mode='basic'] .av-timeline-toolbar > div:first-child,
+  html:not(.af-on) .av-editor-page[data-ui-mode='basic'] .av-meters {
+    display: none;
+  }
+  html:not(.af-on) .av-editor-page[data-ui-mode='basic'] .av-timeline-toolbar {
+    justify-content: flex-end;
+    padding: 4px 8px;
+    min-height: 0;
+  }
+  html:not(.af-on) .av-editor-page[data-ui-mode='basic'] .av-transport {
+    justify-content: center;
+    gap: 8px;
+    padding: 6px 8px;
+  }
+  html:not(.af-on) .av-editor-page[data-ui-mode='basic'] .av-transport button {
+    border-radius: 999px;
+  }
+  html:not(.af-on) .av-editor-page[data-ui-mode='basic'] .av-transport .av-play {
+    width: 52px;
+    min-width: 52px;
+    background: var(--ab-grad);
+    color: #051318;
+    border: 0;
+  }
+  html:not(.af-on) .av-editor-page[data-ui-mode='basic'] .av-app .av-creator-button {
+    flex-basis: 66px;
+    min-width: 66px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .av-editor-page[data-ui-mode='basic'] .av-creator-sheet {
+    animation: none;
+  }
+  .av-editor-page[data-ui-mode='basic'] .av-app .av-creator-button,
+  .av-editor-page[data-ui-mode='basic'] .av-app .av-creator-chip {
+    transition: none;
+  }
+}
+.av-editor-page[data-ui-mode='basic'] .av-app .av-mode-switch {
+  border-radius: 999px;
+  padding: 3px;
+  overflow: hidden;
+}
+.av-editor-page[data-ui-mode='basic'] .av-app .av-mode-switch button {
+  border-radius: 999px;
+}
+
+/* ==================================================================
+   Audit fixes 2026-10-29 (last file in the editor bundle, so these win ties).
+   ================================================================== */
+
+/* Inter on every editor control, including the phone frame's chrome and tool names.
+   Timecode fields keep their monospace face through their own id rules. */
+html
+  body
+  .av-editor-page
+  :is(
+    button,
+    select,
+    textarea,
+    input:not([type='range']):not([type='checkbox']):not([type='color'])
+  ),
+html body .av-editor-page .af-chrome {
+  font-family: Inter, 'Inter Fallback', system-ui, sans-serif;
+}
+html body .av-editor-page .av-tools button,
+html.af-on body .av-editor-page [data-af-toolbar] button[data-af-name] {
+  font-family: Inter, 'Inter Fallback', system-ui, sans-serif !important;
+}
+html body .av-editor-page .av-tools button kbd {
+  font-family: Consolas, ui-monospace, monospace;
+}
+
+/* Disabled controls stay readable (>= 4.5:1 for Source, Delete, Undo, Redo). */
+html body .av-editor-page .av-app button:disabled {
+  opacity: 0.72;
+}
+
+/* Tab rows and tool strips scroll sideways. A fade appears only on the side that has more to
+   scroll to: the scroll-driven animation is inactive when nothing overflows, so rows that fit
+   are never masked. */
+@property --av-fade-l {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+@property --av-fade-r {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+@keyframes av-edge-fade {
+  0% {
+    --av-fade-l: 0px;
+    --av-fade-r: 28px;
+  }
+  8% {
+    --av-fade-l: 28px;
+    --av-fade-r: 28px;
+  }
+  92% {
+    --av-fade-l: 28px;
+    --av-fade-r: 28px;
+  }
+  100% {
+    --av-fade-l: 28px;
+    --av-fade-r: 0px;
+  }
+}
+/* Desktop: only the panel tab row (no popovers there to clip). Phones: every scrolling row. */
+@supports (animation-timeline: scroll(self inline)) {
+  html body .av-editor-page .av-panel-tabs {
+    -webkit-mask-image: linear-gradient(
+      90deg,
+      transparent 0,
+      #000 var(--av-fade-l),
+      #000 calc(100% - var(--av-fade-r)),
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      90deg,
+      transparent 0,
+      #000 var(--av-fade-l),
+      #000 calc(100% - var(--av-fade-r)),
+      transparent 100%
+    );
+    animation: av-edge-fade linear both;
+    animation-timeline: scroll(self inline);
+  }
+}
+@media (max-width: 760px) {
+  html body .av-editor-page :is(.af-tabs, .av-creator-rail, .av-transport, .av-timeline-tools) {
+    -webkit-mask-image: linear-gradient(
+      90deg,
+      transparent 0,
+      #000 var(--av-fade-l),
+      #000 calc(100% - var(--av-fade-r)),
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      90deg,
+      transparent 0,
+      #000 var(--av-fade-l),
+      #000 calc(100% - var(--av-fade-r)),
+      transparent 100%
+    );
+  }
+  @supports (animation-timeline: scroll(self inline)) {
+    html body .av-editor-page :is(.af-tabs, .av-creator-rail, .av-transport, .av-timeline-tools) {
+      animation: av-edge-fade linear both;
+      animation-timeline: scroll(self inline);
+    }
+  }
+  /* Without scroll-driven animations, show a fixed fade on the trailing edge only. */
+  @supports not (animation-timeline: scroll(self inline)) {
+    html body .av-editor-page :is(.af-tabs, .av-creator-rail, .av-transport, .av-timeline-tools) {
+      --av-fade-r: 24px;
+    }
+  }
+}
+
+/* Desktop panel tabs: share the row, never clip the last tab (Mixer) at 1280-1440. */
+.av-editor-page .av-panel-tabs {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+.av-editor-page .av-panel-tabs::-webkit-scrollbar {
+  display: none;
+}
+.av-editor-page .av-panel-tabs button {
+  flex: 1 0 auto;
+  padding-inline: 6px !important;
+  white-space: nowrap;
+}
+
+/* Phones (AlcorFrame): every primary control reachable, nothing cut at the edges. */
+@media (max-width: 760px) {
+  /* Basic tool rail: buttons size to their label ("Add Media"), padded clear of the fade. */
+  html body .av-editor-page .av-creator-rail {
+    justify-content: flex-start;
+    padding-inline: 8px;
+    scroll-padding-inline: 8px;
+  }
+  html body .av-editor-page .av-app .av-creator-button {
+    flex: 0 0 auto;
+    min-width: 64px;
+    padding-inline: 8px;
+  }
+  html body .av-editor-page .av-app .av-creator-button span {
+    white-space: nowrap;
+  }
+  /* Bottom panel tabs and the transport strip scroll; the first item starts inside the row. */
+  html.af-on body .av-editor-page .af-tabs {
+    scroll-padding-inline: 8px;
+  }
+  html.af-on body .av-editor-page .af-tab {
+    flex: 0 0 auto;
+    padding-inline: 12px;
+    white-space: nowrap;
+  }
+  html.af-on body .av-editor-page .av-transport {
+    scroll-padding-inline: 10px;
+  }
+  /* Timeline: one scrolling row of edit tools instead of three wrapped rows, so the tracks get the room. */
+  html.af-on body .av-editor-page .av-timeline-toolbar {
+    flex-wrap: nowrap;
+    min-height: 0;
+    padding: 4px 0;
+  }
+  html.af-on body .av-editor-page .av-timeline-toolbar > div:first-child {
+    display: none;
+  }
+  html.af-on body .av-editor-page .av-timeline-tools {
+    flex: 1 1 auto;
+    min-width: 0;
+    flex-wrap: nowrap !important;
+    justify-content: flex-start !important;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    padding-inline: 8px;
+    scroll-padding-inline: 8px;
+  }
+  html.af-on body .av-editor-page .av-timeline-tools::-webkit-scrollbar {
+    display: none;
+  }
+  html.af-on body .av-editor-page .av-timeline-tools > * {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+  html.af-on body .av-editor-page .av-timeline-scroll {
+    min-height: 180px;
+  }
+}
+/* The timeline dock is tall enough for at least 180px of tracks under its bar and tool row. */
+html.af-on.af-has-dock:not(.af-dock-collapsed):not(.af-sheet-half):not(.af-sheet-full):has(
+    .av-editor-page
+  ) {
+  --af-dock-h: max(30dvh, min(300px, 40dvh));
+}

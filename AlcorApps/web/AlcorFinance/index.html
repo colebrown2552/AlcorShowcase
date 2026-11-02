@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AlcorFinance App | Alcor Industries</title>
+    <meta
+      name="description"
+      content="Open the free AlcorFinance calculators: loan payment and schedule, break-even units and opportunity cost. The math runs in your browser."
+    />
+    <meta name="robots" content="noindex,follow" />
+    <link rel="canonical" href="https://alcor-industries.com/finance/" />
+    <link rel="manifest" href="../assets/site/site.webmanifest" />
+    <link rel="icon" type="image/svg+xml" href="../assets/site/logos/alcor-star-small.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/site/icons/favicon-32.png" />
+    <link rel="icon" sizes="16x16 32x32 48x48" href="../assets/site/icons/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="../assets/site/icons/apple-touch-icon.png" />
+    <meta name="theme-color" content="#050608" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Alcor Industries" />
+    <meta property="og:title" content="AlcorFinance App | Alcor Industries" />
+    <meta
+      property="og:description"
+      content="Open the free AlcorFinance calculators: loan payment and schedule, break-even units and opportunity cost. The math runs in your browser."
+    />
+    <meta property="og:url" content="https://alcor-industries.com/finance/" />
+    <meta property="og:image" content="../assets/site/social/pages/alcorfinance.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="AlcorFinance App | Alcor Industries" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="../assets/site/social/pages/alcorfinance.png" />
+    <meta name="twitter:title" content="AlcorFinance App | Alcor Industries" />
+    <link rel="stylesheet" href="../assets/css/site.css" />
+    <link rel="stylesheet" href="../assets/css/polish.css" />
+    <link rel="stylesheet" href="../assets/css/design-system.css" />
+    <link rel="stylesheet" href="../assets/css/alcor-finance.css" />
+    <link rel="stylesheet" href="../assets/css/arcana.css" />
+    <link rel="stylesheet" href="../assets/css/alcor-arcana.css" />
+    <link
+      rel="preload"
+      href="../assets/fonts/brands/inter-normal-400-700.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+  </head>
+  <body class="alcor-finance-page alcor-finance-app">
+    <a class="af-skip" href="#af-tool">Skip to the calculators</a>
+    <div class="page">
+      <link
+        rel="stylesheet"
+        id="alcor-product-header-css"
+        href="../assets/css/alcor-product-header.css"
+      />
+      <header class="apx-bar" data-alcor-product-header data-mode="app" data-product="AlcorFinance">
+        <div class="apx-bar__inner">
+          <a class="apx-wordmark" href="https://alcor-industries.com/alcor-finance/"
+            ><img
+              class="apx-wordmark__mark"
+              src="../assets/site/logos/alcor-star-small.svg"
+              width="22"
+              height="22"
+              alt=""
+              decoding="async"
+            /><span><b>Alcor</b>Finance</span></a
+          >
+          <nav class="apx-nav" aria-label="AlcorFinance">
+            <a href="https://alcor-industries.com/alcor-finance/">About</a
+            ><a href="https://alcor-industries.com/platform/#platform-products">All apps</a>
+          </nav>
+        </div>
+      </header>
+      <main class="af-main" data-alcor-finance-app>
+        <h1 class="af-sr">AlcorFinance calculators</h1>
+        <div class="af" id="af-tool" tabindex="-1" data-alcor-finance data-version="0.2.0">
+          <div class="af-toolbar">
+            <div class="af-tabs" role="tablist" aria-label="Calculators">
+              <button
+                type="button"
+                class="af-tab"
+                role="tab"
+                id="af-tab-opportunity"
+                aria-controls="af-panel-opportunity"
+                aria-selected="true"
+                data-af-tab="opportunity"
+              >
+                Opportunity cost
+              </button>
+              <button
+                type="button"
+                class="af-tab"
+                role="tab"
+                id="af-tab-loan"
+                aria-controls="af-panel-loan"
+                aria-selected="false"
+                tabindex="-1"
+                data-af-tab="loan"
+              >
+                Loan
+              </button>
+              <button
+                type="button"
+                class="af-tab"
+                role="tab"
+                id="af-tab-breakeven"
+                aria-controls="af-panel-breakeven"
+                aria-selected="false"
+                tabindex="-1"
+                data-af-tab="breakeven"
+              >
+                Break-even
+              </button>
+            </div>
+            <div class="af-actions">
+              <button type="button" class="af-button" data-af-action="copy">Copy link</button>
+              <button type="button" class="af-button" data-af-action="csv">Download CSV</button>
+              <button type="button" class="af-button" data-af-action="print">Print</button>
+            </div>
+          </div>
+          <p class="af-status" role="status" data-af-status></p>
+          <p class="af-sr" aria-live="polite" data-af-live></p>
+          <div class="af-print-head" data-af-print-head></div>
+          <noscript
+            ><p class="af-noscript">
+              These calculators run in your browser and need JavaScript turned on.
+            </p></noscript
+          >
+
+          <div
+            class="af-panel"
+            role="tabpanel"
+            id="af-panel-opportunity"
+            aria-labelledby="af-tab-opportunity"
+            data-af-panel="opportunity"
+          >
+            <div class="af-grid af-grid-stacked">
+              <form class="af-inputs" data-af-form novalidate>
+                <h2 class="af-title">What your money could have made elsewhere</h2>
+                <p class="af-intro">
+                  List what you own or are thinking about buying. Each line is compared with the
+                  same amount growing at a baseline rate for the same number of years, so a two-year
+                  T-bill and a ten-year rental can sit side by side.
+                </p>
+                <div class="af-field">
+                  <label for="af-opportunity-baseline">Baseline rate per year</label>
+                  <span class="af-input"
+                    ><input
+                      id="af-opportunity-baseline"
+                      type="text"
+                      inputmode="decimal"
+                      autocomplete="off"
+                      spellcheck="false"
+                      value="10"
+                      data-af-field="opportunity.baseline"
+                      aria-describedby="af-opportunity-baseline-error"
+                    /><span class="af-affix af-affix-end" aria-hidden="true">%</span></span
+                  >
+                  <p class="af-error" id="af-opportunity-baseline-error" hidden></p>
+                </div>
+                <p class="af-hint">
+                  Use the return you'd expect from your fallback option, such as an index fund.
+                </p>
+                <div class="af-holdings" data-af-holdings></div>
+                <div class="af-row-actions">
+                  <button type="button" class="af-button af-button-quiet" data-af-action="add-row">
+                    Add a holding
+                  </button>
+                  <button type="button" class="af-button af-button-quiet" data-af-action="example">
+                    Load the example
+                  </button>
+                </div>
+              </form>
+              <div class="af-results" data-af-results="opportunity">
+                <div class="af-summary" data-af-summary></div>
+                <p class="af-invalid" data-af-invalid hidden>
+                  Fix the fields marked in red to see results.
+                </p>
+                <div class="af-table-block" data-af-table></div>
+              </div>
+            </div>
+            <details class="af-math">
+              <summary>How it's calculated</summary>
+              <p>
+                Each amount grows once a year: amount &times; (1 + rate)<sup>years</sup>. The
+                baseline column does the same at the baseline rate over that holding's own years.
+                Difference is the baseline value minus the holding's value, and the gap is that
+                difference as a share of the baseline value.
+              </p>
+              <p>
+                Totals add values reached in different years, so they don't describe one balance on
+                one date. The average rate is weighted by amount and ignores time.
+              </p>
+            </details>
+          </div>
+
+          <div
+            class="af-panel"
+            role="tabpanel"
+            id="af-panel-loan"
+            aria-labelledby="af-tab-loan"
+            data-af-panel="loan"
+            hidden
+          >
+            <div class="af-grid">
+              <form class="af-inputs" data-af-form novalidate>
+                <h2 class="af-title">Loan payment and schedule</h2>
+                <p class="af-intro">
+                  Enter the amount, the yearly interest rate and the term. You get the monthly
+                  payment and how each payment splits between interest and paying down the balance.
+                  Fixed rate, paid monthly.
+                </p>
+                <div class="af-field">
+                  <label for="af-loan-amount">Loan amount</label>
+                  <span class="af-input"
+                    ><span class="af-affix" aria-hidden="true">$</span
+                    ><input
+                      id="af-loan-amount"
+                      type="text"
+                      inputmode="decimal"
+                      autocomplete="off"
+                      spellcheck="false"
+                      value="300000"
+                      data-af-field="loan.amount"
+                      aria-describedby="af-loan-amount-error"
+                  /></span>
+                  <p class="af-error" id="af-loan-amount-error" hidden></p>
+                </div>
+                <div class="af-field">
+                  <label for="af-loan-rate">Interest rate per year</label>
+                  <span class="af-input"
+                    ><input
+                      id="af-loan-rate"
+                      type="text"
+                      inputmode="decimal"
+                      autocomplete="off"
+                      spellcheck="false"
+                      value="6"
+                      data-af-field="loan.rate"
+                      aria-describedby="af-loan-rate-error"
+                    /><span class="af-affix af-affix-end" aria-hidden="true">%</span></span
+                  >
+                  <p class="af-error" id="af-loan-rate-error" hidden></p>
+                </div>
+                <div class="af-field">
+                  <label for="af-loan-years">Term</label>
+                  <span class="af-input"
+                    ><input
+                      id="af-loan-years"
+                      type="text"
+                      inputmode="numeric"
+                      autocomplete="off"
+                      spellcheck="false"
+                      value="30"
+                      data-af-field="loan.years"
+                      aria-describedby="af-loan-years-error"
+                    /><span class="af-affix af-affix-end" aria-hidden="true">years</span></span
+                  >
+                  <p class="af-error" id="af-loan-years-error" hidden></p>
+                </div>
+                <p class="af-hint">Property tax, insurance, PMI and lender fees aren't included.</p>
+              </form>
+              <div class="af-results" data-af-results="loan">
+                <div class="af-summary" data-af-summary></div>
+                <p class="af-invalid" data-af-invalid hidden>
+                  Fix the fields marked in red to see results.
+                </p>
+                <label class="af-toggle"
+                  ><input type="checkbox" data-af-monthly /> Show every payment</label
+                >
+                <div class="af-table-block" data-af-table></div>
+              </div>
+            </div>
+            <details class="af-math">
+              <summary>How it's calculated</summary>
+              <p>
+                Payment = amount &times; r &divide; (1 &minus; (1 + r)<sup>&minus;n</sup>), where r
+                is the yearly rate divided by 12 and n is the number of months. At 0% it's the
+                amount divided by n.
+              </p>
+              <p>
+                The schedule uses the fixed-payment formula before rounding. Principal and interest
+                are rounded across the schedule so displayed rows add up; individual payments may
+                vary by a few cents. Lender schedules and rounding can differ.
+              </p>
+            </details>
+          </div>
+
+          <div
+            class="af-panel"
+            role="tabpanel"
+            id="af-panel-breakeven"
+            aria-labelledby="af-tab-breakeven"
+            data-af-panel="breakeven"
+            hidden
+          >
+            <div class="af-grid">
+              <form class="af-inputs" data-af-form novalidate>
+                <h2 class="af-title">How many sales cover your costs</h2>
+                <p class="af-intro">
+                  Enter your fixed costs for a period (rent, salaries, software), your price per
+                  unit and what each unit costs you to make or deliver. You get the number of units
+                  you need to sell in that period before you stop losing money.
+                </p>
+                <div class="af-field">
+                  <label for="af-breakeven-fixed">Fixed costs</label>
+                  <span class="af-input"
+                    ><span class="af-affix" aria-hidden="true">$</span
+                    ><input
+                      id="af-breakeven-fixed"
+                      type="text"
+                      inputmode="decimal"
+                      autocomplete="off"
+                      spellcheck="false"
+                      value="10000"
+                      data-af-field="breakeven.fixed"
+                      aria-describedby="af-breakeven-fixed-error"
+                  /></span>
+                  <p class="af-error" id="af-breakeven-fixed-error" hidden></p>
+                </div>
+                <div class="af-field">
+                  <label for="af-breakeven-price">Price per unit</label>
+                  <span class="af-input"
+                    ><span class="af-affix" aria-hidden="true">$</span
+                    ><input
+                      id="af-breakeven-price"
+                      type="text"
+                      inputmode="decimal"
+                      autocomplete="off"
+                      spellcheck="false"
+                      value="50"
+                      data-af-field="breakeven.price"
+                      aria-describedby="af-breakeven-price-error"
+                  /></span>
+                  <p class="af-error" id="af-breakeven-price-error" hidden></p>
+                </div>
+                <div class="af-field">
+                  <label for="af-breakeven-variable">Cost per unit</label>
+                  <span class="af-input"
+                    ><span class="af-affix" aria-hidden="true">$</span
+                    ><input
+                      id="af-breakeven-variable"
+                      type="text"
+                      inputmode="decimal"
+                      autocomplete="off"
+                      spellcheck="false"
+                      value="30"
+                      data-af-field="breakeven.variable"
+                      aria-describedby="af-breakeven-variable-error"
+                  /></span>
+                  <p class="af-error" id="af-breakeven-variable-error" hidden></p>
+                </div>
+              </form>
+              <div class="af-results" data-af-results="breakeven">
+                <div class="af-summary" data-af-summary></div>
+                <p class="af-invalid" data-af-invalid hidden>
+                  Fix the fields marked in red to see results.
+                </p>
+                <div class="af-table-block" data-af-table></div>
+              </div>
+            </div>
+            <details class="af-math">
+              <summary>How it's calculated</summary>
+              <p>
+                Margin per unit = price &minus; cost per unit. Units to break even = fixed costs
+                &divide; margin per unit, rounded up because you can't sell part of a unit.
+                Break-even sales = those units &times; price.
+              </p>
+            </details>
+          </div>
+          <p class="af-disclaimer">
+            For estimates only. This isn't financial, tax or legal advice.
+          </p>
+        </div>
+      </main>
+    </div>
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <a class="footer-wordmark" href="https://alcor-industries.com/"
+            ><img
+              class="brand-star"
+              src="../assets/site/logos/alcor-star.svg"
+              width="48"
+              height="48"
+              alt=""
+              loading="lazy"
+              decoding="async"
+            />Alcor Industries</a
+          >
+          <p class="footer-line">
+            Ask Alcor is free for individuals. Businesses get a written quote.
+          </p>
+        </div>
+        <nav class="footer-links" aria-label="Footer">
+          <div class="footer-group">
+            <p class="footer-group__title">Products</p>
+            <ul role="list">
+              <li><a href="https://alcor-industries.com/platform/">All apps</a></li>
+              <li><a href="https://alcor-industries.com/archetypes/">Archetypes</a></li>
+              <li><a href="https://alcor-industries.com/arcana/">Arcana</a></li>
+            </ul>
+          </div>
+          <div class="footer-group">
+            <p class="footer-group__title">Company</p>
+            <ul role="list">
+              <li><a href="https://alcor-industries.com/agi/">AGI research</a></li>
+              <li><a href="https://alcor-industries.com/agents/">For AI agents</a></li>
+              <li><a href="https://alcor-industries.com/blog/">Blog</a></li>
+              <li><a href="https://alcor-industries.com/privacy/">Privacy</a></li>
+              <li><a href="https://alcor-industries.com/archetype-terms/">Archetype terms</a></li>
+            </ul>
+          </div>
+          <div class="footer-group footer-group--contact">
+            <p class="footer-group__title">Contact</p>
+            <ul role="list">
+              <li><a href="https://alcor-industries.com/#contact">Get a written quote</a></li>
+            </ul>
+          </div>
+        </nav>
+        <p class="footer-legal">
+          &copy; 2026 Alcor Systems LLC. Alcor Industries is a product of Alcor Systems LLC &middot;
+          Austin, Texas
+        </p>
+      </div>
+    </footer>
+    <script src="../assets/js/site.js"></script>
+    <script src="../assets/js/alcor-finance-core.js"></script>
+    <script src="../assets/js/alcor-finance.js"></script>
+    <script src="../assets/js/alcor-product-names.js" defer></script>
+  </body>
+</html>

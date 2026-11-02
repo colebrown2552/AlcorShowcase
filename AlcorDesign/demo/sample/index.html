@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Juniper Lane Bakery</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: Georgia, 'Times New Roman', serif;
+        color: #2b2118;
+        background: #fbf6ee;
+      }
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 24px 48px;
+        background: #3d5a40;
+        color: #fbf6ee;
+      }
+      nav a {
+        color: inherit;
+        margin-left: 24px;
+        text-decoration: none;
+      }
+      .hero {
+        padding: 96px 48px;
+        text-align: center;
+      }
+      .hero h1 {
+        font-size: 56px;
+        margin: 0 0 16px;
+      }
+      .hero p {
+        font-size: 20px;
+        margin: 0 auto;
+        max-width: 560px;
+      }
+      .menu {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+        padding: 0 48px 96px;
+      }
+      .card {
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+      .card h2 {
+        margin: 0 0 8px;
+        font-size: 24px;
+      }
+      footer {
+        padding: 32px 48px;
+        font-size: 14px;
+        color: #6b5a48;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <strong id="brand">Juniper Lane Bakery</strong>
+      <nav><a href="#menu">Menu</a><a href="#visit">Visit</a></nav>
+    </header>
+    <section class="hero">
+      <h1 id="headline">Bread worth waking up for</h1>
+      <p id="intro">
+        A small neighbourhood bakery with slow-fermented loaves, seasonal pastries and coffee from
+        the roaster down the street.
+      </p>
+    </section>
+    <section id="menu" class="menu">
+      <article class="card">
+        <h2>Country sourdough</h2>
+        <p>Thirty-six hours from starter to crust.</p>
+      </article>
+      <article class="card">
+        <h2>Cardamom buns</h2>
+        <p>Brushed with orange syrup every morning.</p>
+      </article>
+      <article class="card">
+        <h2>Rye and fennel</h2>
+        <p>Dense, dark and good for a week.</p>
+      </article>
+    </section>
+    <footer id="visit">Open Tuesday to Sunday, 7am to 2pm. A fictional business for this demo.</footer>
+  </body>
+</html>

@@ -1,0 +1,30 @@
+# Build output
+target/
+dist/
+build/
+*.egg-info/
+__pycache__/
+*.pyc
+node_modules/
+
+# Tool caches
+.ruff_cache/
+.pytest_cache/
+.mypy_cache/
+
+# Local environments and editors
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Runtime state written by demos
+**/demo/out/
+**/demo/state/
+*.log

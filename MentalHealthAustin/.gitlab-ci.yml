@@ -1,0 +1,53 @@
+# GitLab CI pipeline used for the original deployment: backend unit tests, frontend unit tests,
+# then headless Selenium acceptance tests. Secrets are supplied as CI/CD variables, never stored here.
+image: node:18
+
+stages:
+  - test
+  - unit-tests
+  - acceptance-tests
+
+backend_unit_tests:
+  stage: test
+  image: python:3.10
+  before_script:
+    - pip install -r backend/API/requirements.txt
+  script:
+    # Seed a throwaway SQLite database, then run the API tests against it.
+    - cd backend/API
+    - python3 seed.py
+    - python3 unit_tests.py
+
+unit-tests:
+  stage: unit-tests
+  script:
+    - npm ci
+    - export CI=false  # Disable treating warnings as errors
+    - npm run test -- --watchAll=false
+
+acceptance-tests:
+  # Adapted from a public example pipeline by another student team.
+  stage: acceptance-tests
+  image: python:3.10
+  # The SITE_URL CI/CD variable (name only) points the Selenium tests at the deployed site.
+  script:
+  - pip install --upgrade pip
+  - pip install --no-cache-dir -r ./acceptance_tests/requirements.txt
+  - apt-get update -q -y
+  - apt-get --yes install libnss3
+  - apt-get --yes install libgconf-2-4
+  - apt-get install libx11-xcb1
+
+  # Add chrome to container
+  - wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
+  - sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
+  - apt-get update -q -y 
+  - apt-get install -y google-chrome-stable
+
+  # Download and unzip the chromedriver
+  - apt-get install -yqq unzip
+  - wget -O /tmp/chromedriver.zip http://chromedriver.storage.googleapis.com/`curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE`/chromedriver_linux64.zip
+  - unzip /tmp/chromedriver.zip chromedriver -d /usr/local/bin/
+
+  # Run selenium tests
+  - python3 guitests.py

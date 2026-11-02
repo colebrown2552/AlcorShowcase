@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="1039" viewBox="0 0 960 1039" role="img" aria-label="AlcorLang: a fail-closed language for agent policies">
+  <rect width="960" height="1039" rx="10" fill="#0d1117"/>
+  <rect width="960" height="34" rx="10" fill="#161b22"/>
+  <rect y="24" width="960" height="10" fill="#161b22"/>
+  <circle cx="20" cy="17" r="6" fill="#ff5f57"/><circle cx="40" cy="17" r="6" fill="#febc2e"/>
+  <circle cx="60" cy="17" r="6" fill="#28c840"/>
+  <text x="480.0" y="22" fill="#8b949e" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13">AlcorLang: a fail-closed language for agent policies</text>
+  <g font-family="Cascadia Mono, Consolas, Menlo, DejaVu Sans Mono, monospace" font-size="14">
+        <text x="18" y="66" fill="#7ee787" xml:space="preserve">$ python demo/run_demo.py</text>
+    <text x="18" y="85" fill="#e6edf3" xml:space="preserve">AlcorLang demo: every line below is computed now.</text>
+    <text x="18" y="104" fill="#e6edf3" xml:space="preserve"></text>
+    <text x="18" y="123" fill="#e6edf3" xml:space="preserve">== 1. Policy programs (default profile: every one provably halts) ========</text>
+    <text x="18" y="142" fill="#e6edf3" xml:space="preserve">  quorum_gate.alcor      -&gt; ALLOW REFUSE HOLD REFUSE</text>
+    <text x="18" y="161" fill="#e6edf3" xml:space="preserve">  [ok] quorum_gate.alcor prints &#x27;ALLOW REFUSE HOLD REFUSE&#x27;</text>
+    <text x="18" y="180" fill="#e6edf3" xml:space="preserve">  capped_backoff.alcor   -&gt; 5 10 20 40 60 60</text>
+    <text x="18" y="199" fill="#e6edf3" xml:space="preserve">  [ok] capped_backoff.alcor prints &#x27;5 10 20 40 60 60&#x27;</text>
+    <text x="18" y="218" fill="#e6edf3" xml:space="preserve">  kernel.alcor           -&gt; action=continue, reason=none   (nothing wrong, keep going)</text>
+    <text x="18" y="237" fill="#e6edf3" xml:space="preserve">  [ok] kernel scenario &#x27;nothing wrong, keep going&#x27;</text>
+    <text x="18" y="256" fill="#e6edf3" xml:space="preserve">  kernel.alcor           -&gt; action=pushback, reason=check_red   (claim with a red check is pushed back)</text>
+    <text x="18" y="275" fill="#e6edf3" xml:space="preserve">  [ok] kernel scenario &#x27;claim with a red check is pushed back&#x27;</text>
+    <text x="18" y="294" fill="#e6edf3" xml:space="preserve">  kernel.alcor           -&gt; action=refuse, reason=request-schema-mismatch   (wrong request schema is refused)</text>
+    <text x="18" y="313" fill="#e6edf3" xml:space="preserve">  [ok] kernel scenario &#x27;wrong request schema is refused&#x27;</text>
+    <text x="18" y="332" fill="#e6edf3" xml:space="preserve"></text>
+    <text x="18" y="351" fill="#e6edf3" xml:space="preserve">== 2. v3 syntax lowers to the same core ==================================</text>
+    <text x="18" y="370" fill="#e6edf3" xml:space="preserve">  programs/backoff_v3.alcor (10 lines):</text>
+    <text x="18" y="389" fill="#e6edf3" xml:space="preserve">      ALCOR 3</text>
+    <text x="18" y="408" fill="#e6edf3" xml:space="preserve">      INPUT $line</text>
+    <text x="18" y="427" fill="#e6edf3" xml:space="preserve">      $tries = int($line)</text>
+    <text x="18" y="446" fill="#e6edf3" xml:space="preserve">      $delay = 5</text>
+    <text x="18" y="465" fill="#e6edf3" xml:space="preserve">      FOR $i FROM 1 TO 4</text>
+    <text x="18" y="484" fill="#e6edf3" xml:space="preserve">      IF $i &lt;= $tries THEN</text>
+    <text x="18" y="503" fill="#e6edf3" xml:space="preserve">      $delay = $delay * 2</text>
+    <text x="18" y="522" fill="#e6edf3" xml:space="preserve">      END IF</text>
+    <text x="18" y="541" fill="#e6edf3" xml:space="preserve">      END FOR</text>
+    <text x="18" y="560" fill="#e6edf3" xml:space="preserve">      PRINT &quot;attempt &quot; ++ $line ++ &quot;: wait &quot; ++ str($delay) ++ &quot;s&quot;</text>
+    <text x="18" y="579" fill="#e6edf3" xml:space="preserve">  lowered to canonical v2 (a constant FOR is unrolled, IF becomes forward jumps):</text>
+    <text x="18" y="598" fill="#e6edf3" xml:space="preserve">      PROGRAM Program</text>
+    <text x="18" y="617" fill="#e6edf3" xml:space="preserve">      READ $line</text>
+    <text x="18" y="636" fill="#e6edf3" xml:space="preserve">      LET $tries INT $line</text>
+    <text x="18" y="655" fill="#e6edf3" xml:space="preserve">      LET $delay 5</text>
+    <text x="18" y="674" fill="#e6edf3" xml:space="preserve">      LET $i 1</text>
+    <text x="18" y="693" fill="#e6edf3" xml:space="preserve">      BRANCH LE $i $tries v3_unroll_4 ELSE v3_unroll_5</text>
+    <text x="18" y="712" fill="#e6edf3" xml:space="preserve">... (75 lines omitted) ...</text>
+    <text x="18" y="731" fill="#e6edf3" xml:space="preserve">== 9. Self-hosting: an interpreter written in AlcorLang ==================</text>
+    <text x="18" y="750" fill="#e6edf3" xml:space="preserve">  selfhost/alcorlang.alcor: 1865 lines, 64 PROGRAM blocks</text>
+    <text x="18" y="769" fill="#e6edf3" xml:space="preserve">  [ok] its string library is an exact copy of selfhost/alcorstr.alcor</text>
+    <text x="18" y="788" fill="#e6edf3" xml:space="preserve">  program corpus on both interpreters: {&#x27;identical&#x27;: 15, &#x27;refused-by-design&#x27;: 1}</text>
+    <text x="18" y="807" fill="#e6edf3" xml:space="preserve">  [ok] no program disagrees between the two interpreters</text>
+    <text x="18" y="826" fill="#e6edf3" xml:space="preserve">  operator sweep (every 25th of 1650 programs): {&#x27;identical&#x27;: 66}</text>
+    <text x="18" y="845" fill="#e6edf3" xml:space="preserve">  [ok] the sampled operator sweep has zero mismatches</text>
+    <text x="18" y="864" fill="#e6edf3" xml:space="preserve">  the same loop under three headers, run by the self-hosted interpreter:</text>
+    <text x="18" y="883" fill="#e6edf3" xml:space="preserve">      PROGRAM Main                                               -&gt; COMPILE-ERROR backward jump to [...]</text>
+    <text x="18" y="902" fill="#e6edf3" xml:space="preserve">      PROGRAM Main WITH profile=complete                         -&gt; REFUSED unsigned_complete</text>
+    <text x="18" y="921" fill="#e6edf3" xml:space="preserve">      PROGRAM Main WITH profile=complete authority=conformance   -&gt; 0</text>
+    <text x="18" y="940" fill="#e6edf3" xml:space="preserve">  [ok] the halting rule holds when the interpreter is itself an AlcorLang program</text>
+    <text x="18" y="959" fill="#e6edf3" xml:space="preserve">  an effect on the self-hosted interpreter: UNSUPPORTED v1-effect-statement &#x27;WRITE&#x27;</text>
+    <text x="18" y="978" fill="#e6edf3" xml:space="preserve">  [ok] effects are refused out loud, never faked</text>
+    <text x="18" y="997" fill="#e6edf3" xml:space="preserve"></text>
+    <text x="18" y="1016" fill="#e6edf3" xml:space="preserve">39 checks, 0 failed</text>
+  </g>
+</svg>

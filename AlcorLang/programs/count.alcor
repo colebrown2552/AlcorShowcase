@@ -1,0 +1,30 @@
+PROGRAM AlcorCount WITH profile=default
+
+READ $schema
+READ $question_kind
+READ $context_state
+
+BRANCH NE $schema "alcor.count.request.v1" refuse_schema
+BRANCH NE $question_kind "count" bare
+BRANCH NE $context_state "long" bare
+EMIT "schema=alcor.count.decision.v1"
+EMIT "strategy=list"
+EMIT "reason=a-count-over-long-context-is-listed-by-the-model-and-counted-by-the-host"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL bare
+EMIT "schema=alcor.count.decision.v1"
+EMIT "strategy=bare"
+EMIT "reason=not-a-count-question-over-long-context"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL refuse_schema
+EMIT "schema=alcor.count.decision.v1"
+EMIT "strategy=bare"
+EMIT "reason=request-schema-mismatch"
+EMIT "effect_authority=false"
+
+LABEL done
+END PROGRAM

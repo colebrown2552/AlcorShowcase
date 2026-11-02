@@ -1,0 +1,786 @@
+PROGRAM AlcorStrSelfTest WITH profile=complete authority=conformance
+LET $bad 0
+EMIT "alcorstr.alcor -- the string library the self-hosted interpreter stands on."
+EMIT "Built from CHAR FIND LEN CAT only. AlcorLang has no comment syntax, so the WHY"
+EMIT "lives in StrWhy below and prints here; the PASS lines under each are its proof."
+EMIT ""
+
+CALL StrWhy WITH $name="StrSlice" INTO $w
+EMIT CAT "StrSlice -- " $w
+CALL StrSlice WITH $s="hello world" $a=6 $b=11 INTO $g
+CALL SelfCheck WITH $name="slice/basic" $got=$g $want="world" INTO $e; LET $bad ADD $bad $e
+CALL StrSlice WITH $s="hello" $a=0 $b=0 INTO $g
+CALL SelfCheck WITH $name="slice/index-0-empty" $got=$g $want="" INTO $e; LET $bad ADD $bad $e
+CALL StrSlice WITH $s="hello" $a=0 $b=1 INTO $g
+CALL SelfCheck WITH $name="slice/index-0-one" $got=$g $want="h" INTO $e; LET $bad ADD $bad $e
+CALL StrSlice WITH $s="hello" $a=-4 $b=2 INTO $g
+CALL SelfCheck WITH $name="slice/negative-start-clamps" $got=$g $want="he" INTO $e; LET $bad ADD $bad $e
+CALL StrSlice WITH $s="hello" $a=3 $b=99 INTO $g
+CALL SelfCheck WITH $name="slice/end-past-end-clamps" $got=$g $want="lo" INTO $e; LET $bad ADD $bad $e
+CALL StrSlice WITH $s="hello" $a=99 $b=99 INTO $g
+CALL SelfCheck WITH $name="slice/start-past-end" $got=$g $want="" INTO $e; LET $bad ADD $bad $e
+CALL StrSlice WITH $s="hello" $a=4 $b=2 INTO $g
+CALL SelfCheck WITH $name="slice/reversed-bounds" $got=$g $want="" INTO $e; LET $bad ADD $bad $e
+CALL StrSlice WITH $s="" $a=0 $b=5 INTO $g
+CALL SelfCheck WITH $name="slice/empty-haystack" $got=$g $want="" INTO $e; LET $bad ADD $bad $e
+CALL StrSlice WITH $s="hello" $a=-9 $b=-3 INTO $g
+CALL SelfCheck WITH $name="slice/both-negative" $got=$g $want="" INTO $e; LET $bad ADD $bad $e
+EMIT ""
+
+CALL StrWhy WITH $name="StrSubstr" INTO $w
+EMIT CAT "StrSubstr -- " $w
+CALL StrSubstr WITH $s="hello world" $a=6 $n=5 INTO $g
+CALL SelfCheck WITH $name="substr/basic" $got=$g $want="world" INTO $e; LET $bad ADD $bad $e
+CALL StrSubstr WITH $s="hello" $a=-3 $n=2 INTO $g
+CALL SelfCheck WITH $name="substr/negative-start-still-gets-n" $got=$g $want="he" INTO $e; LET $bad ADD $bad $e
+CALL StrSubstr WITH $s="hello" $a=3 $n=99 INTO $g
+CALL SelfCheck WITH $name="substr/n-past-end" $got=$g $want="lo" INTO $e; LET $bad ADD $bad $e
+CALL StrSubstr WITH $s="hello" $a=2 $n=0 INTO $g
+CALL SelfCheck WITH $name="substr/zero-length" $got=$g $want="" INTO $e; LET $bad ADD $bad $e
+CALL StrSubstr WITH $s="hello" $a=2 $n=-4 INTO $g
+CALL SelfCheck WITH $name="substr/negative-length" $got=$g $want="" INTO $e; LET $bad ADD $bad $e
+CALL StrSubstr WITH $s="" $a=0 $n=3 INTO $g
+CALL SelfCheck WITH $name="substr/empty-haystack" $got=$g $want="" INTO $e; LET $bad ADD $bad $e
+EMIT ""
+
+CALL StrWhy WITH $name="StrStartsWith" INTO $w
+EMIT CAT "StrStartsWith -- " $w
+CALL StrStartsWith WITH $s="PROGRAM Main" $p="PROGRAM" $at=0 INTO $g
+CALL SelfCheck WITH $name="startswith/at-0" $got=$g $want=1 INTO $e; LET $bad ADD $bad $e
+CALL StrStartsWith WITH $s="PROGRAM Main" $p="Main" $at=8 INTO $g
+CALL SelfCheck WITH $name="startswith/mid" $got=$g $want=1 INTO $e; LET $bad ADD $bad $e
+CALL StrStartsWith WITH $s="PROGRAM Main" $p="Main" $at=7 INTO $g
+CALL SelfCheck WITH $name="startswith/off-by-one" $got=$g $want=0 INTO $e; LET $bad ADD $bad $e
+CALL StrStartsWith WITH $s="ab" $p="abcdef" $at=0 INTO $g
+CALL SelfCheck WITH $name="startswith/needle-longer" $got=$g $want=0 INTO $e; LET $bad ADD $bad $e
+CALL StrStartsWith WITH $s="abc" $p="" $at=1 INTO $g
+CALL SelfCheck WITH $name="startswith/empty-prefix" $got=$g $want=1 INTO $e; LET $bad ADD $bad $e
+CALL StrStartsWith WITH $s="abc" $p="" $at=99 INTO $g
+CALL SelfCheck WITH $name="startswith/empty-prefix-past-end" $got=$g $want=1 INTO $e; LET $bad ADD $bad $e
+CALL StrStartsWith WITH $s="abc" $p="a" $at=99 INTO $g
+CALL SelfCheck WITH $name="startswith/past-end" $got=$g $want=0 INTO $e; LET $bad ADD $bad $e
+CALL StrStartsWith WITH $s="abc" $p="a" $at=-5 INTO $g
+CALL SelfCheck WITH $name="startswith/negative-at-clamps" $got=$g $want=1 INTO $e; LET $bad ADD $bad $e
+CALL StrStartsWith WITH $s="" $p="x" $at=0 INTO $g
+CALL SelfCheck WITH $name="startswith/empty-haystack" $got=$g $want=0 INTO $e; LET $bad ADD $bad $e
+CALL StrEndsWith WITH $s="END PROGRAM" $p="PROGRAM" INTO $g
+CALL SelfCheck WITH $name="endswith/basic" $got=$g $want=1 INTO $e; LET $bad ADD $bad $e
+CALL StrEndsWith WITH $s="ab" $p="xxab" INTO $g
+CALL SelfCheck WITH $name="endswith/needle-longer" $got=$g $want=0 INTO $e; LET $bad ADD $bad $e
+CALL StrEndsWith WITH $s="abc" $p="" INTO $g
+CALL SelfCheck WITH $name="endswith/empty-suffix" $got=$g $want=1 INTO $e; LET $bad ADD $bad $e
+EMIT ""
+
+CALL StrWhy WITH $name="StrIndexFrom" INTO $w
+EMIT CAT "StrIndexFrom -- " $w
+CALL StrIndexFrom WITH $s="a,b,c" $sub="," $from=0 INTO $g
+CALL SelfCheck WITH $name="indexfrom/first" $got=$g $want=1 INTO $e; LET $bad ADD $bad $e
+CALL StrIndexFrom WITH $s="a,b,c" $sub="," $from=2 INTO $g
+CALL SelfCheck WITH $name="indexfrom/second" $got=$g $want=3 INTO $e; LET $bad ADD $bad $e
+CALL StrIndexFrom WITH $s="a,b,c" $sub="," $from=4 INTO $g
+CALL SelfCheck WITH $name="indexfrom/absent-after-from" $got=$g $want=-1 INTO $e; LET $bad ADD $bad $e
+CALL StrIndexFrom WITH $s="abc" $sub="zz" $from=0 INTO $g
+CALL SelfCheck WITH $name="indexfrom/needle-absent" $got=$g $want=-1 INTO $e; LET $bad ADD $bad $e
+CALL StrIndexFrom WITH $s="abc" $sub="abcd" $from=0 INTO $g
+CALL SelfCheck WITH $name="indexfrom/needle-longer" $got=$g $want=-1 INTO $e; LET $bad ADD $bad $e
+CALL StrIndexFrom WITH $s="" $sub="x" $from=0 INTO $g
+CALL SelfCheck WITH $name="indexfrom/empty-haystack" $got=$g $want=-1 INTO $e; LET $bad ADD $bad $e
+CALL StrIndexFrom WITH $s="abc" $sub="a" $from=-9 INTO $g
+CALL SelfCheck WITH $name="indexfrom/negative-from-clamps" $got=$g $want=0 INTO $e; LET $bad ADD $bad $e
+CALL StrIndexFrom WITH $s="abc" $sub="" $from=99 INTO $g
+CALL SelfCheck WITH $name="indexfrom/empty-needle-past-end" $got=$g $want=3 INTO $e; LET $bad ADD $bad $e
+CALL StrIndexFrom WITH $s="abc" $sub="c" $from=99 INTO $g
+CALL SelfCheck WITH $name="indexfrom/from-past-end" $got=$g $want=-1 INTO $e; LET $bad ADD $bad $e
+EMIT ""
+
+CALL StrWhy WITH $name="StrTrim" INTO $w
+EMIT CAT "StrTrim -- " $w
+CALL StrTrim WITH $s="   spaced out   " INTO $g
+CALL SelfCheck WITH $name="trim/both-ends" $got=$g $want="spaced out" INTO $e; LET $bad ADD $bad $e
+CALL StrTrim WITH $s="\t\r\n mixed \n\r\t" INTO $g
+CALL SelfCheck WITH $name="trim/tab-cr-nl" $got=$g $want="mixed" INTO $e; LET $bad ADD $bad $e
+CALL StrTrim WITH $s="" INTO $g
+CALL SelfCheck WITH $name="trim/empty" $got=$g $want="" INTO $e; LET $bad ADD $bad $e
+CALL StrTrim WITH $s="     " INTO $g
+CALL SelfCheck WITH $name="trim/all-space" $got=$g $want="" INTO $e; LET $bad ADD $bad $e
+CALL StrTrim WITH $s="nospace" INTO $g
+CALL SelfCheck WITH $name="trim/nothing-to-do" $got=$g $want="nospace" INTO $e; LET $bad ADD $bad $e
+CALL StrTrim WITH $s=" a b " INTO $g
+CALL SelfCheck WITH $name="trim/keeps-inner-space" $got=$g $want="a b" INTO $e; LET $bad ADD $bad $e
+EMIT ""
+
+CALL StrWhy WITH $name="StrRepeat" INTO $w
+EMIT CAT "StrRepeat -- " $w
+CALL StrRepeat WITH $s="ab" $n=3 INTO $g
+CALL SelfCheck WITH $name="repeat/basic" $got=$g $want="ababab" INTO $e; LET $bad ADD $bad $e
+CALL StrRepeat WITH $s="ab" $n=0 INTO $g
+CALL SelfCheck WITH $name="repeat/zero" $got=$g $want="" INTO $e; LET $bad ADD $bad $e
+CALL StrRepeat WITH $s="ab" $n=-4 INTO $g
+CALL SelfCheck WITH $name="repeat/negative" $got=$g $want="" INTO $e; LET $bad ADD $bad $e
+CALL StrRepeat WITH $s="" $n=9 INTO $g
+CALL SelfCheck WITH $name="repeat/empty-unit" $got=$g $want="" INTO $e; LET $bad ADD $bad $e
+EMIT ""
+
+CALL StrWhy WITH $name="StrReplaceFirst" INTO $w
+EMIT CAT "StrReplaceFirst -- " $w
+CALL StrReplaceFirst WITH $s="a,b,c" $find="," $rep=";" INTO $g
+CALL SelfCheck WITH $name="replace/first-only" $got=$g $want="a;b,c" INTO $e; LET $bad ADD $bad $e
+CALL StrReplaceFirst WITH $s="a,b" $find="zz" $rep="!" INTO $g
+CALL SelfCheck WITH $name="replace/needle-absent" $got=$g $want="a,b" INTO $e; LET $bad ADD $bad $e
+CALL StrReplaceFirst WITH $s="ab" $find="abcd" $rep="!" INTO $g
+CALL SelfCheck WITH $name="replace/needle-longer" $got=$g $want="ab" INTO $e; LET $bad ADD $bad $e
+CALL StrReplaceFirst WITH $s="a,b" $find="," $rep="" INTO $g
+CALL SelfCheck WITH $name="replace/delete" $got=$g $want="ab" INTO $e; LET $bad ADD $bad $e
+CALL StrReplaceFirst WITH $s="abc" $find="" $rep="X" INTO $g
+CALL SelfCheck WITH $name="replace/empty-needle-prepends" $got=$g $want="Xabc" INTO $e; LET $bad ADD $bad $e
+CALL StrReplaceFirst WITH $s="" $find="x" $rep="y" INTO $g
+CALL SelfCheck WITH $name="replace/empty-haystack" $got=$g $want="" INTO $e; LET $bad ADD $bad $e
+CALL StrReplaceFirst WITH $s="aaa" $find="aa" $rep="b" INTO $g
+CALL SelfCheck WITH $name="replace/overlap-leftmost" $got=$g $want="ba" INTO $e; LET $bad ADD $bad $e
+EMIT ""
+
+CALL StrWhy WITH $name="StrSplitNth" INTO $w
+EMIT CAT "StrSplitNth -- " $w
+CALL StrSplitNth WITH $s="a,bb,ccc" $sep="," $n=0 INTO $g
+CALL SelfCheck WITH $name="split/field-0" $got=$g $want="a" INTO $e; LET $bad ADD $bad $e
+CALL StrSplitNth WITH $s="a,bb,ccc" $sep="," $n=2 INTO $g
+CALL SelfCheck WITH $name="split/last-field" $got=$g $want="ccc" INTO $e; LET $bad ADD $bad $e
+CALL StrSplitNth WITH $s="a,,b" $sep="," $n=1 INTO $g
+CALL SelfCheck WITH $name="split/empty-field" $got=$g $want="" INTO $e; LET $bad ADD $bad $e
+CALL StrSplitNth WITH $s="a,b" $sep="," $n=7 INTO $g
+CALL SelfCheck WITH $name="split/past-last-field" $got=$g $want="" INTO $e; LET $bad ADD $bad $e
+CALL StrSplitNth WITH $s="a,b" $sep="," $n=-1 INTO $g
+CALL SelfCheck WITH $name="split/negative-n" $got=$g $want="" INTO $e; LET $bad ADD $bad $e
+CALL StrSplitNth WITH $s="a--b--c" $sep="--" $n=1 INTO $g
+CALL SelfCheck WITH $name="split/multichar-sep" $got=$g $want="b" INTO $e; LET $bad ADD $bad $e
+CALL StrSplitNth WITH $s="whole" $sep="" $n=0 INTO $g
+CALL SelfCheck WITH $name="split/empty-sep-is-one-field" $got=$g $want="whole" INTO $e; LET $bad ADD $bad $e
+CALL StrSplitNth WITH $s="" $sep="," $n=0 INTO $g
+CALL SelfCheck WITH $name="split/empty-haystack" $got=$g $want="" INTO $e; LET $bad ADD $bad $e
+CALL StrFieldCount WITH $s="a,bb,ccc" $sep="," INTO $g
+CALL SelfCheck WITH $name="fieldcount/three" $got=$g $want=3 INTO $e; LET $bad ADD $bad $e
+CALL StrFieldCount WITH $s="" $sep="," INTO $g
+CALL SelfCheck WITH $name="fieldcount/empty-is-one" $got=$g $want=1 INTO $e; LET $bad ADD $bad $e
+CALL StrFieldCount WITH $s="a,,b" $sep="," INTO $g
+CALL SelfCheck WITH $name="fieldcount/counts-empty-field" $got=$g $want=3 INTO $e; LET $bad ADD $bad $e
+CALL StrFieldCount WITH $s="a,b" $sep="" INTO $g
+CALL SelfCheck WITH $name="fieldcount/empty-sep" $got=$g $want=1 INTO $e; LET $bad ADD $bad $e
+EMIT ""
+
+CALL StrWhy WITH $name="StrIsSpace" INTO $w
+EMIT CAT "StrIsSpace -- " $w
+CALL StrIsDigit WITH $c="0" INTO $g
+CALL SelfCheck WITH $name="isdigit/zero" $got=$g $want=1 INTO $e; LET $bad ADD $bad $e
+CALL StrIsDigit WITH $c="9" INTO $g
+CALL SelfCheck WITH $name="isdigit/nine" $got=$g $want=1 INTO $e; LET $bad ADD $bad $e
+CALL StrIsDigit WITH $c="/" INTO $g
+CALL SelfCheck WITH $name="isdigit/just-below-zero" $got=$g $want=0 INTO $e; LET $bad ADD $bad $e
+CALL StrIsDigit WITH $c=":" INTO $g
+CALL SelfCheck WITH $name="isdigit/just-above-nine" $got=$g $want=0 INTO $e; LET $bad ADD $bad $e
+CALL StrIsDigit WITH $c="" INTO $g
+CALL SelfCheck WITH $name="isdigit/empty-is-not" $got=$g $want=0 INTO $e; LET $bad ADD $bad $e
+CALL StrIsDigit WITH $c=CHAR "abc" 99 INTO $g
+CALL SelfCheck WITH $name="isdigit/char-past-end" $got=$g $want=0 INTO $e; LET $bad ADD $bad $e
+CALL StrIsAlpha WITH $c="a" INTO $g
+CALL SelfCheck WITH $name="isalpha/lower" $got=$g $want=1 INTO $e; LET $bad ADD $bad $e
+CALL StrIsAlpha WITH $c="Z" INTO $g
+CALL SelfCheck WITH $name="isalpha/upper" $got=$g $want=1 INTO $e; LET $bad ADD $bad $e
+CALL StrIsAlpha WITH $c="_" INTO $g
+CALL SelfCheck WITH $name="isalpha/underscore-is-not" $got=$g $want=0 INTO $e; LET $bad ADD $bad $e
+CALL StrIsAlpha WITH $c="" INTO $g
+CALL SelfCheck WITH $name="isalpha/empty-is-not" $got=$g $want=0 INTO $e; LET $bad ADD $bad $e
+CALL StrIsSpace WITH $c=" " INTO $g
+CALL SelfCheck WITH $name="isspace/space" $got=$g $want=1 INTO $e; LET $bad ADD $bad $e
+CALL StrIsSpace WITH $c="\t" INTO $g
+CALL SelfCheck WITH $name="isspace/tab" $got=$g $want=1 INTO $e; LET $bad ADD $bad $e
+CALL StrIsSpace WITH $c="\r" INTO $g
+CALL SelfCheck WITH $name="isspace/cr" $got=$g $want=1 INTO $e; LET $bad ADD $bad $e
+CALL StrIsSpace WITH $c="\n" INTO $g
+CALL SelfCheck WITH $name="isspace/newline-EXCLUDED" $got=$g $want=0 INTO $e; LET $bad ADD $bad $e
+CALL StrIsSpace WITH $c="" INTO $g
+CALL SelfCheck WITH $name="isspace/empty-is-not" $got=$g $want=0 INTO $e; LET $bad ADD $bad $e
+CALL StrIsSpaceNl WITH $c="\n" INTO $g
+CALL SelfCheck WITH $name="isspacenl/newline-INCLUDED" $got=$g $want=1 INTO $e; LET $bad ADD $bad $e
+CALL StrIsSpaceNl WITH $c=" " INTO $g
+CALL SelfCheck WITH $name="isspacenl/space" $got=$g $want=1 INTO $e; LET $bad ADD $bad $e
+CALL StrIsSpaceNl WITH $c="x" INTO $g
+CALL SelfCheck WITH $name="isspacenl/letter" $got=$g $want=0 INTO $e; LET $bad ADD $bad $e
+CALL StrIsIdentChar WITH $c="q" INTO $g
+CALL SelfCheck WITH $name="isidentchar/letter" $got=$g $want=1 INTO $e; LET $bad ADD $bad $e
+CALL StrIsIdentChar WITH $c="7" INTO $g
+CALL SelfCheck WITH $name="isidentchar/digit" $got=$g $want=1 INTO $e; LET $bad ADD $bad $e
+CALL StrIsIdentChar WITH $c="_" INTO $g
+CALL SelfCheck WITH $name="isidentchar/underscore" $got=$g $want=1 INTO $e; LET $bad ADD $bad $e
+CALL StrIsIdentChar WITH $c="-" INTO $g
+CALL SelfCheck WITH $name="isidentchar/hyphen-is-not" $got=$g $want=0 INTO $e; LET $bad ADD $bad $e
+CALL StrIsIdentChar WITH $c="" INTO $g
+CALL SelfCheck WITH $name="isidentchar/empty-ends-a-cell" $got=$g $want=0 INTO $e; LET $bad ADD $bad $e
+EMIT ""
+
+CALL StrWhy WITH $name="StrIsWordBreak" INTO $w
+EMIT CAT "StrIsWordBreak -- " $w
+CALL StrIsWordBreak WITH $c=" " INTO $g
+CALL SelfCheck WITH $name="wordbreak/space" $got=$g $want=1 INTO $e; LET $bad ADD $bad $e
+CALL StrIsWordBreak WITH $c="\t" INTO $g
+CALL SelfCheck WITH $name="wordbreak/tab" $got=$g $want=1 INTO $e; LET $bad ADD $bad $e
+CALL StrIsWordBreak WITH $c="\r" INTO $g
+CALL SelfCheck WITH $name="wordbreak/cr" $got=$g $want=1 INTO $e; LET $bad ADD $bad $e
+CALL StrIsWordBreak WITH $c="\n" INTO $g
+CALL SelfCheck WITH $name="wordbreak/newline" $got=$g $want=1 INTO $e; LET $bad ADD $bad $e
+CALL StrIsWordBreak WITH $c=";" INTO $g
+CALL SelfCheck WITH $name="wordbreak/semicolon" $got=$g $want=1 INTO $e; LET $bad ADD $bad $e
+CALL StrIsWordBreak WITH $c="=" INTO $g
+CALL SelfCheck WITH $name="wordbreak/equals" $got=$g $want=1 INTO $e; LET $bad ADD $bad $e
+CALL StrIsWordBreak WITH $c="\"" INTO $g
+CALL SelfCheck WITH $name="wordbreak/quote" $got=$g $want=1 INTO $e; LET $bad ADD $bad $e
+CALL StrIsWordBreak WITH $c="" INTO $g
+CALL SelfCheck WITH $name="wordbreak/end-of-string-breaks" $got=$g $want=1 INTO $e; LET $bad ADD $bad $e
+CALL StrIsWordBreak WITH $c="$" INTO $g
+CALL SelfCheck WITH $name="wordbreak/dollar-does-not" $got=$g $want=0 INTO $e; LET $bad ADD $bad $e
+CALL StrIsWordBreak WITH $c="x" INTO $g
+CALL SelfCheck WITH $name="wordbreak/letter-does-not" $got=$g $want=0 INTO $e; LET $bad ADD $bad $e
+EMIT ""
+
+CALL StrWhy WITH $name="StrIsInt" INTO $w
+EMIT CAT "StrIsInt -- " $w
+CALL StrIsInt WITH $s="42" INTO $g
+CALL SelfCheck WITH $name="isint/plain" $got=$g $want=1 INTO $e; LET $bad ADD $bad $e
+CALL StrIsInt WITH $s="-42" INTO $g
+CALL SelfCheck WITH $name="isint/negative" $got=$g $want=1 INTO $e; LET $bad ADD $bad $e
+CALL StrIsInt WITH $s="0007" INTO $g
+CALL SelfCheck WITH $name="isint/leading-zeros" $got=$g $want=1 INTO $e; LET $bad ADD $bad $e
+CALL StrIsInt WITH $s="" INTO $g
+CALL SelfCheck WITH $name="isint/empty" $got=$g $want=0 INTO $e; LET $bad ADD $bad $e
+CALL StrIsInt WITH $s="-" INTO $g
+CALL SelfCheck WITH $name="isint/bare-minus" $got=$g $want=0 INTO $e; LET $bad ADD $bad $e
+CALL StrIsInt WITH $s="1-2" INTO $g
+CALL SelfCheck WITH $name="isint/minus-inside" $got=$g $want=0 INTO $e; LET $bad ADD $bad $e
+CALL StrIsInt WITH $s="+5" INTO $g
+CALL SelfCheck WITH $name="isint/plus-rejected" $got=$g $want=0 INTO $e; LET $bad ADD $bad $e
+CALL StrIsInt WITH $s="4x" INTO $g
+CALL SelfCheck WITH $name="isint/trailing-letter" $got=$g $want=0 INTO $e; LET $bad ADD $bad $e
+CALL StrIsInt WITH $s=" 4" INTO $g
+CALL SelfCheck WITH $name="isint/leading-space" $got=$g $want=0 INTO $e; LET $bad ADD $bad $e
+EMIT ""
+
+CALL StrWhy WITH $name="NsPut" INTO $w
+EMIT CAT "NsPut -- " $w
+CALL StrWhy WITH $name="NsNext" INTO $w
+EMIT CAT "NsNext -- " $w
+CALL NsPut WITH $value="hi" INTO $g
+CALL SelfCheck WITH $name="nsput/word" $got=$g $want="2:hi," INTO $e; LET $bad ADD $bad $e
+CALL NsPut WITH $value="" INTO $g
+CALL SelfCheck WITH $name="nsput/empty" $got=$g $want="0:," INTO $e; LET $bad ADD $bad $e
+CALL NsPut WITH $value=7 INTO $g
+CALL SelfCheck WITH $name="nsput/int-renders-first" $got=$g $want="1:7," INTO $e; LET $bad ADD $bad $e
+LET $blob "2:hi,5:a,b:c,0:,16:12:not-a-record,"
+CALL NsCount WITH $blob=$blob INTO $g
+CALL SelfCheck WITH $name="nscount/four" $got=$g $want=4 INTO $e; LET $bad ADD $bad $e
+CALL NsNth WITH $blob=$blob $n=0 INTO $g
+CALL SelfCheck WITH $name="nsnth/0" $got=$g $want="hi" INTO $e; LET $bad ADD $bad $e
+CALL NsNth WITH $blob=$blob $n=1 INTO $g
+CALL SelfCheck WITH $name="nsnth/1-holds-comma-and-colon" $got=$g $want="a,b:c" INTO $e; LET $bad ADD $bad $e
+CALL NsNth WITH $blob=$blob $n=2 INTO $g
+CALL SelfCheck WITH $name="nsnth/2-empty-payload" $got=$g $want="" INTO $e; LET $bad ADD $bad $e
+CALL NsNth WITH $blob=$blob $n=3 INTO $g
+CALL SelfCheck WITH $name="nsnth/3-payload-looks-like-a-record" $got=$g $want="12:not-a-record," INTO $e; LET $bad ADD $bad $e
+CALL NsNth WITH $blob=$blob $n=99 INTO $g
+CALL SelfCheck WITH $name="nsnth/past-end" $got=$g $want="" INTO $e; LET $bad ADD $bad $e
+CALL NsNth WITH $blob=$blob $n=-1 INTO $g
+CALL SelfCheck WITH $name="nsnth/negative" $got=$g $want="" INTO $e; LET $bad ADD $bad $e
+CALL NsCount WITH $blob="" INTO $g
+CALL SelfCheck WITH $name="nscount/empty-blob" $got=$g $want=0 INTO $e; LET $bad ADD $bad $e
+CALL NsNth WITH $blob="" $n=0 INTO $g
+CALL SelfCheck WITH $name="nsnth/empty-blob" $got=$g $want="" INTO $e; LET $bad ADD $bad $e
+CALL NsBody WITH $blob="5:hello,6:world!," $pos=0 INTO $g
+CALL SelfCheck WITH $name="nsbody/handwritten-blob-0" $got=$g $want="hello" INTO $e; LET $bad ADD $bad $e
+CALL NsNext WITH $blob="5:hello,6:world!," $pos=0 INTO $g
+CALL SelfCheck WITH $name="nsnext/skips-by-length-prefix" $got=$g $want=8 INTO $e; LET $bad ADD $bad $e
+CALL NsBody WITH $blob="5:hello,6:world!," $pos=8 INTO $g
+CALL SelfCheck WITH $name="nsbody/handwritten-blob-1" $got=$g $want="world!" INTO $e; LET $bad ADD $bad $e
+CALL SelfRoundTrip WITH $seed=0 INTO $g
+CALL SelfCheck WITH $name="netstring/adversarial-round-trip" $got=$g $want="7/7" INTO $e; LET $bad ADD $bad $e
+CALL StrWhy WITH $name="NsColon" INTO $w
+EMIT CAT "NsColon -- " $w
+CALL NsColon WITH $blob="2:hi," $pos=0 INTO $g
+CALL SelfCheck WITH $name="nscolon/at-record-start" $got=$g $want=1 INTO $e; LET $bad ADD $bad $e
+CALL NsColon WITH $blob="11:longer_name," $pos=0 INTO $g
+CALL SelfCheck WITH $name="nscolon/two-digit-prefix" $got=$g $want=2 INTO $e; LET $bad ADD $bad $e
+CALL NsColon WITH $blob="2:hi,0:," $pos=5 INTO $g
+CALL SelfCheck WITH $name="nscolon/mid-blob" $got=$g $want=6 INTO $e; LET $bad ADD $bad $e
+CALL NsColon WITH $blob="" $pos=0 INTO $g
+CALL SelfCheck WITH $name="nscolon/empty-blob-stops-at-cap" $got=$g $want=12 INTO $e; LET $bad ADD $bad $e
+CALL NsColon WITH $blob="no-colon-here-at-all" $pos=0 INTO $g
+CALL SelfCheck WITH $name="nscolon/corrupt-blob-stops-at-cap" $got=$g $want=12 INTO $e; LET $bad ADD $bad $e
+CALL StrCatalog INTO $g
+CALL StrFieldCount WITH $s=$g $sep="," INTO $g
+CALL SelfCheck WITH $name="catalog/names-every-library-block" $got=$g $want=27 INTO $e; LET $bad ADD $bad $e
+EMIT ""
+
+CALL StrWhy WITH $name="PairFind" INTO $w
+EMIT CAT "PairFind -- " $w
+LET $env ""
+CALL NsPut WITH $value="x" INTO $r
+LET $env CAT $env $r
+CALL NsPut WITH $value="i42" INTO $r
+LET $env CAT $env $r
+CALL NsPut WITH $value="longer_name" INTO $r
+LET $env CAT $env $r
+CALL NsPut WITH $value="" INTO $r
+LET $env CAT $env $r
+CALL PairGet WITH $blob=$env $key="x" INTO $g
+CALL SelfCheck WITH $name="pair/first-key" $got=$g $want="i42" INTO $e; LET $bad ADD $bad $e
+CALL PairGet WITH $blob=$env $key="longer_name" INTO $g
+CALL SelfCheck WITH $name="pair/second-key-empty-value" $got=$g $want="" INTO $e; LET $bad ADD $bad $e
+CALL PairFind WITH $blob=$env $key="longer_name" INTO $g
+CALL SelfCheck WITH $name="pair/offset-of-value-record" $got=$g $want=25 INTO $e; LET $bad ADD $bad $e
+CALL PairFind WITH $blob=$env $key="nope" INTO $g
+CALL SelfCheck WITH $name="pair/absent-key" $got=$g $want=-1 INTO $e; LET $bad ADD $bad $e
+CALL PairFind WITH $blob="" $key="x" INTO $g
+CALL SelfCheck WITH $name="pair/empty-env" $got=$g $want=-1 INTO $e; LET $bad ADD $bad $e
+CALL PairFind WITH $blob=$env $key="i42" INTO $g
+CALL SelfCheck WITH $name="pair/value-is-not-a-key" $got=$g $want=-1 INTO $e; LET $bad ADD $bad $e
+EMIT ""
+
+EMIT CAT "failures=" STR $bad
+BRANCH EQ $bad 0 allpass
+EMIT "ALCORSTR FAIL"
+JUMP done
+LABEL allpass
+EMIT "ALCORSTR PASS"
+LABEL done
+END PROGRAM
+
+PROGRAM SelfCheck
+BRANCH EQ $got $want ok
+EMIT CAT CAT "  FAIL " $name CAT "  got=[" CAT STR $got CAT "] want=[" CAT STR $want "]"
+RETURN 1
+LABEL ok
+EMIT CAT "  pass " $name
+RETURN 0
+END PROGRAM
+
+PROGRAM SelfRoundTrip
+LET $blob ""
+LET $k 0
+LABEL enc
+CALL SelfSample WITH $n=$k INTO $v
+BRANCH EQ $v "<<STOP>>" encdone
+CALL NsPut WITH $value=$v INTO $r
+LET $blob CAT $blob $r
+LET $k ADD $k 1
+JUMP enc
+LABEL encdone
+LET $p 0
+LET $j 0
+LET $ok 0
+LABEL dec
+BRANCH GE $p LEN $blob decdone
+CALL NsBody WITH $blob=$blob $pos=$p INTO $got
+CALL SelfSample WITH $n=$j INTO $want
+BRANCH NE $got $want miss
+LET $ok ADD $ok 1
+LABEL miss
+CALL NsNext WITH $blob=$blob $pos=$p INTO $p
+LET $j ADD $j 1
+JUMP dec
+LABEL decdone
+RETURN CAT CAT STR $ok "/" STR $j
+END PROGRAM
+
+PROGRAM SelfSample
+BRANCH EQ $n 0 s0
+BRANCH EQ $n 1 s1
+BRANCH EQ $n 2 s2
+BRANCH EQ $n 3 s3
+BRANCH EQ $n 4 s4
+BRANCH EQ $n 5 s5
+BRANCH EQ $n 6 s6
+RETURN "<<STOP>>"
+LABEL s0
+RETURN "hi"
+LABEL s1
+RETURN ""
+LABEL s2
+RETURN "a,b:c,"
+LABEL s3
+RETURN "12:not-a-record,"
+LABEL s4
+RETURN "line1\nline2"
+LABEL s5
+RETURN "\"quoted\"\tand\ttabs"
+LABEL s6
+RETURN "3:xy,"
+END PROGRAM
+
+PROGRAM StrSlice
+LET $n LEN $s
+LET $i $a
+BRANCH GE $i 0 lodone
+LET $i 0
+LABEL lodone
+LET $j $b
+BRANCH LE $j $n hidone
+LET $j $n
+LABEL hidone
+LET $out ""
+LABEL top
+BRANCH GE $i $j stop
+LET $out CAT $out CHAR $s $i
+LET $i ADD $i 1
+JUMP top
+LABEL stop
+RETURN $out
+END PROGRAM
+
+PROGRAM StrSubstr
+LET $from $a
+BRANCH GE $from 0 lodone
+LET $from 0
+LABEL lodone
+CALL StrSlice WITH $s=$s $a=$from $b=ADD $from $n INTO $out
+RETURN $out
+END PROGRAM
+
+PROGRAM StrStartsWith
+LET $i $at
+BRANCH GE $i 0 lodone
+LET $i 0
+LABEL lodone
+CALL StrSlice WITH $s=$s $a=$i $b=ADD $i LEN $p INTO $got
+RETURN INT EQ $got $p
+END PROGRAM
+
+PROGRAM StrEndsWith
+LET $start SUB LEN $s LEN $p
+BRANCH GE $start 0 fits
+RETURN 0
+LABEL fits
+CALL StrSlice WITH $s=$s $a=$start $b=LEN $s INTO $got
+RETURN INT EQ $got $p
+END PROGRAM
+
+PROGRAM StrIndexFrom
+LET $n LEN $s
+LET $i $from
+BRANCH GE $i 0 lodone
+LET $i 0
+LABEL lodone
+BRANCH LE $i $n hidone
+LET $i $n
+LABEL hidone
+CALL StrSlice WITH $s=$s $a=$i $b=$n INTO $tail
+LET $k FIND $tail $sub
+BRANCH GE $k 0 hit
+RETURN -1
+LABEL hit
+RETURN ADD $k $i
+END PROGRAM
+
+PROGRAM StrTrim
+LET $n LEN $s
+LET $lo 0
+LABEL front
+BRANCH GE $lo $n frontdone
+CALL StrIsSpaceNl WITH $c=CHAR $s $lo INTO $w
+BRANCH NOT $w frontdone
+LET $lo ADD $lo 1
+JUMP front
+LABEL frontdone
+LET $hi $n
+LABEL back
+BRANCH LE $hi $lo backdone
+CALL StrIsSpaceNl WITH $c=CHAR $s SUB $hi 1 INTO $w
+BRANCH NOT $w backdone
+LET $hi SUB $hi 1
+JUMP back
+LABEL backdone
+CALL StrSlice WITH $s=$s $a=$lo $b=$hi INTO $out
+RETURN $out
+END PROGRAM
+
+PROGRAM StrRepeat
+LET $out ""
+LET $k 0
+LABEL top
+BRANCH GE $k $n stop
+LET $out CAT $out $s
+LET $k ADD $k 1
+JUMP top
+LABEL stop
+RETURN $out
+END PROGRAM
+
+PROGRAM StrReplaceFirst
+LET $k FIND $s $find
+BRANCH GE $k 0 hit
+RETURN $s
+LABEL hit
+CALL StrSlice WITH $s=$s $a=0 $b=$k INTO $head
+CALL StrSlice WITH $s=$s $a=ADD $k LEN $find $b=LEN $s INTO $tail
+RETURN CAT $head CAT $rep $tail
+END PROGRAM
+
+PROGRAM StrSplitNth
+LET $w LEN $sep
+BRANCH LT $n 0 none
+BRANCH GT $w 0 seps
+BRANCH EQ $n 0 whole
+RETURN ""
+LABEL whole
+RETURN $s
+LABEL seps
+LET $pos 0
+LET $k 0
+LABEL skip
+BRANCH GE $k $n skipdone
+CALL StrIndexFrom WITH $s=$s $sub=$sep $from=$pos INTO $at
+BRANCH LT $at 0 none
+LET $pos ADD $at $w
+LET $k ADD $k 1
+JUMP skip
+LABEL skipdone
+CALL StrIndexFrom WITH $s=$s $sub=$sep $from=$pos INTO $end
+BRANCH GE $end 0 cut
+LET $end LEN $s
+LABEL cut
+CALL StrSlice WITH $s=$s $a=$pos $b=$end INTO $out
+RETURN $out
+LABEL none
+RETURN ""
+END PROGRAM
+
+PROGRAM StrFieldCount
+LET $w LEN $sep
+BRANCH GT $w 0 seps
+RETURN 1
+LABEL seps
+LET $fields 1
+LET $pos 0
+LABEL top
+CALL StrIndexFrom WITH $s=$s $sub=$sep $from=$pos INTO $at
+BRANCH LT $at 0 stop
+LET $fields ADD $fields 1
+LET $pos ADD $at $w
+JUMP top
+LABEL stop
+RETURN $fields
+END PROGRAM
+
+PROGRAM StrIsDigit
+RETURN INT AND GE $c "0" LE $c "9"
+END PROGRAM
+
+PROGRAM StrIsAlpha
+BRANCH AND GE $c "a" LE $c "z" yes
+BRANCH AND GE $c "A" LE $c "Z" yes
+RETURN 0
+LABEL yes
+RETURN 1
+END PROGRAM
+
+PROGRAM StrIsSpace
+BRANCH EQ $c " " yes
+BRANCH EQ $c "\t" yes
+BRANCH EQ $c "\r" yes
+RETURN 0
+LABEL yes
+RETURN 1
+END PROGRAM
+
+PROGRAM StrIsSpaceNl
+BRANCH EQ $c "\n" yes
+CALL StrIsSpace WITH $c=$c INTO $r
+RETURN $r
+LABEL yes
+RETURN 1
+END PROGRAM
+
+PROGRAM StrIsIdentChar
+CALL StrIsAlpha WITH $c=$c INTO $r
+BRANCH $r yes
+CALL StrIsDigit WITH $c=$c INTO $r
+BRANCH $r yes
+BRANCH EQ $c "_" yes
+RETURN 0
+LABEL yes
+RETURN 1
+END PROGRAM
+
+PROGRAM StrIsWordBreak
+BRANCH EQ $c "" yes
+BRANCH EQ $c " " yes
+BRANCH EQ $c "\t" yes
+BRANCH EQ $c "\r" yes
+BRANCH EQ $c "\n" yes
+BRANCH EQ $c ";" yes
+BRANCH EQ $c "=" yes
+BRANCH EQ $c "\"" yes
+RETURN 0
+LABEL yes
+RETURN 1
+END PROGRAM
+
+PROGRAM StrIsInt
+LET $n LEN $s
+LET $i 0
+BRANCH NE CHAR $s 0 "-" body
+LET $i 1
+LABEL body
+BRANCH GE $i $n no
+LABEL top
+BRANCH GE $i $n yes
+CALL StrIsDigit WITH $c=CHAR $s $i INTO $d
+BRANCH NOT $d no
+LET $i ADD $i 1
+JUMP top
+LABEL yes
+RETURN 1
+LABEL no
+RETURN 0
+END PROGRAM
+
+PROGRAM NsPut
+LET $t STR $value
+RETURN CAT CAT STR LEN $t ":" CAT $t ","
+END PROGRAM
+
+PROGRAM NsColon
+LET $i $pos
+LET $cap ADD $pos 12
+LABEL top
+BRANCH EQ CHAR $blob $i ":" stop
+BRANCH GE $i $cap stop
+LET $i ADD $i 1
+JUMP top
+LABEL stop
+RETURN $i
+END PROGRAM
+
+PROGRAM NsBody
+CALL NsColon WITH $blob=$blob $pos=$pos INTO $c
+CALL StrSlice WITH $s=$blob $a=$pos $b=$c INTO $d
+LET $start ADD $c 1
+CALL StrSlice WITH $s=$blob $a=$start $b=ADD $start INT $d INTO $body
+RETURN $body
+END PROGRAM
+
+PROGRAM NsNext
+CALL NsColon WITH $blob=$blob $pos=$pos INTO $c
+CALL StrSlice WITH $s=$blob $a=$pos $b=$c INTO $d
+RETURN ADD ADD $c 1 ADD INT $d 1
+END PROGRAM
+
+PROGRAM NsNth
+LET $p 0
+LET $k 0
+BRANCH LT $n 0 oob
+LABEL top
+BRANCH GE $k $n stop
+BRANCH GE $p LEN $blob oob
+CALL NsNext WITH $blob=$blob $pos=$p INTO $p
+LET $k ADD $k 1
+JUMP top
+LABEL stop
+BRANCH GE $p LEN $blob oob
+CALL NsBody WITH $blob=$blob $pos=$p INTO $body
+RETURN $body
+LABEL oob
+RETURN ""
+END PROGRAM
+
+PROGRAM NsCount
+LET $p 0
+LET $k 0
+LABEL top
+BRANCH GE $p LEN $blob stop
+CALL NsNext WITH $blob=$blob $pos=$p INTO $p
+LET $k ADD $k 1
+JUMP top
+LABEL stop
+RETURN $k
+END PROGRAM
+
+PROGRAM PairFind
+LET $p 0
+LABEL top
+BRANCH GE $p LEN $blob miss
+CALL NsBody WITH $blob=$blob $pos=$p INTO $k
+CALL NsNext WITH $blob=$blob $pos=$p INTO $v
+BRANCH EQ $k $key hit
+BRANCH GE $v LEN $blob miss
+CALL NsNext WITH $blob=$blob $pos=$v INTO $p
+JUMP top
+LABEL hit
+RETURN $v
+LABEL miss
+RETURN -1
+END PROGRAM
+
+PROGRAM PairGet
+CALL PairFind WITH $blob=$blob $key=$key INTO $at
+BRANCH GE $at 0 hit
+RETURN ""
+LABEL hit
+CALL NsBody WITH $blob=$blob $pos=$at INTO $v
+RETURN $v
+END PROGRAM
+
+PROGRAM StrCatalog
+RETURN "StrSlice,StrSubstr,StrStartsWith,StrEndsWith,StrIndexFrom,StrTrim,StrRepeat,StrReplaceFirst,StrSplitNth,StrFieldCount,StrIsDigit,StrIsAlpha,StrIsSpace,StrIsSpaceNl,StrIsIdentChar,StrIsWordBreak,StrIsInt,NsPut,NsColon,NsBody,NsNext,NsNth,NsCount,PairFind,PairGet,StrCatalog,StrWhy"
+END PROGRAM
+
+PROGRAM StrWhy
+BRANCH EQ $name "StrSlice" slice
+BRANCH EQ $name "StrSubstr" substr
+BRANCH EQ $name "StrStartsWith" starts
+BRANCH EQ $name "StrIndexFrom" indexfrom
+BRANCH EQ $name "StrTrim" trim
+BRANCH EQ $name "StrRepeat" repeat
+BRANCH EQ $name "StrReplaceFirst" replace
+BRANCH EQ $name "StrSplitNth" split
+BRANCH EQ $name "StrIsSpace" isspace
+BRANCH EQ $name "StrIsWordBreak" wordbreak
+BRANCH EQ $name "StrIsIdentChar" identchar
+BRANCH EQ $name "StrIsInt" isint
+BRANCH EQ $name "NsPut" nsput
+BRANCH EQ $name "NsColon" nscolon
+BRANCH EQ $name "NsNext" nsnext
+BRANCH EQ $name "NsNth" nsnth
+BRANCH EQ $name "PairFind" pairfind
+RETURN "no reason recorded. if this routine has a non-obvious shape, record it here."
+LABEL slice
+RETURN "clamps both ends instead of trapping. the only reason to slice inside a lexer is to ask what is there, and asking has to be safe past both ends -- the same argument that made CHAR total."
+LABEL substr
+RETURN "clamps the start BEFORE counting, so n characters means n characters. slicing to start+n first would silently hand back a short string whenever the start was negative."
+LABEL starts
+RETURN "returns int 1 or 0, never a bool. every predicate in this file does, so a caller may add them up, CAT STR them, or BRANCH on them without knowing which kind it got."
+LABEL indexfrom
+RETURN "exists only because native FIND has no start offset. it copies the tail to search it, so scanning a long blob with it is quadratic -- the Ns* walkers step by length prefix instead, and never call this."
+LABEL trim
+RETURN "asks StrIsSpaceNl, not StrIsSpace. trimming a line means the newline too; a lexer must never skip one. the two predicates exist so that difference is stated once, here."
+LABEL repeat
+RETURN "treats every n below 1 as zero rather than trapping, because the callers that want padding compute n by subtraction and a short string makes n negative."
+LABEL replace
+RETURN "replaces the leftmost match only, and an empty needle matches at 0, so it prepends. that is what Python does, and the differential harness compares against Python."
+LABEL split
+RETURN "returns the empty string both for an empty field and for a field past the last one. it cannot tell you which; StrFieldCount is how you ask."
+LABEL isspace
+RETURN "is the reference lexer skip set, space tab CR, exactly. newline is excluded on purpose: in AlcorLang a newline is a statement separator, so a lexer that skipped one would erase statement boundaries."
+LABEL wordbreak
+RETURN "answers yes for the empty string as well as for the six break characters. running off the end ends a word, so a scanner written against this predicate alone cannot spin forever."
+LABEL identchar
+RETURN "is ASCII only, while the reference scans a cell name with Python isalnum, which is Unicode-wide. both reject a non-ASCII cell name -- through different messages. that divergence is known and written down, not fixed."
+LABEL isint
+RETURN "exists because INT traps bad_int. a lexer has to ASK whether a word is a number before converting it, and there is no other way to ask without falling over."
+LABEL nsput
+RETURN "is the plain netstring encoding: decimal length, colon, bytes, comma. the tests decode a hand-written blob in exactly that form to prove it."
+LABEL nscolon
+RETURN "scans at most twelve characters, because a length prefix is decimal digits and nothing here is longer. a corrupt blob then shows up as a bad_int trap at the INT, which is loud, instead of as a scan of the whole tape."
+LABEL nsnext
+RETURN "never reads the payload, only the length prefix. that is what lets a program counter be a byte offset into a blob instead of a record index -- fetch stays O(1) where an index would rescan."
+LABEL nsnth
+RETURN "returns the empty string for an index past the end, which is also a perfectly legal payload. NsCount is how you tell those apart."
+LABEL pairfind
+RETURN "returns the byte offset of the VALUE record, not the value. the environment rewrites a binding in place by splicing around that offset, so it needs the position, not a copy."
+END PROGRAM

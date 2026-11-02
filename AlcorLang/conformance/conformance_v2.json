@@ -1,0 +1,225 @@
+{
+  "version": 2,
+  "schema": "alcorlang.conformance.v2",
+  "spec": "docs/ALCORLANG_SPEC_V2.md (2.0.0)",
+  "tests": [
+    {
+      "id": "m1-v1-write-message",
+      "milestone": "M1",
+      "kind": "parse",
+      "src": "WRITE Message \"hello\" TO File t.txt",
+      "expect": {"type": "module", "body": [{"type": "v1", "verb": "Update", "object": "Message", "value": "hello", "props": {}, "tail": {"dir": "TO", "object": "File", "name": "t.txt"}}]}
+    },
+    {
+      "id": "m1-v1-open-view",
+      "milestone": "M1",
+      "kind": "parse",
+      "src": "OPEN File \"notes.txt\"",
+      "expect": {"type": "module", "body": [{"type": "v1", "verb": "View", "object": "File", "value": "notes.txt", "props": {}, "tail": null}]}
+    },
+    {
+      "id": "m1-v1-send-alias",
+      "milestone": "M1",
+      "kind": "parse",
+      "src": "SEND Message \"hi\" TO Person ada",
+      "expect": {"type": "module", "body": [{"type": "v1", "verb": "Message", "object": "Message", "value": "hi", "props": {}, "tail": {"dir": "TO", "object": "Person", "name": "ada"}}]}
+    },
+    {
+      "id": "m1-v1-set-is-update",
+      "milestone": "M1",
+      "kind": "parse",
+      "src": "SET Task \"x\"",
+      "expect": {"type": "module", "body": [{"type": "v1", "verb": "Update", "object": "Task", "value": "x", "props": {}, "tail": null}]}
+    },
+    {
+      "id": "m1-program-let-emit",
+      "milestone": "M1",
+      "kind": "parse",
+      "src": "PROGRAM\nLET $x ADD 3 4\nEMIT $x\nEND PROGRAM",
+      "expect": {"type": "module", "body": [{"type": "program", "name": null, "props": {}, "body": [{"type": "let", "cell": "x", "expr": {"op": "ADD", "args": [{"int": 3}, {"int": 4}]}}, {"type": "emit", "expr": {"cell": "x"}}]}]}
+    },
+    {
+      "id": "m1-fail-unknown-verb",
+      "milestone": "M1",
+      "kind": "parse",
+      "src": "FROB Task",
+      "expect_error": true
+    },
+    {
+      "id": "m1-fail-bare-cell",
+      "milestone": "M1",
+      "kind": "parse",
+      "src": "PROGRAM\nLET x 5\nEND PROGRAM",
+      "expect_error": true
+    },
+    {
+      "id": "m1-fail-default-loop",
+      "milestone": "M1",
+      "kind": "parse",
+      "src": "PROGRAM\nLET $i 0\nLOOP WHILE LT $i 3\nLET $i ADD $i 1\nEND LOOP\nEND PROGRAM",
+      "expect_error": true
+    },
+    {
+      "id": "m2-arith-emit",
+      "milestone": "M2",
+      "kind": "run",
+      "src": "PROGRAM\nLET $x ADD MUL 2 3 4\nEMIT $x\nEND PROGRAM",
+      "expect": "10\n"
+    },
+    {
+      "id": "m2-interp-cat",
+      "milestone": "M2",
+      "kind": "run",
+      "src": "PROGRAM\nLET $n \"world\"\nEMIT CAT \"hello \" $n\nEND PROGRAM",
+      "expect": "hello world\n"
+    },
+    {
+      "id": "m2-branch-then",
+      "milestone": "M2",
+      "kind": "run",
+      "src": "PROGRAM\nLET $x 5\nBRANCH GT $x 3 big ELSE small\nLABEL small\nEMIT \"small\"\nJUMP done\nLABEL big\nEMIT \"big\"\nJUMP done\nLABEL done\nEND PROGRAM",
+      "expect": "big\n"
+    },
+    {
+      "id": "m2-branch-else",
+      "milestone": "M2",
+      "kind": "run",
+      "src": "PROGRAM\nLET $x 2\nBRANCH GT $x 3 big ELSE small\nLABEL small\nEMIT \"small\"\nJUMP done\nLABEL big\nEMIT \"big\"\nJUMP done\nLABEL done\nEND PROGRAM",
+      "expect": "small\n"
+    },
+    {
+      "id": "m2-loop-sum",
+      "milestone": "M2",
+      "kind": "run",
+      "src": "PROGRAM WITH profile=complete authority=conformance\nLET $i 1\nLET $sum 0\nLOOP WHILE LE $i 5\nLET $sum ADD $sum $i\nLET $i ADD $i 1\nEND LOOP\nEMIT $sum\nEND PROGRAM",
+      "expect": "15\n"
+    },
+    {
+      "id": "m2-minsky-double",
+      "milestone": "M2",
+      "kind": "run",
+      "src": "PROGRAM WITH profile=complete authority=conformance\nLET $c1 3\nLET $c2 0\nLABEL q0\nBRANCH EQ $c1 0 qhalt ELSE q1\nLABEL q1\nLET $c1 SUB $c1 1\nLET $c2 ADD $c2 2\nJUMP q0\nLABEL qhalt\nEMIT $c2\nEND PROGRAM",
+      "expect": "6\n"
+    },
+    {
+      "id": "m2-string-len-str",
+      "milestone": "M2",
+      "kind": "run",
+      "src": "PROGRAM\nLET $w \"alcor\"\nEMIT LEN $w\nEMIT CAT STR LEN $w \" letters\"\nEND PROGRAM",
+      "expect": "5\n5 letters\n"
+    },
+    {
+      "id": "m2-call-return",
+      "milestone": "M2",
+      "kind": "run",
+      "src": "PROGRAM Main\nLET $n 7\nCALL Double WITH $x=$n INTO $r\nEMIT $r\nEND PROGRAM\nPROGRAM Double\nLET $y MUL $x 2\nRETURN $y\nEND PROGRAM",
+      "expect": "14\n"
+    },
+    {
+      "id": "m2-recursion-fact",
+      "milestone": "M2",
+      "kind": "run",
+      "src": "PROGRAM Main WITH profile=complete authority=conformance\nCALL Fact WITH $n=5 INTO $r\nEMIT $r\nEND PROGRAM\nPROGRAM Fact\nBRANCH LE $n 1 base ELSE rec\nLABEL base\nRETURN 1\nLABEL rec\nLET $m SUB $n 1\nCALL Fact WITH $n=$m INTO $sub\nRETURN MUL $n $sub\nEND PROGRAM",
+      "expect": "120\n"
+    },
+    {
+      "id": "m2-read-input",
+      "milestone": "M2",
+      "kind": "run",
+      "src": "PROGRAM\nREAD $line\nEMIT CAT \"got: \" $line\nEND PROGRAM",
+      "input": "ping\n",
+      "expect": "got: ping\n"
+    },
+    {
+      "id": "m2-trap-div-zero",
+      "milestone": "M2",
+      "kind": "run",
+      "src": "PROGRAM\nEMIT \"before\"\nEMIT DIV 1 0\nEND PROGRAM",
+      "expect": "before\nTRAP div_zero\n"
+    },
+    {
+      "id": "m2-trap-undefined-cell",
+      "milestone": "M2",
+      "kind": "run",
+      "src": "PROGRAM\nEMIT $ghost\nEND PROGRAM",
+      "expect": "TRAP undefined_cell\n"
+    },
+    {
+      "id": "m2-refused-unsigned-complete",
+      "milestone": "M2",
+      "kind": "run",
+      "src": "PROGRAM WITH profile=complete\nLET $i 0\nLOOP WHILE LT $i 3\nLET $i ADD $i 1\nEND LOOP\nEMIT $i\nEND PROGRAM",
+      "expect": "REFUSED unsigned_complete\n"
+    },
+    {
+      "id": "m2-interp-not-eval",
+      "milestone": "M2",
+      "kind": "run",
+      "src": "PROGRAM\nLET $m \"WRITE Message \\\"x\\\" TO File t.txt\"\nEMIT $m\nEND PROGRAM",
+      "expect": "WRITE Message \"x\" TO File t.txt\n"
+    },
+    {
+      "id": "m2-gate-not-wired-receipt",
+      "milestone": "M2",
+      "kind": "gate",
+      "src": "PROGRAM WITH profile=complete authority=conformance\nLET $i 0\nLOOP WHILE LT $i 2\nWRITE Message \"tick\" TO File out.txt\nLET $i ADD $i 1\nEND LOOP\nEND PROGRAM",
+      "receipt": "receipts/*.json"
+    },
+    {
+      "id": "m3-lower-arith",
+      "milestone": "M3",
+      "kind": "lower_python",
+      "src": "PROGRAM\nLET $x ADD MUL 2 3 4\nEMIT $x\nEND PROGRAM",
+      "expect": "10\n"
+    },
+    {
+      "id": "m3-lower-minsky",
+      "milestone": "M3",
+      "kind": "lower_python",
+      "src": "PROGRAM WITH profile=complete authority=conformance\nLET $c1 3\nLET $c2 0\nLABEL q0\nBRANCH EQ $c1 0 qhalt ELSE q1\nLABEL q1\nLET $c1 SUB $c1 1\nLET $c2 ADD $c2 2\nJUMP q0\nLABEL qhalt\nEMIT $c2\nEND PROGRAM",
+      "expect": "6\n"
+    },
+    {
+      "id": "m4-lower-c-main",
+      "milestone": "M4",
+      "kind": "lower_c",
+      "src": "PROGRAM\nLET $x ADD 1 2\nEMIT $x\nEND PROGRAM",
+      "expect_contains": ["int main"]
+    },
+    {
+      "id": "m4-lower-c-gate-reserved-closed",
+      "milestone": "M4",
+      "kind": "lower_c",
+      "src": "PROGRAM WITH profile=complete authority=conformance\nWRITE Message \"tick\" TO File out.txt\nEND PROGRAM",
+      "expect_contains": ["int main", "alcor_gate_effect_v1", "effect_host_unavailable"]
+    },
+    {
+      "id": "m2-unicode-len-ascii",
+      "milestone": "M2",
+      "kind": "run",
+      "src": "PROGRAM\nEMIT LEN \"alcor\"\nEND PROGRAM",
+      "expect": "5\n"
+    },
+    {
+      "id": "m2-unicode-len-bmp",
+      "milestone": "M2",
+      "kind": "run",
+      "src": "PROGRAM\nEMIT LEN \"caf\u00e9\"\nEND PROGRAM",
+      "expect": "4\n"
+    },
+    {
+      "id": "m2-unicode-len-astral",
+      "milestone": "M2",
+      "kind": "run",
+      "src": "PROGRAM\nEMIT LEN \"\ud83d\ude00\"\nEND PROGRAM",
+      "expect": "1\n"
+    },
+    {
+      "id": "m2-unicode-len-cat",
+      "milestone": "M2",
+      "kind": "run",
+      "src": "PROGRAM\nEMIT LEN CAT \"caf\u00e9\" \"\ud83d\ude00\"\nEND PROGRAM",
+      "expect": "5\n"
+    }
+  ]
+}

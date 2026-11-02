@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="963" viewBox="0 0 960 963" role="img" aria-label="AlcorComputer: contract-bound computer use on a fake desktop">
+  <rect width="960" height="963" rx="10" fill="#0d1117"/>
+  <rect width="960" height="34" rx="10" fill="#161b22"/>
+  <rect y="24" width="960" height="10" fill="#161b22"/>
+  <circle cx="20" cy="17" r="6" fill="#ff5f57"/><circle cx="40" cy="17" r="6" fill="#febc2e"/>
+  <circle cx="60" cy="17" r="6" fill="#28c840"/>
+  <text x="480.0" y="22" fill="#8b949e" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13">AlcorComputer: contract-bound computer use on a fake desktop</text>
+  <g font-family="Cascadia Mono, Consolas, Menlo, DejaVu Sans Mono, monospace" font-size="14">
+        <text x="18" y="66" fill="#7ee787" xml:space="preserve">$ python AlcorComputer/demo/run_demo.py</text>
+    <text x="18" y="85" fill="#e6edf3" xml:space="preserve"></text>
+    <text x="18" y="104" fill="#e6edf3" xml:space="preserve">== 1. Mediator: a click proposal bound to an observation the authority produced ==</text>
+    <text x="18" y="123" fill="#e6edf3" xml:space="preserve">  [PASS] the lane completed prepared -&gt; search -&gt; read -&gt; completed</text>
+    <text x="18" y="142" fill="#e6edf3" xml:space="preserve">  readiness : validation_ready=True</text>
+    <text x="18" y="161" fill="#e6edf3" xml:space="preserve">  boundary  : actuation_backend_present=False network_access_present=False</text>
+    <text x="18" y="180" fill="#e6edf3" xml:space="preserve">  [PASS] the mediator is ready only because the pin matches the live authority contract</text>
+    <text x="18" y="199" fill="#e6edf3" xml:space="preserve">  [PASS] validate accepts the bound pair without consuming it</text>
+    <text x="18" y="218" fill="#e6edf3" xml:space="preserve">  stage     : reason=staged_no_input input_fired=False</text>
+    <text x="18" y="237" fill="#e6edf3" xml:space="preserve">  [PASS] stage consumes the proposal once and fires no input</text>
+    <text x="18" y="256" fill="#e6edf3" xml:space="preserve">  [PASS] a replay with a fresh bundle nonce is refused  (replay)</text>
+    <text x="18" y="275" fill="#e6edf3" xml:space="preserve">  [PASS] the ledger holds only SHA-256 hashes  (1 hash)</text>
+    <text x="18" y="294" fill="#e6edf3" xml:space="preserve">  chain the authority never registered           -&gt; forged_observe_click</text>
+    <text x="18" y="313" fill="#e6edf3" xml:space="preserve">  [PASS] chain the authority never registered: forged_observe_click</text>
+    <text x="18" y="332" fill="#e6edf3" xml:space="preserve">  scope that already expired                     -&gt; stale_scope</text>
+    <text x="18" y="351" fill="#e6edf3" xml:space="preserve">  [PASS] scope that already expired: stale_scope</text>
+    <text x="18" y="370" fill="#e6edf3" xml:space="preserve">  two candidates on screen                       -&gt; projection_failure</text>
+    <text x="18" y="389" fill="#e6edf3" xml:space="preserve">  [PASS] two candidates on screen: projection_failure</text>
+    <text x="18" y="408" fill="#e6edf3" xml:space="preserve">  bundle with an unknown field                   -&gt; unknown_field</text>
+    <text x="18" y="427" fill="#e6edf3" xml:space="preserve">  [PASS] bundle with an unknown field: unknown_field</text>
+    <text x="18" y="446" fill="#e6edf3" xml:space="preserve">  bundle asking to type, not click               -&gt; invalid_value</text>
+    <text x="18" y="465" fill="#e6edf3" xml:space="preserve">  [PASS] bundle asking to type, not click: invalid_value</text>
+    <text x="18" y="484" fill="#e6edf3" xml:space="preserve">  bundle written for another mediator contract   -&gt; mediator_contract_mismatch</text>
+    <text x="18" y="503" fill="#e6edf3" xml:space="preserve">  [PASS] bundle written for another mediator contract: mediator_contract_mismatch</text>
+    <text x="18" y="522" fill="#e6edf3" xml:space="preserve">  [PASS] the authority itself will not register an ambiguous chain  (readlane_chain_mismatch)</text>
+    <text x="18" y="541" fill="#e6edf3" xml:space="preserve"></text>
+    <text x="18" y="560" fill="#e6edf3" xml:space="preserve">== 2. App control: a grant-bound session on a fake desktop ==</text>
+    <text x="18" y="579" fill="#e6edf3" xml:space="preserve">  grant     : owner-written, 120 s, 3 events, actions focus/click/type (no key, no move)</text>
+    <text x="18" y="598" fill="#e6edf3" xml:space="preserve">  [PASS] a terminal emulator can never be the target  (shell_app_target_forbidden)</text>
+    <text x="18" y="617" fill="#e6edf3" xml:space="preserve">  click     : reason=performed events_used=1</text>
+    <text x="18" y="636" fill="#e6edf3" xml:space="preserve">  [PASS] a click with a fresh observation reaches the fake host</text>
+    <text x="18" y="655" fill="#e6edf3" xml:space="preserve">... (5 lines omitted) ...</text>
+    <text x="18" y="674" fill="#e6edf3" xml:space="preserve">  [PASS] typing reaches the fake host</text>
+    <text x="18" y="693" fill="#e6edf3" xml:space="preserve">  [PASS] the receipt carries a length and hash, not the text</text>
+    <text x="18" y="712" fill="#e6edf3" xml:space="preserve">  [PASS] the third event is still inside the budget</text>
+    <text x="18" y="731" fill="#e6edf3" xml:space="preserve">  4th event : reason=owner_grant_event_limit_reached</text>
+    <text x="18" y="750" fill="#e6edf3" xml:space="preserve">  [PASS] the grant&#x27;s event budget is exhausted  (owner_grant_event_limit_reached)</text>
+    <text x="18" y="769" fill="#e6edf3" xml:space="preserve">  [PASS] the fake host saw exactly click, type, click  ([&#x27;click&#x27;, &#x27;type&#x27;, &#x27;click&#x27;])</text>
+    <text x="18" y="788" fill="#e6edf3" xml:space="preserve">  receipts  : 3 pending, 3 terminal records on disk</text>
+    <text x="18" y="807" fill="#e6edf3" xml:space="preserve">  [PASS] every effect wrote a pending record before the terminal one</text>
+    <text x="18" y="826" fill="#e6edf3" xml:space="preserve">  [PASS] the durable file never contains the typed text</text>
+    <text x="18" y="845" fill="#e6edf3" xml:space="preserve">  [PASS] receipts name no paths or hosts</text>
+    <text x="18" y="864" fill="#e6edf3" xml:space="preserve"></text>
+    <text x="18" y="883" fill="#e6edf3" xml:space="preserve">== 3. Summary ==</text>
+    <text x="18" y="902" fill="#e6edf3" xml:space="preserve">  [PASS] no real OS call was attempted (subprocess and CDLL tripwires)</text>
+    <text x="18" y="921" fill="#e6edf3" xml:space="preserve"></text>
+    <text x="18" y="940" fill="#e6edf3" xml:space="preserve">demo finished: 0 failed expectation(s)</text>
+  </g>
+</svg>

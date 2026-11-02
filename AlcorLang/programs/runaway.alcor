@@ -1,0 +1,20 @@
+PROGRAM Eater WITH profile=complete authority=conformance fuel=1200
+LET $round 0
+LET $bite 1
+LET $eaten 0
+
+EMIT "an energy eater. it has no stopping condition. read that again."
+EMIT "the default profile could not host this: LOOP and backward JUMP are"
+EMIT "compile errors there, so a default program's halting is decided before"
+EMIT "it runs. this one is complete-profile, and the only thing between it"
+EMIT "and forever is fuel."
+
+LABEL feed
+LET $round ADD $round 1
+LET $bite ADD $bite 1
+LET $eaten ADD $eaten $bite
+EMIT CAT CAT CAT "round " STR $round " -- eaten " STR $eaten
+JUMP feed
+
+EMIT "unreachable. if you ever see this line, the machine is lying."
+END PROGRAM

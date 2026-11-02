@@ -1,0 +1,64 @@
+PROGRAM CliMemory WITH profile=default
+
+READ $schema
+READ $effect_authority
+READ $has_evidence
+READ $evidence_failed
+READ $echoes_heard
+READ $asserts_result
+
+BRANCH NE $schema "alcor.cli.memory.request.v1" refuse_schema
+BRANCH NE $effect_authority "false" refuse_authority
+BRANCH EQ $has_evidence "yes" stamped
+BRANCH EQ $echoes_heard "yes" testimony
+BRANCH EQ $asserts_result "yes" refuse_claim
+BRANCH EQ $evidence_failed "yes" unstamped
+EMIT "schema=alcor.cli.memory.decision.v1"
+EMIT "kind=unsourced"
+EMIT "reason=a-row-without-evidence-is-kept-only-as-unsourced"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL stamped
+EMIT "schema=alcor.cli.memory.decision.v1"
+EMIT "kind=stamped"
+EMIT "reason=the-row-cites-evidence-whose-hash-it-carries"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL testimony
+EMIT "schema=alcor.cli.memory.decision.v1"
+EMIT "kind=testimony"
+EMIT "reason=the-row-echoes-heard-text-so-it-is-testimony-not-observation"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL unstamped
+EMIT "schema=alcor.cli.memory.decision.v1"
+EMIT "kind=evidence_unstamped"
+EMIT "reason=evidence-was-named-but-could-not-be-stamped"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL refuse_claim
+EMIT "schema=alcor.cli.memory.decision.v1"
+EMIT "kind=refuse"
+EMIT "reason=a-result-claimed-without-evidence-is-not-admitted-cite-the-check"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL refuse_schema
+EMIT "schema=alcor.cli.memory.decision.v1"
+EMIT "kind=refuse"
+EMIT "reason=request-schema-mismatch"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL refuse_authority
+EMIT "schema=alcor.cli.memory.decision.v1"
+EMIT "kind=refuse"
+EMIT "reason=effect-authority-must-be-false"
+EMIT "effect_authority=false"
+
+LABEL done
+END PROGRAM

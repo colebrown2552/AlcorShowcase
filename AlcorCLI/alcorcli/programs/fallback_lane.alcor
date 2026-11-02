@@ -1,0 +1,66 @@
+PROGRAM AlcorFallbackLane WITH profile=default
+
+READ $schema
+READ $effect_authority
+READ $fast_state
+READ $deep_state
+READ $flash_state
+READ $fallback_state
+
+BRANCH NE $schema "alcor.fallback-lane.request.v1" refuse_schema
+BRANCH NE $effect_authority "false" refuse_authority
+BRANCH EQ $fast_state "up" local_available
+BRANCH EQ $deep_state "up" local_available
+BRANCH EQ $flash_state "up" local_available
+BRANCH NE $fallback_state "installed" fallback_missing
+
+EMIT "schema=alcor.fallback-lane.decision.v1"
+EMIT "eligible=true"
+EMIT "route=remote-fallback"
+EMIT "reason=all-local-model-lanes-unavailable"
+EMIT "operations=observe,submit_exact_sha_patch_request,read_receipts"
+EMIT "model_authority=false"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL local_available
+EMIT "schema=alcor.fallback-lane.decision.v1"
+EMIT "eligible=false"
+EMIT "route=none"
+EMIT "reason=local-model-lane-available"
+EMIT "operations=none"
+EMIT "model_authority=false"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL fallback_missing
+EMIT "schema=alcor.fallback-lane.decision.v1"
+EMIT "eligible=false"
+EMIT "route=none"
+EMIT "reason=fallback-not-installed"
+EMIT "operations=none"
+EMIT "model_authority=false"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL refuse_schema
+EMIT "schema=alcor.fallback-lane.decision.v1"
+EMIT "eligible=false"
+EMIT "route=none"
+EMIT "reason=request-schema-mismatch"
+EMIT "operations=none"
+EMIT "model_authority=false"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL refuse_authority
+EMIT "schema=alcor.fallback-lane.decision.v1"
+EMIT "eligible=false"
+EMIT "route=none"
+EMIT "reason=effect-authority-must-be-false"
+EMIT "operations=none"
+EMIT "model_authority=false"
+EMIT "effect_authority=false"
+
+LABEL done
+END PROGRAM

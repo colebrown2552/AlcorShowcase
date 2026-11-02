@@ -1,0 +1,1053 @@
+/* Arcana: the shareable, brand-neutral base. Source: STYLE_STANDARD.md (2026-10-28).
+ *
+ * The canonical components of the style standard, built only on tokens. This file assumes nothing about
+ * the Alcor Industries site: no body scope, no legacy class names, no font files, no brand colors in the
+ * rules. It is meant to ship unchanged inside client WordPress themes.
+ *
+ *   Eyebrow   .eyebrow
+ *   Buttons   .btn  .btn--primary  .btn--secondary  .btn--compact
+ *   Links     .link-arrow
+ *   Cards     .card-grid > .card > .card__media + .card__body > (.eyebrow, h3, p, .card__actions)
+ *   Chips     .chip
+ *   Sections  .section  .section--band  .section-head  .section-cta  .lede
+ *   Forms     .form  .form-row  .form-label  .form-optional  .form-note  (+ input, select, textarea inside .form)
+ *   Media     .app-tile (monogram fallback; set --app-color)
+ *   Type      .h1 .h2 .h3 .small, and the same sizes on the headings inside .section-head and .card__body
+ *
+ * THEMING. Every value below is a custom property. The defaults sit in :where(:root), which has zero
+ * specificity, so a theme's own :root (design-system.css on alcor-industries.com, a <name>-arcana.css
+ * sub-theme on a client site) wins whatever the load order. The Alcor colors in the defaults are only
+ * fallbacks; the components read the tokens, never the values.
+ *
+ * Do not confuse this file with arcana-archetypes.css (the [data-arcana] Archetype layer) or with
+ * alcor-arcana.css (the Alcor Industries sub-theme: Inter, legacy class mappings, header, footer).
+ *
+ * TYPE AND RHYTHM (owner 10-29: "sora 700 across the site for headings and subheadings ... standardize").
+ * Headings are Sora 700 (--font-display), everything else is the body face. One scale: each level has a
+ * size, a leading and a tracking token, and one space token below it. Sections, page heroes and the
+ * paragraph and list rhythm are tokens too. The token block is brand-neutral; the last section of this file
+ * applies it to the Alcor Industries marketing pages (body.alcor-std) at a weight that outranks the old
+ * per-page one-offs, so app screens and the Archetype sample sites keep their own type.
+ */
+
+/* Sora 700, self-hosted (SIL OFL 1.1, latin subset, license and source in fonts/brands/sora-OFL.txt).
+ * "Sora Fallback" is Arial Bold scaled to Sora's widths and line box, so the swap does not move the layout. */
+@font-face {
+  font-family: 'Sora Fallback';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Arial Bold'), local('Arial-BoldMT'), local('Liberation Sans Bold'),
+    local('LiberationSans-Bold'), local('Helvetica Neue Bold'), local('Roboto Bold');
+  size-adjust: 105.4%;
+  ascent-override: 92%;
+  descent-override: 27.5%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'Sora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('../fonts/brands/sora-normal-700.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304,
+    U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* ===== Token defaults (zero specificity) ===== */
+
+:where(:root) {
+  --font-body: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Sora', 'Sora Fallback', 'Inter', system-ui, sans-serif;
+  --font-action: var(--font-body);
+
+  --void: #050608;
+  --surface: #0b0d13;
+  --surface-raised: #11131b;
+  --paper: #f6f0e4;
+  --muted: #b8bec8;
+  --quiet: #959dac;
+  --cyan: #53d9d4;
+  --violet: #b38cff;
+  --gold: #d7b56d;
+  --red: #ff4e6a;
+  --action-primary: var(--cyan);
+  --action-primary-hover: #7de3df;
+  --action-ink: #06110f;
+
+  --line: rgba(246, 240, 228, 0.1);
+  --line-control: rgba(246, 240, 228, 0.22);
+  --line-hover: rgba(246, 240, 228, 0.32);
+
+  --radius-card: 16px;
+  --radius-media: 12px;
+  --radius-control: 999px;
+  --radius-input: 10px;
+
+  --type-display: clamp(3.25rem, 1.4rem + 6.4vw, 7rem);
+  --type-h1: clamp(2.75rem, 1.6rem + 4.6vw, 5.25rem);
+  --type-h2: clamp(2rem, 1.3rem + 2.6vw, 3.25rem);
+  --type-h3: 1.25rem;
+  --type-h4: 1.0625rem;
+  --type-lede: 1.1875rem;
+  --type-body: 1.0625rem;
+  --type-small: 0.875rem;
+  /* The homepage display line on phones: the hero column (the viewport less its 16px gutters) over the width of
+   * its longest line as set in the hero ("Got a problem?" measures 7.46em in Sora 700 at -.03em), with 3% to
+   * spare, so it always sets on two lines. */
+  --type-display-phone: calc((100vw - 2rem) / 7.7);
+
+  /* Leading (unitless) and tracking per level. */
+  /* 1.12, not 1.05 (owner 10-29 "increase the space between lines here"): at 1.05 the descender of "problem?"
+   * nearly touched "Ask Alcor!". Only the homepage display line uses this token. */
+  --leading-display: 1.12;
+  --leading-h1: 1.08;
+  --leading-h2: 1.12;
+  --leading-h3: 1.25;
+  --leading-h4: 1.3;
+  --leading-lede: 1.55;
+  --leading-body: 1.6;
+  --leading-small: 1.5;
+  --leading-eyebrow: 1.2;
+  --leading-heading: var(--leading-h1);
+  --track-display: -0.03em;
+  --track-h1: -0.03em;
+  --track-h2: -0.02em;
+  --track-h3: -0.01em;
+
+  /* Vertical rhythm: the space after each element, in its own em where it scales with the type. */
+  --space-eyebrow: 14px;
+  --space-h1: 0.5em;
+  --space-h2: 0.5em;
+  --space-h3: 0.4em;
+  --space-p: 1em;
+  --space-li: 0.5em;
+  --space-card-title: 12px;
+
+  /* Text-link underline (the secondary arrow links: alcor-arcana.css section 4). */
+  --link-underline-thickness: 1px;
+  --link-underline-offset: 3px;
+  --link-underline-color: rgba(246, 240, 228, 0.35);
+
+  --button-height: 48px;
+  --button-height-compact: 40px;
+  --button-font: 600 0.9375rem/1 var(--font-body);
+  --button-padding: 0 22px;
+  --button-shadow: none;
+
+  --site-column: 1180px;
+  --site-gutter: 20px;
+  /* Section padding-block and the page hero's space under the header bar: phone, tablet (640), desktop (1024). */
+  --section-y-phone: 64px;
+  --section-y-tablet: 88px;
+  --section-y-desktop: 112px;
+  --section-y: var(--section-y-phone);
+  /* The Archetypes hub's measured top air on staging (owner: "more top spacing like archetypes"): 126px at 1440 and
+   * 96px at 768-1024. Its 128px on phones is twice any other page and costs the first screen, so phones take one
+   * header height. */
+  --page-hero-gap-phone: 72px;
+  --page-hero-gap-tablet: 96px;
+  --page-hero-gap-desktop: 64px; /* owner 2026-10-31: was 128px */
+
+  /* Form fields: the caret and the text never touch the border. */
+  --field-pad-y: 12px;
+  --field-pad-y-area: 14px;
+  --field-pad-x: 16px;
+  --leading-field: 1.5;
+  --page-hero-gap: var(--page-hero-gap-phone);
+  --header-offset: 72px;
+}
+@media (min-width: 640px) {
+  :where(:root) {
+    --site-gutter: 40px;
+    --section-y: var(--section-y-tablet);
+    --page-hero-gap: var(--page-hero-gap-tablet);
+  }
+}
+@media (min-width: 1024px) {
+  :where(:root) {
+    --site-gutter: 72px;
+    --section-y: var(--section-y-desktop);
+    --page-hero-gap: var(--page-hero-gap-desktop);
+  }
+}
+
+/* ===== Type scale ===== */
+
+.h1,
+.section-head > h1 {
+  max-width: 16ch;
+  margin-block-end: var(--space-h1);
+  color: var(--paper);
+  font-family: var(--font-display);
+  font-size: var(--type-h1);
+  font-weight: 700;
+  line-height: var(--leading-h1);
+  letter-spacing: var(--track-h1);
+  text-wrap: balance;
+}
+.h2,
+.section-head > h2 {
+  max-width: 20ch;
+  margin-block-end: var(--space-h2);
+  color: var(--paper);
+  font-family: var(--font-display);
+  font-size: var(--type-h2);
+  font-weight: 700;
+  line-height: var(--leading-h2);
+  letter-spacing: var(--track-h2);
+  text-wrap: balance;
+}
+.h3,
+.card__body > h3 {
+  color: var(--paper);
+  font-family: var(--font-display);
+  font-size: var(--type-h3);
+  font-weight: 700;
+  line-height: var(--leading-h3);
+  letter-spacing: var(--track-h3);
+}
+.lede,
+.section-head > p:not(.eyebrow) {
+  max-width: 60ch;
+  color: var(--muted);
+  font-size: var(--type-lede);
+  line-height: var(--leading-lede);
+  text-wrap: pretty;
+}
+.small,
+.form-note {
+  color: var(--quiet);
+  font-size: var(--type-small);
+  line-height: var(--leading-small);
+}
+
+/* ===== Eyebrow: a category label, never a product name or a price ===== */
+
+.eyebrow {
+  display: block;
+  margin: 0 0 var(--space-eyebrow);
+  color: var(--eyebrow-color, var(--violet));
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: var(--leading-eyebrow);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* ===== Buttons: .btn plus a modifier ===== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* About one word space: product names are wrapped in spans, and flex drops the space before them. */
+  gap: 0.35em;
+  box-sizing: border-box;
+  height: var(--button-height);
+  padding: var(--button-padding);
+  border: 1px solid transparent;
+  border-radius: var(--radius-control);
+  box-shadow: var(--button-shadow);
+  font: var(--button-font);
+  letter-spacing: -0.005em;
+  text-transform: none;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease,
+    transform 150ms ease;
+}
+.btn--primary {
+  border-color: var(--action-primary);
+  background: var(--action-primary);
+  color: var(--action-ink);
+}
+.btn--primary:hover:not(:disabled):not([aria-disabled='true']) {
+  border-color: var(--action-primary-hover);
+  background: var(--action-primary-hover);
+  transform: translateY(-1px);
+}
+.btn--secondary {
+  border-color: var(--line-control);
+  background: transparent;
+  color: var(--paper);
+}
+.btn--secondary:hover:not(:disabled):not([aria-disabled='true']) {
+  border-color: var(--line-hover);
+  background: color-mix(in srgb, var(--paper) 6%, transparent);
+}
+.btn--compact {
+  height: var(--button-height-compact);
+  padding: 0 16px;
+  font-size: 0.875rem;
+}
+.btn:disabled,
+.btn[aria-disabled='true'] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+/* Every button and link: a paper ring on keyboard focus only. */
+.btn:focus-visible,
+.link-arrow:focus-visible,
+.chip:focus-visible,
+.card__media a:focus-visible {
+  outline: 2px solid var(--paper);
+  outline-offset: 3px;
+}
+/* Compact buttons keep a 44px target on phones and touch screens. */
+@media (max-width: 639px), (pointer: coarse) {
+  .btn--compact {
+    height: auto;
+    min-height: 44px;
+  }
+  .link-arrow {
+    min-height: 44px;
+  }
+}
+
+/* ===== Text link with an arrow ===== */
+
+.link-arrow {
+  display: inline-flex;
+  align-items: center;
+  color: var(--action-primary);
+  font: 600 0.9375rem/1.4 var(--font-body);
+  text-decoration: none;
+  text-transform: none;
+  transition: color 150ms ease;
+}
+.link-arrow > [aria-hidden='true'] {
+  display: inline-block;
+  margin-left: 6px;
+  transition: transform 150ms ease;
+}
+.link-arrow:hover {
+  color: var(--paper);
+}
+.link-arrow:hover > [aria-hidden='true'] {
+  transform: translateX(3px);
+}
+
+/* ===== Card ===== */
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
+  gap: 20px;
+}
+.card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--paper) 3.5%, transparent),
+      color-mix(in srgb, var(--paper) 1.2%, transparent)
+    ),
+    var(--surface);
+}
+/* Only a card that is itself the link moves. */
+a.card,
+.card--link {
+  color: inherit;
+  text-decoration: none;
+  transition:
+    border-color 150ms ease,
+    transform 150ms ease;
+}
+a.card:hover,
+.card--link:hover {
+  border-color: var(--line-hover);
+  transform: translateY(-2px);
+}
+.card__media {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border-bottom: 1px solid var(--line);
+  background: var(--surface-raised);
+}
+.card__media :is(a, picture) {
+  display: block;
+  height: 100%;
+}
+.card__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+.card__body {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-width: 0;
+  padding: 24px;
+}
+.card__body > h3 {
+  margin: 0 0 var(--space-h3);
+}
+.card__body > h3 a {
+  color: inherit;
+  text-decoration: none;
+}
+.card__body > p:not(.eyebrow) {
+  margin: 0;
+  color: var(--muted);
+}
+.card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  margin-top: auto;
+  padding-top: 20px;
+}
+@media (max-width: 639px) {
+  .card__body {
+    padding: 20px;
+  }
+}
+/* The description is never clamped: card copy is written to fit (a cut mid-word reads as broken). */
+
+/* App monogram tile: the media fallback, so a grid never holds an empty box. */
+.app-tile {
+  --app-color: var(--violet);
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  background: radial-gradient(120% 90% at 30% 20%, var(--app-color) 0%, transparent 60%),
+    var(--surface-raised);
+  color: var(--paper);
+}
+.app-tile > :is(span, b, strong, .app-tile__mark) {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  border: 1px solid var(--line-control);
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--void) 40%, transparent);
+  font: 700 28px/1 var(--font-body);
+}
+.card__media > .app-tile {
+  height: 100%;
+  aspect-ratio: auto;
+}
+
+/* ===== Chip: filters and one status badge per card ===== */
+
+.chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--line-control);
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--muted);
+  font: 500 0.8125rem/1 var(--font-body);
+  white-space: nowrap;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease;
+}
+button.chip,
+a.chip {
+  cursor: pointer;
+}
+button.chip:hover,
+a.chip:hover {
+  border-color: var(--line-hover);
+}
+.chip:is(.is-active, [aria-pressed='true'], [aria-selected='true'], [aria-current]) {
+  border-color: var(--paper);
+  background: var(--paper);
+  color: var(--void);
+}
+/* A 44px hit area on phones without growing the chip. */
+@media (max-width: 639px), (pointer: coarse) {
+  button.chip::after,
+  a.chip::after {
+    content: '';
+    position: absolute;
+    inset: -6px 0;
+  }
+}
+
+/* ===== Section ===== */
+
+/* Sections are separated by space, not by decoration: no rule, no gradient. A band changes the background. */
+.section {
+  padding-block: var(--section-y);
+}
+.section--band {
+  background: var(--surface);
+}
+.section-head {
+  margin: 0 0 48px;
+  text-align: left;
+}
+.section-head > .eyebrow + h1,
+.section-head > .eyebrow + h2 {
+  margin-top: 0;
+}
+.section-head > :is(.lede, p:not(.eyebrow)) {
+  margin-top: 16px;
+}
+.section-head--center {
+  max-width: 720px;
+  margin-inline: auto;
+  text-align: center;
+}
+.section-head--center > :is(h1, h2, .lede, p) {
+  margin-inline: auto;
+}
+/* A row of calls to action closing a section. */
+.section-cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  margin: 40px 0 0;
+}
+@media (max-width: 639px) {
+  .section-head {
+    margin-bottom: 32px;
+  }
+}
+
+/* ===== Form: labels, controls, two columns from 640px ===== */
+
+.form {
+  display: grid;
+  gap: 16px;
+}
+.form-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+}
+@media (min-width: 640px) {
+  .form-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.form label,
+.form-label {
+  display: grid;
+  gap: 8px;
+  color: var(--paper);
+  font: 600 0.875rem/1.4 var(--font-body);
+}
+.form-optional {
+  color: var(--quiet);
+  font-weight: 400;
+}
+.form :is(input, select, textarea) {
+  box-sizing: border-box;
+  width: 100%;
+  height: 48px;
+  padding: var(--field-pad-y) var(--field-pad-x);
+  border: 1px solid var(--line-control);
+  border-radius: var(--radius-input);
+  background: color-mix(in srgb, var(--paper) 3%, transparent);
+  color: var(--paper);
+  font: 400 1rem / var(--leading-field) var(--font-body);
+}
+.form textarea {
+  height: auto;
+  min-height: 140px;
+  padding: var(--field-pad-y-area) var(--field-pad-x);
+  resize: vertical;
+}
+.form :is(input, select, textarea):focus {
+  outline: 0;
+  border-color: var(--action-primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--action-primary) 25%, transparent);
+}
+.form :is(input, select, textarea)[aria-invalid='true'] {
+  border-color: var(--red);
+}
+.form-note {
+  margin: 0;
+  line-height: 1.5;
+}
+/* The submit is full width on phones. */
+@media (max-width: 639px) {
+  .form button[type='submit'] {
+    width: 100%;
+  }
+}
+
+/* ===== Reduced motion: no transforms, no transitions ===== */
+
+@media (prefers-reduced-motion: reduce) {
+  .btn,
+  .link-arrow,
+  .link-arrow > [aria-hidden='true'],
+  .card,
+  a.card,
+  .card--link,
+  .chip {
+    transition: none;
+  }
+  .btn--primary:hover:not(:disabled):not([aria-disabled='true']),
+  a.card:hover,
+  .card--link:hover,
+  .link-arrow:hover > [aria-hidden='true'] {
+    transform: none;
+  }
+}
+
+/* ===== Alcor Industries: the type and rhythm standard on the marketing pages ===== */
+/* body.alcor-std marks the marketing pages (functions.php alcor_standard_page()); app screens never carry it, so
+ * their panels keep Inter and their own spacing. Everything is inside <main>, so the site header, the product
+ * header bar and the footer are untouched. The selector repeats .alcor-std five times on purpose: it outranks
+ * the per-page one-offs (up to four classes) without an ID, which is how the old line-heights and margins are
+ * retired. The Archetype sub-brand type (the brand name, tiles, card, swatches, tagline), the AlcorOS monitor and
+ * the sample-site frames keep their own fonts (the same :where() list alcor-arcana.css uses), and the /arcana/
+ * hero wordmark keeps its own leading and tracking. */
+
+/* Sora sets about 6% wider than Inter at the same size and reads larger (a taller x-height), so the heading sizes
+ * are 94% of the Inter scale; the homepage display line keeps its own size. */
+body.alcor-std {
+  --type-h1: clamp(2.5625rem, 1.5rem + 4.3vw, 4.9375rem);
+  --type-h2: clamp(1.875rem, 1.22rem + 2.45vw, 3.0625rem);
+  --type-h3: 1.1875rem;
+  --section-y: var(--section-y-phone);
+  --page-hero-gap: var(--page-hero-gap-phone);
+}
+@media (min-width: 640px) {
+  body.alcor-std {
+    --section-y: var(--section-y-tablet);
+    --page-hero-gap: var(--page-hero-gap-tablet);
+  }
+}
+@media (min-width: 1024px) {
+  body.alcor-std {
+    --section-y: var(--section-y-desktop);
+    --page-hero-gap: var(--page-hero-gap-desktop);
+  }
+}
+
+/* Headings: Sora 700 (beats the Inter !important rule in alcor-arcana.css on specificity). */
+html
+  body.alcor-std.alcor-std.alcor-std.alcor-std.alcor-std
+  main
+  :is(h1, h2, h3, h4):not(
+    :where(
+        .abr-title,
+        .abr-title *,
+        .abr-tile__word,
+        .abr-tile__word *,
+        .abr-card,
+        .abr-card *,
+        .abr-swatches,
+        .abr-swatches *,
+        .abr-tagline,
+        .abr-tagline *,
+        .amd-monitor *,
+        .amd-screen *,
+        .amd-brand-device *,
+        iframe
+      )
+  ) {
+  font-family: var(--font-display) !important;
+  font-weight: 700;
+  font-synthesis: none;
+}
+html
+  body.alcor-std.alcor-std.alcor-std.alcor-std.alcor-std
+  main
+  h1:not(
+    :where(
+        .abr-title,
+        .abr-title *,
+        .abr-tile__word,
+        .abr-tile__word *,
+        .abr-card,
+        .abr-card *,
+        .abr-swatches,
+        .abr-swatches *,
+        .abr-tagline,
+        .abr-tagline *,
+        .amd-monitor *,
+        .amd-screen *,
+        .amd-brand-device *,
+        iframe,
+        .arcana-hero *
+      )
+  ) {
+  margin-block-end: var(--space-h1);
+  line-height: var(--leading-h1);
+  letter-spacing: var(--track-h1);
+}
+html
+  body.alcor-std.alcor-std.alcor-std.alcor-std.alcor-std
+  main
+  h2:not(
+    :where(
+        .abr-title,
+        .abr-title *,
+        .abr-tile__word,
+        .abr-tile__word *,
+        .abr-card,
+        .abr-card *,
+        .abr-swatches,
+        .abr-swatches *,
+        .abr-tagline,
+        .abr-tagline *,
+        .amd-monitor *,
+        .amd-screen *,
+        .amd-brand-device *,
+        iframe
+      )
+  ) {
+  margin-block-end: var(--space-h2);
+  line-height: var(--leading-h2);
+  letter-spacing: var(--track-h2);
+}
+html
+  body.alcor-std.alcor-std.alcor-std.alcor-std.alcor-std
+  main
+  h3:not(
+    :where(
+        .abr-title,
+        .abr-title *,
+        .abr-tile__word,
+        .abr-tile__word *,
+        .abr-card,
+        .abr-card *,
+        .abr-swatches,
+        .abr-swatches *,
+        .abr-tagline,
+        .abr-tagline *,
+        .amd-monitor *,
+        .amd-screen *,
+        .amd-brand-device *,
+        iframe
+      )
+  ) {
+  margin-block-end: var(--space-h3);
+  line-height: var(--leading-h3);
+  letter-spacing: var(--track-h3);
+}
+html
+  body.alcor-std.alcor-std.alcor-std.alcor-std.alcor-std
+  main
+  h4:not(
+    :where(
+        .abr-title,
+        .abr-title *,
+        .abr-tile__word,
+        .abr-tile__word *,
+        .abr-card,
+        .abr-card *,
+        .abr-swatches,
+        .abr-swatches *,
+        .abr-tagline,
+        .abr-tagline *,
+        .amd-monitor *,
+        .amd-screen *,
+        .amd-brand-device *,
+        iframe
+      )
+  ) {
+  margin-block-end: var(--space-h3);
+  font-size: var(--type-h4);
+  line-height: var(--leading-h4);
+  letter-spacing: var(--track-h3);
+}
+/* A heading that closes its box adds no space; the paragraph after a heading takes the heading's space only. */
+html
+  body.alcor-std.alcor-std.alcor-std.alcor-std.alcor-std
+  main
+  :is(h1, h2, h3, h4):not(
+    :where(
+        .abr-title,
+        .abr-title *,
+        .abr-tile__word,
+        .abr-tile__word *,
+        .abr-card,
+        .abr-card *,
+        .abr-swatches,
+        .abr-swatches *,
+        .abr-tagline,
+        .abr-tagline *,
+        .amd-monitor *,
+        .amd-screen *,
+        .amd-brand-device *,
+        iframe
+      )
+  ):last-child {
+  margin-block-end: 0;
+}
+/* The Archetype tagline under its wordmark is brand type and keeps its own top margin (the-tower.css: >= 24px). */
+html
+  body.alcor-std.alcor-std.alcor-std.alcor-std.alcor-std
+  main
+  :is(h1, h2, h3, h4)
+  + p:not(:where(.home .hero *, .arcana-hero *, .abr-tagline)) {
+  margin-block-start: 0;
+}
+/* Card titles: one 12px gap to the card copy (the /for/ audit), a fixed step rather than the h3's .4em. */
+html body.alcor-std.alcor-std.alcor-std.alcor-std.alcor-std main .b2b-card > h3:not(:last-child) {
+  margin-block-end: var(--space-card-title);
+}
+
+/* The homepage display line: 112px on desktop, and on phones the size that keeps "Got a problem? / Ask Alcor!"
+ * on two lines (no taller than the Inter two-line block it replaces). Its margins stay the hero's own. */
+html body.alcor-std.alcor-std.alcor-std.alcor-std.alcor-std.home main .hero h1 {
+  margin-block-end: 0;
+  font-size: min(var(--type-display), var(--type-display-phone));
+  line-height: var(--leading-display);
+  letter-spacing: var(--track-display);
+}
+
+/* Body copy, ledes, small lines and eyebrows: one leading each; paragraphs and list items are spaced by tokens.
+ * The homepage hero copy (tuned for the phone fold) and the /arcana/ hero keep their own. */
+html
+  body.alcor-std.alcor-std.alcor-std.alcor-std.alcor-std
+  main
+  p:not(:where(.home .hero *, .arcana-hero *)) {
+  line-height: var(--leading-body);
+}
+html
+  body.alcor-std.alcor-std.alcor-std.alcor-std.alcor-std
+  main
+  :is(.lede, .section-lede, h1 + p, h2 + p, .section-head > p):not(
+    :where(
+        .home .hero *,
+        .arcana-hero *,
+        .blog-prose *,
+        small,
+        .small,
+        .meta,
+        .ac-note,
+        .ac-status,
+        .form-note,
+        .blog-byline,
+        .eyebrow,
+        .section-kicker,
+        .aui-kicker,
+        .aa-kicker,
+        .av-eyebrow,
+        .aq-eyebrow,
+        .ar-eyebrow,
+        .at-eyebrow,
+        .am-kicker,
+        .aerp-kicker,
+        .agx-eyebrow,
+        .agx-kicker,
+        .abr-eyebrow,
+        .platform-eyebrow,
+        .blog-eyebrow,
+        .creative-arcana__eyebrow
+      )
+  ) {
+  line-height: var(--leading-lede);
+}
+html
+  body.alcor-std.alcor-std.alcor-std.alcor-std.alcor-std
+  main
+  :is(small, .small, .meta, .ac-note, .ac-status, .form-note, .blog-byline):not(
+    :where(.home .hero *, .arcana-hero *)
+  ) {
+  line-height: var(--leading-small);
+}
+html
+  body.alcor-std.alcor-std.alcor-std.alcor-std.alcor-std
+  main
+  :is(
+    .eyebrow,
+    .section-kicker,
+    .aui-kicker,
+    .aa-kicker,
+    .av-eyebrow,
+    .aq-eyebrow,
+    .ar-eyebrow,
+    .at-eyebrow,
+    .am-kicker,
+    .aerp-kicker,
+    .agx-eyebrow,
+    .agx-kicker,
+    .abr-eyebrow,
+    .platform-eyebrow,
+    .blog-eyebrow,
+    .creative-arcana__eyebrow
+  ):not(:where(.home .hero *, .arcana-hero *)) {
+  margin-block-end: var(--space-eyebrow);
+  line-height: var(--leading-eyebrow);
+}
+html
+  body.alcor-std.alcor-std.alcor-std.alcor-std.alcor-std
+  main
+  p:has(+ p):not(:where(.home .hero *, .arcana-hero *)) {
+  margin-block-end: var(--space-p);
+}
+html body.alcor-std.alcor-std.alcor-std.alcor-std.alcor-std main p + p {
+  margin-block-start: 0;
+}
+/* Prose lists only: the "More free tools" card grid (alcor-app-ui.php) is a class-less ul whose rows are equal 1fr
+ * tracks, and a top margin on every card after the first made those cards 8px shorter than the first. The breadcrumb
+ * trail is a class-less ol in a row: a top margin on its current item dropped it below the link (fb-archqa). */
+html
+  body.alcor-std.alcor-std.alcor-std.alcor-std.alcor-std
+  main
+  :is(ul, ol):not([class]):not(:where(.aui-close__tools *, .alcor-breadcrumbs *))
+  > li
+  + li {
+  margin-block-start: var(--space-li);
+}
+
+/* Sections: one padding-block per breakpoint. The homepage keeps its own spacing (its hero and first section are
+ * tuned for the fold on phones); a run of stacked ERP sections shares one gap. */
+html
+  body.alcor-std.alcor-std.alcor-std.alcor-std.alcor-std:not(.home)
+  main
+  :where(
+    section.section:not(:first-child),
+    .agx-section,
+    .ap-section,
+    .av-section,
+    .aq-section,
+    .am-section,
+    .at-section,
+    .agi-faq,
+    .aerp-section,
+    .aerp-close,
+    .arcana-deck,
+    .arcana-read,
+    .arcana-motion,
+    .arcana-how,
+    .arcana-get
+  ) {
+  padding-block: var(--section-y);
+}
+html
+  body.alcor-std.alcor-std.alcor-std.alcor-std.alcor-std:not(.home)
+  main
+  .aerp-section
+  + .aerp-section {
+  padding-block-start: 0;
+}
+
+/* Page heroes: the same space between the header bar and the first line on every page (the homepage and the
+ * /arcana/ full-bleed hero are designed heroes and keep theirs). Under the fixed header the hero also clears
+ * the header; under the sticky product header (which takes its own room) it does not, and the Archetype pages'
+ * main already clears it. */
+html
+  body.alcor-std.alcor-std.alcor-std.alcor-std.alcor-std:not(.home)
+  main
+  > :is(.platform-hero, .hero, .agx-hero, .section, .agi-section):first-child,
+html body.alcor-std.alcor-std.alcor-std.alcor-std.alcor-std main:is(.privacy-page, .blog-main) {
+  padding-block-start: calc(var(--header-offset) + var(--page-hero-gap));
+}
+html
+  body.alcor-std.alcor-std.alcor-std.alcor-std.alcor-std
+  main
+  :is(.ahub-hero, .abr-head, .ap-lp-hero, .aerp-intro, .aq-hero, .av-hero, .am-hero, .at-hero) {
+  padding-block-start: var(--page-hero-gap);
+}
+/* A page hero starts at the top of its box: no full-screen height that floats the copy down (the /for/ pages),
+ * and the Archetypes hub copy no longer centres against its art. */
+html body.alcor-std.alcor-std.alcor-std.alcor-std.alcor-std:not(.home) main > .hero:first-child {
+  min-height: 0;
+  align-content: start;
+}
+html body.alcor-std.alcor-std.alcor-std.alcor-std.alcor-std main .ahub-hero__copy {
+  align-self: start;
+}
+
+/* Form fields on every marketing form (the quote forms, the Ask Alcor dialog): one padding, leading and radius
+ * (owner 10-29: "cursor here needs spacing too"). A select keeps its own right padding for its arrow; honeypot
+ * fields (tabindex -1) and the Archetype sample sites are left alone. */
+html
+  body.alcor-std.alcor-std.alcor-std.alcor-std.alcor-std
+  form
+  :is(
+    input:not(
+        [type='checkbox'],
+        [type='radio'],
+        [type='range'],
+        [type='color'],
+        [type='file'],
+        [type='submit'],
+        [type='button'],
+        [type='hidden'],
+        [type='image'],
+        [type='reset']
+      ),
+    select,
+    textarea
+  ):not([tabindex='-1']):not(:where(.amd-monitor *, .amd-screen *, .amd-brand-device *)) {
+  box-sizing: border-box;
+  padding-block: var(--field-pad-y);
+  padding-inline-start: var(--field-pad-x);
+  border-radius: var(--radius-input);
+  line-height: var(--leading-field);
+}
+html
+  body.alcor-std.alcor-std.alcor-std.alcor-std.alcor-std
+  form
+  :is(
+    input:not(
+        [type='checkbox'],
+        [type='radio'],
+        [type='range'],
+        [type='color'],
+        [type='file'],
+        [type='submit'],
+        [type='button'],
+        [type='hidden'],
+        [type='image'],
+        [type='reset']
+      ),
+    textarea
+  ):not([tabindex='-1']):not(:where(.amd-monitor *, .amd-screen *, .amd-brand-device *)) {
+  padding-inline-end: var(--field-pad-x);
+}
+/* textarea[name] carries the same weight as the input:not([type]) selector above, so it wins by order. */
+html
+  body.alcor-std.alcor-std.alcor-std.alcor-std.alcor-std
+  form
+  textarea[name]:not([tabindex='-1']):not(
+    :where(.amd-monitor *, .amd-screen *, .amd-brand-device *)
+  ) {
+  padding-block: var(--field-pad-y-area);
+}
+
+/* The homepage app tiles on the narrowest phones: two columns leave 100px for the name, and "AlcorReconcile" is
+ * 7.35em in Sora, so the tile gives 10px back from each side and the name sets at 15px. */
+@media (max-width: 374px) {
+  html body.alcor-std.alcor-std.alcor-std.alcor-std.home #products .product .card__body {
+    padding-inline: 10px;
+  }
+  html body.alcor-std.alcor-std.alcor-std.alcor-std.home #products .product .card__body > h3 {
+    font-size: 15px;
+  }
+}
+
+/* The landing intros of AlcorMap, AlcorFinance and AlcorReconcile sit on the app screen itself: their title is
+ * a marketing heading (Sora); every panel heading of the tool below stays in the body face. */
+html body:not(.alcor-std) main :is(.am-intro, .af-hero, .ar-intro) h1 {
+  font-family: var(--font-display) !important;
+  font-weight: 700;
+  font-synthesis: none;
+  line-height: var(--leading-h1);
+  letter-spacing: var(--track-h1);
+}

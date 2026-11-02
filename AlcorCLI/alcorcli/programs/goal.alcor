@@ -1,0 +1,172 @@
+PROGRAM AlcorGoal WITH profile=default
+
+READ $schema
+READ $effect_authority
+READ $goal_state
+READ $satisfaction
+READ $progress
+READ $approach_attempts
+READ $approach_state
+READ $alternatives
+READ $budget
+READ $owner_grant
+
+BRANCH NE $schema "alcor.goal.request.v1" refuse_schema
+BRANCH NE $effect_authority "false" refuse_authority
+
+BRANCH EQ $goal_state "unstated" valid_goal_state
+BRANCH EQ $goal_state "stated" valid_goal_state
+BRANCH EQ $goal_state "pursuing" valid_goal_state
+BRANCH EQ $goal_state "satisfied" valid_goal_state
+BRANCH EQ $goal_state "abandoned" valid_goal_state
+JUMP refuse_cells
+LABEL valid_goal_state
+BRANCH EQ $satisfaction "unavailable" valid_satisfaction
+BRANCH EQ $satisfaction "passing" valid_satisfaction
+BRANCH EQ $satisfaction "failing" valid_satisfaction
+JUMP refuse_cells
+LABEL valid_satisfaction
+BRANCH EQ $progress "unmeasured" valid_progress
+BRANCH EQ $progress "advancing" valid_progress
+BRANCH EQ $progress "regressing" valid_progress
+BRANCH EQ $progress "stalled" valid_progress
+JUMP refuse_cells
+LABEL valid_progress
+BRANCH EQ $approach_attempts "none" valid_approach_attempts
+BRANCH EQ $approach_attempts "few" valid_approach_attempts
+BRANCH EQ $approach_attempts "many" valid_approach_attempts
+JUMP refuse_cells
+LABEL valid_approach_attempts
+BRANCH EQ $approach_state "working" valid_approach_state
+BRANCH EQ $approach_state "refuted" valid_approach_state
+JUMP refuse_cells
+LABEL valid_approach_state
+BRANCH EQ $alternatives "available" valid_alternatives
+BRANCH EQ $alternatives "exhausted" valid_alternatives
+JUMP refuse_cells
+LABEL valid_alternatives
+BRANCH EQ $budget "available" valid_budget
+BRANCH EQ $budget "spent" valid_budget
+JUMP refuse_cells
+LABEL valid_budget
+BRANCH EQ $owner_grant "present" valid_owner_grant
+BRANCH EQ $owner_grant "absent" valid_owner_grant
+JUMP refuse_cells
+LABEL valid_owner_grant
+
+BRANCH EQ $goal_state "unstated" refuse_unstated
+BRANCH EQ $goal_state "abandoned" refuse_abandoned
+BRANCH EQ $satisfaction "unavailable" halt_unmeasurable
+BRANCH EQ $satisfaction "passing" satisfied
+BRANCH EQ $budget "spent" halt_budget
+BRANCH EQ $goal_state "stated" decompose
+BRANCH EQ $approach_state "refuted" change_approach
+BRANCH EQ $progress "unmeasured" halt_blind
+BRANCH EQ $progress "advancing" pursue
+BRANCH EQ $progress "regressing" change_approach
+BRANCH NE $progress "stalled" pursue
+BRANCH EQ $approach_attempts "none" pursue
+BRANCH EQ $approach_attempts "few" pursue
+BRANCH EQ $alternatives "available" change_approach
+BRANCH EQ $owner_grant "present" escalate
+JUMP halt_exhausted
+
+LABEL pursue
+EMIT "schema=alcor.goal.decision.v1"
+EMIT "verdict=pursue"
+EMIT "reason=the-approach-is-moving-the-goal-and-has-not-been-refuted"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL decompose
+EMIT "schema=alcor.goal.decision.v1"
+EMIT "verdict=decompose"
+EMIT "reason=a-goal-with-no-next-step-cannot-be-pursued-one-action-at-a-time"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL change_approach
+EMIT "schema=alcor.goal.decision.v1"
+EMIT "verdict=change-approach"
+EMIT "reason=repeating-an-approach-that-is-not-moving-the-goal-is-not-persistence-it-is-a-loop"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL escalate
+EMIT "schema=alcor.goal.decision.v1"
+EMIT "verdict=escalate"
+EMIT "reason=every-approach-this-agent-has-is-refuted-so-the-next-move-belongs-to-the-owner"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL satisfied
+EMIT "schema=alcor.goal.decision.v1"
+EMIT "verdict=satisfied"
+EMIT "reason=the-satisfaction-check-passed-which-is-the-only-thing-that-may-end-a-goal"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL halt_unmeasurable
+EMIT "schema=alcor.goal.decision.v1"
+EMIT "verdict=halt"
+EMIT "reason=a-goal-whose-satisfaction-cannot-be-checked-can-never-be-finished-only-claimed"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL halt_blind
+EMIT "schema=alcor.goal.decision.v1"
+EMIT "verdict=halt"
+EMIT "reason=progress-is-unmeasured-so-continuing-would-be-motion-that-cannot-be-told-from-work"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL halt_budget
+EMIT "schema=alcor.goal.decision.v1"
+EMIT "verdict=halt"
+EMIT "reason=the-budget-for-this-goal-is-spent-and-spending-more-is-the-owners-decision"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL halt_exhausted
+EMIT "schema=alcor.goal.decision.v1"
+EMIT "verdict=halt"
+EMIT "reason=stalled-with-every-alternative-exhausted-and-no-owner-to-escalate-to"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL refuse_unstated
+EMIT "schema=alcor.goal.decision.v1"
+EMIT "verdict=refuse"
+EMIT "reason=there-is-no-goal-here-to-pursue"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL refuse_abandoned
+EMIT "schema=alcor.goal.decision.v1"
+EMIT "verdict=refuse"
+EMIT "reason=this-goal-was-abandoned-and-resuming-it-is-the-owners-call-not-a-drift-back-into-it"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL refuse_cells
+EMIT "schema=alcor.goal.decision.v1"
+EMIT "verdict=refuse"
+EMIT "reason=goal-policy-input-invalid"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL refuse_schema
+EMIT "schema=alcor.goal.decision.v1"
+EMIT "verdict=refuse"
+EMIT "reason=request-schema-mismatch"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL refuse_authority
+EMIT "schema=alcor.goal.decision.v1"
+EMIT "verdict=refuse"
+EMIT "reason=effect-authority-must-be-false"
+EMIT "effect_authority=false"
+
+LABEL done
+END PROGRAM

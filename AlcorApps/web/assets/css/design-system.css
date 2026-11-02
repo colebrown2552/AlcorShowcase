@@ -1,0 +1,436 @@
+/* Alcor Industries foundations. Existing site and AlcorApp tokens share one source.
+ * Loaded after route CSS; independent Arcana sample-brand documents do not load this file.
+ * Tokens follow the launch style standard, Arcana (STYLE_STANDARD.md section 2). arcana.css is the
+ * brand-neutral base (its token defaults sit in :where(:root), so this :root always wins) and
+ * alcor-arcana.css is the Alcor layer that applies them to the site; both load after everything else.
+ * Inter's @font-face lives in alcor-arcana.css, with "Inter Fallback" (Arial scaled to Inter's metrics) after it
+ * in the stack so the swap does not reflow the text.
+ * The gutter steps at the standard's boundaries (640px and 1024px); component breakpoints stay
+ * the existing site boundaries: compact <=760px, medium <=1100px.
+ * CSS custom properties cannot be used in media-query conditions.
+ */
+:root {
+  --font-body: 'Inter', 'Inter Fallback', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-action: var(--font-body);
+  --void: #050608;
+  --ink: #090a0f;
+  --ink-2: #10121a;
+  --panel: #121420;
+  --panel-2: #181322;
+  --surface: #0b0d13;
+  --surface-raised: #11131b;
+  --paper: #f6f0e4;
+  --muted: #b8bec8;
+  --quiet: #959dac;
+  --violet: #b38cff;
+  --violet-ink: #6240a0;
+  --cyan: #53d9d4;
+  --magenta: #ff5ec4;
+  --magenta-hover: #ff83d5;
+  --magenta-ink: #160919;
+  --action-primary: var(--cyan);
+  --action-primary-hover: #7de3df;
+  --action-ink: #06110f;
+  --gold: #d7b56d;
+  --green: #78d06d;
+  --red: #ff4e6a;
+  --line: rgba(246, 240, 228, 0.1);
+  --line-strong: rgba(179, 140, 255, 0.48);
+  --line-control: rgba(246, 240, 228, 0.22);
+  --line-hover: rgba(246, 240, 228, 0.32);
+  --shadow: rgba(0, 0, 0, 0.38);
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --site-gutter: 72px; /* 1024px and up; stepped down by the media queries below */
+  --site-column: 1180px;
+  --site-wrap: min(var(--site-column), calc(100% - 2 * var(--site-gutter)));
+  --site-pad-x: max(var(--site-gutter), calc((100% - var(--site-column)) / 2));
+  --section-y: clamp(64px, 8vw, 112px);
+  --measure-copy: 65ch;
+  --measure-lede: 60ch;
+  --type-display: clamp(3.25rem, 1.4rem + 6.4vw, 7rem);
+  --type-h1: clamp(2.75rem, 1.6rem + 4.6vw, 5.25rem);
+  --type-h2: clamp(2rem, 1.3rem + 2.6vw, 3.25rem);
+  --type-h3: 1.25rem;
+  --type-h4: 1.125rem;
+  --type-h5: 1rem;
+  --type-h6: 0.875rem;
+  --type-body: 1.0625rem;
+  --type-lede: 1.1875rem;
+  --type-small: 0.875rem;
+  --leading-heading: 1.04;
+  --leading-body: 1.6;
+  --radius-card: 16px;
+  --radius-control: 999px;
+  --radius-input: 10px;
+  --radius-media: 12px;
+  --radius-pill: 999px;
+  --button-height: 48px;
+  --button-font: 600 0.9375rem/1 var(--font-body);
+  --button-padding: 0 22px;
+  --button-height-compact: 40px;
+  --button-shadow: none;
+  --eyebrow-size: 0.75rem;
+  --eyebrow-gap: 14px;
+
+  /* Compatibility aliases: existing product adapters consume the site values. */
+  --aui-void: var(--void);
+  --aui-surface: var(--surface);
+  --aui-surface-2: var(--surface-raised);
+  --aui-line: var(--line);
+  --aui-line-strong: var(--line-control);
+  --aui-paper: var(--paper);
+  --aui-muted: var(--muted);
+  --aui-quiet: var(--quiet);
+  --aui-cyan: var(--cyan);
+  --aui-gold: var(--gold);
+  --aui-violet: var(--violet);
+  --aui-ink: #06110f;
+  --aui-font: var(--font-body);
+  --aui-cta-font: var(--font-action);
+  --aui-magenta: var(--magenta);
+  --aui-magenta-hover: var(--magenta-hover);
+  --aui-magenta-ink: var(--magenta-ink);
+  --aui-edge: var(--site-gutter);
+  --aui-wrap: var(--site-wrap);
+  --aui-pad-x: var(--site-pad-x);
+  --aui-section-y: var(--section-y);
+  --aui-gutter: clamp(16px, 1.7vw, 24px);
+  --aui-h1: var(--type-h1);
+  --aui-h2: var(--type-h2);
+  --aui-radius: var(--radius-control);
+}
+/* Gutter: 72px from 1024px, 40px from 640px to 1023px, 20px below 640px. */
+@media (max-width: 1023px) {
+  :root {
+    --site-gutter: 40px;
+  }
+}
+@media (max-width: 639px) {
+  :root {
+    --site-gutter: 20px;
+  }
+}
+
+/* One eyebrow component. Legacy names are adapters for saved WordPress content
+ * and product templates; they must never define their own typography again.
+ * Tool status labels, navigation labels and fictional sample brands are separate roles.
+ */
+html
+  :is(
+    .alcor-eyebrow,
+    .eyebrow,
+    .section-kicker,
+    .agx-kicker,
+    .agx-eyebrow,
+    .agi-eyebrow,
+    .agi-overline,
+    .aa-kicker,
+    .av-eyebrow,
+    .aq-eyebrow,
+    .ar-eyebrow,
+    .at-eyebrow,
+    .am-kicker,
+    .aerp-kicker,
+    .aui-kicker,
+    .platform-eyebrow,
+    .abr-eyebrow,
+    .arcana-kicker,
+    .alcor-section__eyebrow,
+    .blog-eyebrow,
+    .ap-lp-tag,
+    :where(.av-landing .av-feature-grid article > span, .product-copy > .product-code),
+    .build-note-code,
+    .b2b-tag,
+    .agi-tagline,
+    .agi-section__index,
+    .platform-badge,
+    .abr-card,
+    .abr-tier__label
+  ) {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+  margin: 0 0 var(--eyebrow-gap);
+  padding: 0;
+  color: var(--eyebrow-color, var(--violet));
+  font: 700 var(--eyebrow-size) / 1.5 var(--font-body);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-align: inherit;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-wrap: pretty;
+}
+.alcor-eyebrow--light {
+  --eyebrow-color: var(--paper);
+}
+.alcor-eyebrow--accent {
+  --eyebrow-color: var(--cyan);
+}
+html :is(.alcor-eyebrow--badge, .platform-badge) {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: fit-content;
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+}
+html .abr-card {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+.alcor-eyebrow--muted {
+  --eyebrow-color: var(--muted);
+}
+/* The same component on an intentional light section needs dark purple. */
+[data-theme='paper'] {
+  --eyebrow-color: var(--violet-ink);
+}
+/* Arcana product previews intentionally demonstrate their own brand palettes.
+ * Use their existing foreground ink, which works on both paper and dark variants. */
+main[data-brand] {
+  --eyebrow-color: var(--arc-ink);
+}
+html
+  :is(
+    .alcor-eyebrow,
+    .eyebrow,
+    .section-kicker,
+    .agx-kicker,
+    .agx-eyebrow,
+    .agi-eyebrow,
+    .agi-overline,
+    .aa-kicker,
+    .av-eyebrow,
+    .aq-eyebrow,
+    .ar-eyebrow,
+    .at-eyebrow,
+    .am-kicker,
+    .aerp-kicker,
+    .aui-kicker,
+    .platform-eyebrow,
+    .abr-eyebrow,
+    .arcana-kicker,
+    .alcor-section__eyebrow,
+    .blog-eyebrow,
+    .ap-lp-tag,
+    :where(.av-landing .av-feature-grid article > span, .product-copy > .product-code),
+    .build-note-code,
+    .b2b-tag,
+    .agi-tagline,
+    .agi-section__index,
+    .platform-badge,
+    .abr-card,
+    .abr-tier__label
+  )
+  + :is(h1, h2, h3) {
+  margin-block-start: 0;
+}
+
+/* Shared marketing roles. Composition, artwork and editor controls remain owned
+ * by their route styles; only the repeated visual primitives are centralized. */
+html
+  :is(
+    .ap-lp-hero,
+    .av-landing .av-hero,
+    .aq-landing .aq-hero,
+    .am-landing .am-hero,
+    .at-landing .at-hero,
+    .platform-page,
+    .agx
+  )
+  h1 {
+  font-family: var(--font-body);
+  font-size: var(--type-h1);
+  font-weight: 700;
+  line-height: var(--leading-heading);
+  letter-spacing: 0;
+}
+html
+  :is(
+    .ap-lp .ap-section,
+    .av-landing .av-section,
+    .av-landing .av-cta,
+    .aq-landing .aq-section,
+    .am-landing .am-section,
+    .at-landing .at-section,
+    .platform-page,
+    .agx,
+    .case-block
+  )
+  h2 {
+  font-size: var(--type-h2);
+  line-height: var(--leading-heading);
+  font-weight: 700;
+  letter-spacing: 0;
+}
+html
+  :is(.ap-lp-hero-copy, .av-hero-copy, .aq-hero, .am-hero, .at-hero)
+  > p:not([class*='kicker']):not([class*='eyebrow']) {
+  max-width: var(--measure-lede);
+  color: var(--muted);
+  font-size: var(--type-lede);
+  line-height: var(--leading-body);
+}
+html :is(.section-lede, .aq-section-lede, .ap-lp .ap-section > p) {
+  max-width: var(--measure-lede);
+  line-height: var(--leading-body);
+}
+html :is(.ap-lp .ap-lp-hero, .ap-lp .ap-section, .av-landing .av-section, .av-landing .av-cta) {
+  width: var(--site-wrap);
+  max-width: none;
+  padding: var(--section-y) 0;
+}
+html .av-landing .av-hero {
+  padding: var(--section-y) var(--site-pad-x);
+}
+html
+  :is(
+    .primary-link,
+    .secondary-link,
+    .ap-lp .ap-lp-cta,
+    .ap-lp .ap-secondary,
+    .av-landing main .av-button,
+    .aui-button,
+    .platform-page .platform-primary-link,
+    .platform-page .platform-secondary-link,
+    .platform-page .platform-card-primary
+  ) {
+  min-height: var(--button-height);
+  height: auto;
+  padding: 12px 18px;
+  border-radius: var(--radius-control);
+  font-family: var(--font-action);
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.4;
+  white-space: normal;
+  text-align: center;
+}
+html
+  :is(
+    .ap-lp .ap-feature-grid article,
+    .av-landing .av-feature-grid article,
+    .aq-landing .aq-feature-grid article,
+    .am-landing .am-features article,
+    .platform-page .platform-card
+  ) {
+  border-color: var(--line);
+  border-radius: var(--radius-card);
+  background-color: var(--surface);
+}
+/* Cyan is the deployed homepage's primary action. Keep that existing treatment
+ * consistent across marketing adapters, including saved WordPress custom CSS. */
+html
+  :is(
+    .primary-link,
+    .ap-lp .ap-lp-cta,
+    .av-landing main .av-button-primary,
+    .aui-button--primary,
+    .platform-page .platform-primary-link,
+    .platform-page .platform-card-primary,
+    .aq-landing .aq-hero .aq-button-primary,
+    .aq-landing .aq-section .aq-button-primary,
+    .am-landing main .am-primary,
+    .at-landing main .at-button-primary,
+    body.alcor-reconcile .ar-cta .ar-button-primary,
+    .aerp-page .aerp-close a,
+    .am-shell .am-intro .am-enter,
+    main[data-arcana='hub'] .abr-button:not([data-kind='ghost'])
+  ) {
+  border-color: var(--action-primary);
+  background: var(--action-primary);
+  color: var(--action-ink);
+  box-shadow: var(--button-shadow);
+}
+html
+  :is(
+    .primary-link,
+    .ap-lp .ap-lp-cta,
+    .av-landing main .av-button-primary,
+    .aui-button--primary,
+    .platform-page .platform-primary-link,
+    .platform-page .platform-card-primary,
+    .aq-landing .aq-hero .aq-button-primary,
+    .aq-landing .aq-section .aq-button-primary,
+    .am-landing main .am-primary,
+    .at-landing main .at-button-primary,
+    body.alcor-reconcile .ar-cta .ar-button-primary,
+    .aerp-page .aerp-close a,
+    .am-shell .am-intro .am-enter,
+    main[data-arcana='hub'] .abr-button:not([data-kind='ghost'])
+  ):hover {
+  border-color: var(--action-primary-hover);
+  background: var(--action-primary-hover);
+}
+
+/* Tertiary actions: sentence-case, quiet links beside stronger calls to action.
+ * Prefer .tertiary-link in new markup. The two explicit adapters serve existing
+ * Demo app links and the Products catalog only; homepage/primary/secondary
+ * actions and individual product landing pages retain their current treatment.
+ * Keep authored labels intact: Open AlcorMusic, not OPEN AlcorMusic.
+ */
+html .tertiary-link,
+html .dmo .dmo-actions .secondary-link,
+html #apps .product-actions .product-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  min-inline-size: 0;
+  max-inline-size: 100%;
+  min-height: var(--button-height-compact, 44px);
+  height: auto;
+  padding: 10px 12px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--cyan);
+  box-shadow: none;
+  font: 600 0.875rem/1.4 var(--font-action);
+  letter-spacing: normal;
+  text-transform: none;
+  text-decoration: underline;
+  text-decoration-color: rgba(83, 217, 212, 0.4);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+  text-align: center;
+  white-space: normal;
+  cursor: pointer;
+}
+/* Preserve catalog alignment and the existing Open / About + Quote rows. */
+html #apps .product-actions .product-cta {
+  padding-inline: 0;
+}
+html .tertiary-link:hover,
+html .dmo .dmo-actions .secondary-link:hover,
+html #apps .product-actions .product-cta:hover {
+  background: rgba(83, 217, 212, 0.08);
+  color: var(--paper);
+  border-color: transparent;
+  text-decoration-color: currentColor;
+  transform: none;
+}
+html .tertiary-link:focus-visible,
+html .dmo .dmo-actions .secondary-link:focus-visible,
+html #apps .product-actions .product-cta:focus-visible {
+  outline: 3px solid var(--cyan);
+  outline-offset: 3px;
+  text-decoration-color: currentColor;
+}
+
+/* A flex label must shrink at enlarged text sizes instead of overflowing its
+ * catalog grid track. Preserve the accessible label and allow natural wrapping. */
+html #apps .product-actions .product-cta__label {
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}

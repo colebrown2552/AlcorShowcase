@@ -1,0 +1,34 @@
+{
+  "$schema": "https://playground.wordpress.net/blueprint-schema.json",
+  "landingPage": "/alcor-demo/",
+  "features": { "networking": false },
+  "steps": [
+    {
+      "step": "defineWpConfigConsts",
+      "consts": {
+        "WP_ENVIRONMENT_TYPE": "local",
+        "DISABLE_WP_CRON": true,
+        "WP_HTTP_BLOCK_EXTERNAL": true,
+        "AUTOMATIC_UPDATER_DISABLED": true
+      }
+    },
+    {
+      "step": "setSiteOptions",
+      "options": {
+        "blogname": "Alcor WordPress demo",
+        "blogdescription": "Production WordPress plugins, exercised over HTTP",
+        "blog_public": "1",
+        "permalink_structure": "/%postname%/",
+        "timezone_string": "UTC"
+      }
+    },
+    {
+      "step": "activatePlugin",
+      "pluginPath": "alcor-demo-fixtures/alcor-demo-fixtures.php"
+    },
+    {
+      "step": "runPHP",
+      "code": "<?php require_once '/wordpress/wp-load.php'; require '/wordpress/wp-content/plugins/alcor-demo-fixtures/seed.php';"
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+# sitekit's default state folder: receipts, jobs, baselines, captures
+.sitekit/
+node_modules/
+package-lock.json

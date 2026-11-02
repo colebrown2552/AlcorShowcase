@@ -1,0 +1,1910 @@
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script>
+      try {
+        sessionStorage.removeItem('alcor_first_touch');
+      } catch (e) {}
+    </script>
+    <title>AlcorVideo — open the app | Alcor Industries</title>
+    <meta name="robots" content="max-image-preview:large, noindex, nofollow, noarchive" />
+    <script>
+      (function (h) {
+        if (!matchMedia('(max-width:760px)').matches) return;
+        h.classList.add('af-on', 'af-has-dock');
+        addEventListener('load', function () {
+          if (!document.querySelector('.af-top')) h.classList.remove('af-on', 'af-has-dock');
+        });
+      })(document.documentElement);
+    </script>
+    <meta
+      name="description"
+      content="Open the working AlcorVideo browser editor. Import local video, audio, and images; arrange a multi-track timeline; add titles; and render where supported."
+    />
+    <link rel="canonical" href="https://alcor-industries.com/video/" />
+    <link rel="icon" type="image/svg+xml" href="../assets/site/logos/alcor-star-small.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/site/icons/favicon-32.png" />
+    <link rel="icon" sizes="16x16 32x32 48x48" href="../assets/site/icons/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="../assets/site/icons/apple-touch-icon.png" />
+    <link
+      rel="alternate"
+      type="application/ld+json"
+      href="https://alcor-industries.com/schema.json"
+    />
+    <meta name="theme-color" content="#050608" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Alcor Industries" />
+    <meta property="og:title" content="AlcorVideo — open the app | Alcor Industries" />
+    <meta
+      property="og:description"
+      content="Open the working AlcorVideo browser editor. Import local video, audio, and images; arrange a multi-track timeline; add titles; and render where supported."
+    />
+    <meta property="og:url" content="https://alcor-industries.com/video/" />
+    <meta property="og:image" content="../assets/site/social/pages/alcor-video.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="AlcorVideo — open the app | Alcor Industries" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="AlcorVideo — open the app | Alcor Industries" />
+    <meta
+      name="twitter:description"
+      content="Open the working AlcorVideo browser editor. Import local video, audio, and images; arrange a multi-track timeline; add titles; and render where supported."
+    />
+    <meta name="twitter:image" content="../assets/site/social/pages/alcor-video.png" />
+    <meta name="twitter:image:alt" content="AlcorVideo — open the app | Alcor Industries" />
+    <link
+      rel="preload"
+      href="../assets/fonts/brands/inter-normal-400-700.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <style id="wp-img-auto-sizes-contain-inline-css">
+      img:is([sizes='auto' i], [sizes^='auto,' i]) {
+        contain-intrinsic-size: 3000px 1500px;
+      }
+      /*# sourceURL=wp-img-auto-sizes-contain-inline-css */
+    </style>
+    <style id="wp-block-library-inline-css">
+      :root {
+        --wp-block-synced-color: #7a00df;
+        --wp-block-synced-color--rgb: 122, 0, 223;
+        --wp-bound-block-color: var(--wp-block-synced-color);
+        --wp-editor-canvas-background: #ddd;
+        --wp-admin-theme-color: #007cba;
+        --wp-admin-theme-color--rgb: 0, 124, 186;
+        --wp-admin-theme-color-darker-10: #006ba1;
+        --wp-admin-theme-color-darker-10--rgb: 0, 107, 160.5;
+        --wp-admin-theme-color-darker-20: #005a87;
+        --wp-admin-theme-color-darker-20--rgb: 0, 90, 135;
+        --wp-admin-border-width-focus: 2px;
+      }
+      @media (min-resolution: 192dpi) {
+        :root {
+          --wp-admin-border-width-focus: 1.5px;
+        }
+      }
+      .wp-element-button {
+        cursor: pointer;
+      }
+      :root .has-very-light-gray-background-color {
+        background-color: #eee;
+      }
+      :root .has-very-dark-gray-background-color {
+        background-color: #313131;
+      }
+      :root .has-very-light-gray-color {
+        color: #eee;
+      }
+      :root .has-very-dark-gray-color {
+        color: #313131;
+      }
+      :root .has-vivid-green-cyan-to-vivid-cyan-blue-gradient-background {
+        background: linear-gradient(135deg, #00d084, #0693e3);
+      }
+      :root .has-purple-crush-gradient-background {
+        background: linear-gradient(135deg, #34e2e4, #4721fb 50%, #ab1dfe);
+      }
+      :root .has-hazy-dawn-gradient-background {
+        background: linear-gradient(135deg, #faaca8, #dad0ec);
+      }
+      :root .has-subdued-olive-gradient-background {
+        background: linear-gradient(135deg, #fafae1, #67a671);
+      }
+      :root .has-atomic-cream-gradient-background {
+        background: linear-gradient(135deg, #fdd79a, #004a59);
+      }
+      :root .has-nightshade-gradient-background {
+        background: linear-gradient(135deg, #330968, #31cdcf);
+      }
+      :root .has-midnight-gradient-background {
+        background: linear-gradient(135deg, #020381, #2874fc);
+      }
+      :root {
+        --wp--preset--font-size--normal: 16px;
+        --wp--preset--font-size--huge: 42px;
+      }
+      .has-regular-font-size {
+        font-size: 1em;
+      }
+      .has-larger-font-size {
+        font-size: 2.625em;
+      }
+      .has-normal-font-size {
+        font-size: var(--wp--preset--font-size--normal);
+      }
+      .has-huge-font-size {
+        font-size: var(--wp--preset--font-size--huge);
+      }
+      :root .has-text-align-center {
+        text-align: center;
+      }
+      :root .has-text-align-left {
+        text-align: left;
+      }
+      :root .has-text-align-right {
+        text-align: right;
+      }
+      .has-fit-text {
+        white-space: nowrap !important;
+      }
+      #end-resizable-editor-section {
+        display: none;
+      }
+      .aligncenter {
+        clear: both;
+      }
+      .items-justified-left {
+        justify-content: flex-start;
+      }
+      .items-justified-center {
+        justify-content: center;
+      }
+      .items-justified-right {
+        justify-content: flex-end;
+      }
+      .items-justified-space-between {
+        justify-content: space-between;
+      }
+      .screen-reader-text {
+        word-wrap: normal !important;
+        border: 0;
+        clip-path: inset(50%);
+        height: 1px;
+        margin: -1px;
+        overflow: hidden;
+        padding: 0;
+        position: absolute;
+        width: 1px;
+        word-break: normal !important;
+      }
+      .screen-reader-text:focus {
+        background-color: #ddd;
+        clip-path: none;
+        color: #444;
+        display: block;
+        font-size: 1em;
+        height: auto;
+        left: 5px;
+        line-height: normal;
+        padding: 15px 23px 14px;
+        text-decoration: none;
+        top: 5px;
+        width: auto;
+        z-index: 100000;
+      }
+      html :where(.has-border-color) {
+        border-style: solid;
+      }
+      html :where([style^='border-color'], [style*=';border-color'], [style*='; border-color']) {
+        border-style: solid;
+      }
+      html
+        :where(
+          [style^='border-top-color'],
+          [style*=';border-top-color'],
+          [style*='; border-top-color']
+        ) {
+        border-top-style: solid;
+      }
+      html
+        :where(
+          [style^='border-right-color'],
+          [style*=';border-right-color'],
+          [style*='; border-right-color']
+        ) {
+        border-right-style: solid;
+      }
+      html
+        :where(
+          [style^='border-bottom-color'],
+          [style*=';border-bottom-color'],
+          [style*='; border-bottom-color']
+        ) {
+        border-bottom-style: solid;
+      }
+      html
+        :where(
+          [style^='border-left-color'],
+          [style*=';border-left-color'],
+          [style*='; border-left-color']
+        ) {
+        border-left-style: solid;
+      }
+      html :where([style^='border-width'], [style*=';border-width'], [style*='; border-width']) {
+        border-style: solid;
+      }
+      html
+        :where(
+          [style^='border-top-width'],
+          [style*=';border-top-width'],
+          [style*='; border-top-width']
+        ) {
+        border-top-style: solid;
+      }
+      html
+        :where(
+          [style^='border-right-width'],
+          [style*=';border-right-width'],
+          [style*='; border-right-width']
+        ) {
+        border-right-style: solid;
+      }
+      html
+        :where(
+          [style^='border-bottom-width'],
+          [style*=';border-bottom-width'],
+          [style*='; border-bottom-width']
+        ) {
+        border-bottom-style: solid;
+      }
+      html
+        :where(
+          [style^='border-left-width'],
+          [style*=';border-left-width'],
+          [style*='; border-left-width']
+        ) {
+        border-left-style: solid;
+      }
+      html :where(img[class*='wp-image-']) {
+        height: auto;
+        max-width: 100%;
+      }
+      :where(figure) {
+        margin: 0 0 1em;
+      }
+      html :where(.is-position-sticky) {
+        --wp-admin--admin-bar--position-offset: var(--wp-admin--admin-bar--height, 0px);
+      }
+      @media screen and (max-width: 600px) {
+        html :where(.is-position-sticky) {
+          --wp-admin--admin-bar--position-offset: 0px;
+        }
+      }
+      /*# sourceURL=/wp-includes/css/dist/block-library/common.min.css */
+    </style>
+    <style id="classic-theme-styles-inline-css">
+      /*! This file is auto-generated */
+      .wp-block-button__link {
+        color: #fff;
+        background-color: #32373c;
+        border-radius: 9999px;
+        box-shadow: none;
+        text-decoration: none;
+        padding: calc(0.667em + 2px) calc(1.333em + 2px);
+        font-size: 1.125em;
+      }
+      .wp-block-file__button {
+        background: #32373c;
+        color: #fff;
+        text-decoration: none;
+      }
+      /*# sourceURL=/wp-includes/css/classic-themes.min.css */
+    </style>
+    <style id="wp-block-styles-placeholder-inline-css">
+      :root {
+        --wp-internal-comment: 'Placeholder for wp_hoist_late_printed_styles() to replace with the block styles printed at wp_footer.';
+      }
+      /*# sourceURL=wp-block-styles-placeholder-inline-css */
+    </style>
+    <style id="wp-global-styles-placeholder-inline-css">
+      :root {
+        --wp-internal-comment: 'Placeholder for wp_hoist_late_printed_styles() to replace with the global-styles printed at wp_footer.';
+      }
+      /*# sourceURL=wp-global-styles-placeholder-inline-css */
+    </style>
+    <link
+      rel="stylesheet"
+      id="alcor-industries-site-css"
+      href="../assets/css/site.css"
+      media="all"
+    />
+    <link rel="stylesheet" id="alcor-video-css" href="editor.css" media="all" />
+    <link
+      rel="stylesheet"
+      id="alcor-industries-polish-css"
+      href="../assets/css/polish.css"
+      media="all"
+    />
+    <link rel="stylesheet" id="alcor-motion-css" href="../assets/css/motion.css" media="all" />
+    <link rel="stylesheet" id="alcor-frame-css" href="../assets/css/alcor-frame.css" media="all" />
+    <link
+      rel="stylesheet"
+      id="alcor-app-ui-css"
+      href="../assets/css/alcor-app-ui.css"
+      media="all"
+    />
+    <link
+      rel="stylesheet"
+      id="alcor-design-system-css"
+      href="../assets/css/design-system.css"
+      media="all"
+    />
+    <link rel="stylesheet" id="arcana-base-css" href="../assets/css/arcana.css" media="all" />
+    <link
+      rel="stylesheet"
+      id="alcor-arcana-theme-css"
+      href="../assets/css/alcor-arcana.css"
+      media="all"
+    />
+    <link rel="manifest" href="https://alcor-industries.com/video/manifest.webmanifest?v=0.3.1" />
+    <meta name="application-name" content="AlcorVideo" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="AlcorVideo" />
+    <style id="wp-custom-css">
+      .primary-link {
+        background: var(--cyan);
+        border: 1px solid var(--cyan);
+      }
+
+      .primary-link:hover {
+        background: var(--cyan);
+        border: 1px solid var(--cyan);
+      }
+
+      .eyebrow {
+        color: var(--paper);
+      }
+
+      .eyebrow::before {
+        content: '';
+        width: 44px;
+        height: 1px;
+        background: var(--paper);
+      }
+
+      .readout-track::before {
+        content: '';
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: 36%;
+        background: linear-gradient(90deg, transparent, var(--paper), transparent);
+        animation: scan 3.8s ease-in-out infinite;
+      }
+
+      .wordpress-band {
+        border-block: 1px solid rgba(246, 240, 228, 0.1);
+        background: linear-gradient(
+            90deg,
+            rgba(000, 94, 196, 0.08),
+            transparent 42%,
+            rgba(000, 000, 109, 0.07)
+          ),
+          rgba(5, 6, 8, 0.9);
+      }
+
+      .feature-list li::before {
+        content: '';
+        width: 8px;
+        height: 8px;
+        margin-top: 8px;
+        border-radius: 50%;
+        background: var(--cyan);
+        box-shadow: 0 0 18px rgba(255, 94, 196, 0.46);
+      }
+
+      .package.is-featured {
+        background: linear-gradient(135deg, rgba(215, 181, 109, 0.16), transparent 54%), #11101a;
+      }
+    </style>
+  </head>
+  <body
+    class="wp-singular -template-default single wp-embed-responsive wp-theme-alcor-industries alcor-video alcor-video-editor"
+  >
+    <link
+      rel="stylesheet"
+      id="alcor-product-header-css"
+      href="../assets/css/alcor-product-header.css"
+    />
+    <a class="apx-skip" href="#av-editor-main">Skip to content</a>
+    <header class="apx-bar" data-alcor-product-header data-mode="app" data-product="AlcorVideo">
+      <div class="apx-bar__inner">
+        <a class="apx-wordmark" href="https://alcor-industries.com/alcor-video/"
+          ><img
+            class="apx-wordmark__mark"
+            src="../assets/site/logos/alcor-star-small.svg"
+            width="22"
+            height="22"
+            alt=""
+            decoding="async"
+          /><span><b>Alcor</b>Video</span></a
+        >
+        <nav class="apx-nav" aria-label="AlcorVideo">
+          <a href="https://alcor-industries.com/alcor-video/">About</a
+          ><a href="https://alcor-industries.com/platform/#platform-products">All apps</a>
+        </nav>
+      </div>
+    </header>
+    <a class="site-skip-link" href="#av-editor-main">Skip to content</a>
+    <div
+      class="av-page av-editor-page"
+      data-alcor-video-editor
+      data-af-app="video"
+      data-corporate-measurement="disabled"
+      data-version="0.5.0"
+    >
+      <main id="av-editor-main" tabindex="-1" class="av-app" aria-labelledby="av-editor-title">
+        <h1 id="av-editor-title" class="av-visually-hidden">AlcorVideo editor</h1>
+        <div class="av-appbar" data-af-menu>
+          <div class="av-project-identity">
+            <label for="av-project-name">Project</label>
+            <input
+              id="av-project-name"
+              type="text"
+              value="Untitled project"
+              maxlength="80"
+              autocomplete="off"
+              data-af-title
+            />
+            <span id="av-save-state" role="status">In-memory project</span>
+          </div>
+          <div class="av-app-actions" role="toolbar" aria-label="Project">
+            <div class="av-menu">
+              <button
+                type="button"
+                class="av-menu-button"
+                aria-haspopup="menu"
+                aria-expanded="false"
+                aria-controls="av-file-menu"
+              >
+                File
+              </button>
+              <div id="av-file-menu" class="av-menu-list" role="menu" aria-label="File">
+                <button type="button" role="menuitem" data-action="new-project">New project</button>
+                <label class="av-file-button" role="menuitem"
+                  >Open project…<input
+                    id="av-project-file"
+                    type="file"
+                    accept="application/vnd.alcorvideo.project,.alcorvideo,application/json,.json"
+                /></label>
+                <button type="button" role="menuitem" data-action="load-sample">
+                  Open the sample project
+                </button>
+                <button
+                  type="button"
+                  role="menuitem"
+                  data-action="export-project"
+                  title="Download metadata only; media must be relinked when reopening"
+                >
+                  Download project JSON
+                </button>
+                <span class="av-menu-rule" role="separator"></span>
+                <label
+                  class="av-recovery-toggle"
+                  title="Off by default. When on, a copy of this project and its media stays in this browser on this device so a crash can be recovered."
+                >
+                  <input id="av-recovery-toggle" type="checkbox" /> Keep a recovery copy
+                </label>
+                <button
+                  type="button"
+                  role="menuitem"
+                  data-action="recover"
+                  title="Restore the recovery copy stored in this browser"
+                >
+                  Recover
+                </button>
+                <span class="av-menu-rule" role="separator"></span>
+                <button type="button" role="menuitem" data-action="show-shortcuts">
+                  Keyboard shortcuts <kbd>?</kbd>
+                </button>
+              </div>
+            </div>
+            <button
+              type="button"
+              data-action="save-browser"
+              title="Download edits and linked media as a portable .alcorvideo project (Ctrl+S)"
+            >
+              Save
+            </button>
+            <button
+              class="av-render-button"
+              type="button"
+              data-action="export"
+              data-af-primary
+              data-af-short="Export"
+              title="Export video (Ctrl+M)"
+            >
+              Export
+            </button>
+          </div>
+        </div>
+
+        <div class="av-workspace">
+          <section
+            class="av-panel av-media-panel"
+            aria-labelledby="av-media-heading"
+            data-af-panel="media"
+            data-af-label="Media"
+          >
+            <div class="av-panel-heading">
+              <div>
+                <span>PROJECT</span>
+                <h2 id="av-media-heading">Media</h2>
+              </div>
+              <label class="av-import-button"
+                >Import<input
+                  id="av-media-input"
+                  type="file"
+                  accept="video/*,audio/*,image/*"
+                  multiple
+              /></label>
+            </div>
+            <div class="av-panel-tabs" role="tablist" aria-label="Project panels">
+              <button
+                type="button"
+                role="tab"
+                id="av-tab-media"
+                aria-controls="av-pane-media"
+                aria-selected="true"
+                data-panel-tab="media"
+              >
+                Bin
+              </button>
+              <button
+                type="button"
+                role="tab"
+                id="av-tab-effects"
+                aria-controls="av-pane-effects"
+                aria-selected="false"
+                data-panel-tab="effects"
+              >
+                Effects
+              </button>
+              <button
+                type="button"
+                role="tab"
+                id="av-tab-markers"
+                aria-controls="av-pane-markers"
+                aria-selected="false"
+                data-panel-tab="markers"
+              >
+                Markers
+              </button>
+              <button
+                type="button"
+                role="tab"
+                id="av-tab-history"
+                aria-controls="av-pane-history"
+                aria-selected="false"
+                data-panel-tab="history"
+              >
+                History
+              </button>
+              <button
+                type="button"
+                role="tab"
+                id="av-tab-scopes"
+                aria-controls="av-pane-scopes"
+                aria-selected="false"
+                data-panel-tab="scopes"
+              >
+                Scopes
+              </button>
+              <button
+                type="button"
+                role="tab"
+                id="av-tab-mixer"
+                aria-controls="av-pane-mixer"
+                aria-selected="false"
+                data-panel-tab="mixer"
+              >
+                Mixer
+              </button>
+            </div>
+            <div
+              class="av-panel-pane"
+              id="av-pane-media"
+              role="tabpanel"
+              aria-labelledby="av-tab-media"
+            >
+              <p class="av-panel-help">
+                Files stay on this device. Drop files here, drag bin items onto a track, or open one
+                in the Source monitor.
+              </p>
+              <div id="av-media-bin" class="av-media-bin">
+                <div class="av-empty-state">
+                  <strong>No media yet</strong
+                  ><span>Import or drop a video, audio file, or still image.</span
+                  ><button type="button" class="av-link-button" data-action="load-sample">
+                    Try the sample project
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div
+              class="av-panel-pane"
+              id="av-pane-effects"
+              role="tabpanel"
+              aria-labelledby="av-tab-effects"
+              data-af-panel="effects"
+              data-af-label="Effects"
+              hidden
+            >
+              <h3>Video transitions</h3>
+              <p class="av-panel-help">
+                Select the incoming clip at a cut (or park the playhead on the cut), then choose a
+                transition. It is centered on the cut and uses the clips' spare source frames.
+              </p>
+              <div class="av-effect-list">
+                <button
+                  type="button"
+                  data-action="apply-transition"
+                  data-transition="cross-dissolve"
+                >
+                  Cross Dissolve
+                </button>
+                <button type="button" data-action="apply-transition" data-transition="dip-to-black">
+                  Dip to Black
+                </button>
+                <button type="button" data-action="apply-transition" data-transition="dip-to-white">
+                  Dip to White
+                </button>
+                <button type="button" data-action="apply-transition" data-transition="wipe-left">
+                  Wipe Left
+                </button>
+                <button type="button" data-action="apply-transition" data-transition="wipe-right">
+                  Wipe Right
+                </button>
+                <button type="button" data-action="apply-transition" data-transition="wipe-up">
+                  Wipe Up
+                </button>
+                <button type="button" data-action="apply-transition" data-transition="wipe-down">
+                  Wipe Down
+                </button>
+              </div>
+              <h3>Audio transitions</h3>
+              <div class="av-effect-list">
+                <button
+                  type="button"
+                  data-action="apply-transition"
+                  data-kind="audio"
+                  data-transition="constant-power"
+                >
+                  Constant Power
+                </button>
+                <button
+                  type="button"
+                  data-action="apply-transition"
+                  data-kind="audio"
+                  data-transition="constant-gain"
+                >
+                  Constant Gain
+                </button>
+              </div>
+              <h3>Titles</h3>
+              <div class="av-effect-list">
+                <button type="button" data-action="title-preset" data-preset="title">Title</button>
+                <button type="button" data-action="title-preset" data-preset="lower-third">
+                  Lower third
+                </button>
+                <button type="button" data-action="title-preset" data-preset="subtitle">
+                  Subtitle
+                </button>
+                <button type="button" data-action="title-preset" data-preset="end-card">
+                  End card
+                </button>
+              </div>
+            </div>
+            <div
+              class="av-panel-pane"
+              id="av-pane-markers"
+              role="tabpanel"
+              aria-labelledby="av-tab-markers"
+              data-af-panel="markers"
+              data-af-label="Markers"
+              hidden
+            >
+              <p class="av-panel-help">
+                M adds a marker at the playhead; Shift+M jumps to the next one.
+              </p>
+              <ul id="av-marker-list" class="av-marker-list"></ul>
+            </div>
+            <div
+              class="av-panel-pane"
+              id="av-pane-history"
+              role="tabpanel"
+              aria-labelledby="av-tab-history"
+              data-af-panel="history"
+              data-af-label="History"
+              hidden
+            >
+              <p class="av-panel-help">
+                Every edit is listed. Choose a step to go back to it; Ctrl+Z and Ctrl+Shift+Z step
+                one at a time.
+              </p>
+              <ol id="av-history-list" class="av-history-list"></ol>
+            </div>
+            <div
+              class="av-panel-pane"
+              id="av-pane-mixer"
+              role="tabpanel"
+              aria-labelledby="av-tab-mixer"
+              data-af-panel="mixer"
+              data-af-label="Audio mixer"
+              hidden
+            >
+              <p class="av-panel-help">
+                Audio track mixer: level and pan per track, applied in preview and export. Clip
+                level, gain and keyframes live in Effect Controls.
+              </p>
+              <div id="av-mixer" class="av-mixer"></div>
+            </div>
+            <div
+              class="av-panel-pane"
+              id="av-pane-scopes"
+              role="tabpanel"
+              aria-labelledby="av-tab-scopes"
+              data-af-panel="scopes"
+              data-af-label="Scopes"
+              hidden
+            >
+              <p class="av-panel-help">
+                Luma waveform, vectorscope and RGB histogram of the Program monitor, measured on
+                this device.
+              </p>
+              <canvas
+                id="av-scopes"
+                class="av-scopes"
+                width="300"
+                height="420"
+                role="img"
+                aria-label="Video scopes: luma waveform, vectorscope and RGB histogram"
+              ></canvas>
+            </div>
+          </section>
+
+          <section class="av-panel av-program-panel" aria-labelledby="av-program-heading">
+            <div class="av-panel-heading av-program-heading">
+              <div>
+                <span>MONITOR</span>
+                <h2 id="av-program-heading">Program</h2>
+              </div>
+              <div class="av-monitor-switch" role="group" aria-label="Monitor">
+                <button type="button" data-action="monitor-source" aria-pressed="false" disabled>
+                  Source
+                </button>
+                <button type="button" data-action="monitor-program" aria-pressed="true">
+                  Program
+                </button>
+              </div>
+              <div id="av-timecode" class="av-timecode" aria-label="Playhead timecode">
+                00:00:00:00
+              </div>
+            </div>
+            <div class="av-monitor-wrap" data-af-stage>
+              <canvas
+                id="av-preview"
+                width="1280"
+                height="720"
+                aria-label="Program monitor"
+              ></canvas>
+              <div id="av-monitor-message" class="av-monitor-message">
+                <span class="av-monitor-idle">Nothing on the timeline at the playhead.</span>
+                <div class="av-start">
+                  <span class="av-start-mark" aria-hidden="true"></span>
+                  <strong>Drop video, audio or images</strong>
+                  <span
+                    ><label class="av-start-browse" for="av-media-input">Browse this device</label>
+                    · nothing is uploaded</span
+                  >
+                  <button type="button" class="av-sample-button" data-action="load-sample">
+                    Try a sample project
+                  </button>
+                </div>
+              </div>
+              <div class="av-safe-guides" aria-hidden="true">
+                <span class="av-safe-action"></span><span class="av-safe-title"></span>
+              </div>
+              <p id="av-source-info" class="av-source-info" hidden></p>
+            </div>
+            <div class="av-transport" data-af-transport aria-label="Playback controls">
+              <button type="button" data-action="jump-start" aria-label="Go to start (Home)">
+                <svg class="av-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                  <path d="M3 2.5h2v11H3zM13 2.5v11L6 8z" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                data-action="step-back"
+                aria-label="Step back one frame (Left arrow)"
+              >
+                <svg class="av-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                  <path d="M12 2.5v11L3 8z" />
+                </svg>
+              </button>
+              <button
+                class="av-play"
+                type="button"
+                data-action="play"
+                aria-label="Play or pause (Space)"
+              >
+                <svg class="av-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                  <path d="M4 2.5v11l9-5.5z" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                data-action="step-forward"
+                aria-label="Step forward one frame (Right arrow)"
+              >
+                <svg class="av-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                  <path d="M4 2.5v11l9-5.5z" />
+                </svg>
+              </button>
+              <button type="button" data-action="jump-end" aria-label="Go to end (End)">
+                <svg class="av-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                  <path d="M11 2.5h2v11h-2zM3 2.5v11L10 8z" />
+                </svg>
+              </button>
+              <button type="button" data-action="mark-in" aria-label="Mark in (I)">In</button>
+              <button type="button" data-action="mark-out" aria-label="Mark out (O)">Out</button>
+              <button
+                type="button"
+                data-action="insert-edit"
+                aria-label="Insert from source at the playhead (,)"
+              >
+                Insert
+              </button>
+              <button
+                type="button"
+                data-action="overwrite-edit"
+                aria-label="Overwrite from source at the playhead (.)"
+              >
+                Overwrite
+              </button>
+              <label
+                >Time
+                <input
+                  id="av-time-input"
+                  type="text"
+                  inputmode="decimal"
+                  value="0"
+                  aria-label="Playhead time in seconds or timecode"
+              /></label>
+              <div class="av-meters" role="group" aria-label="Audio meters">
+                <span
+                  id="av-meter-l"
+                  class="av-meter"
+                  role="meter"
+                  aria-label="Left channel"
+                  aria-valuemin="-60"
+                  aria-valuemax="0"
+                  aria-valuenow="-60"
+                ></span>
+                <span
+                  id="av-meter-r"
+                  class="av-meter"
+                  role="meter"
+                  aria-label="Right channel"
+                  aria-valuemin="-60"
+                  aria-valuemax="0"
+                  aria-valuenow="-60"
+                ></span>
+              </div>
+            </div>
+            <div class="av-sequence-bar">
+              <label
+                >Sequence
+                <select id="av-sequence-preset">
+                  <option value="1280x720">HD 720p · 1280×720</option>
+                  <option value="1920x1080">Full HD · 1920×1080</option>
+                  <option value="3840x2160">4K UHD · 3840×2160</option>
+                  <option value="1080x1920">Vertical 9:16 · 1080×1920</option>
+                  <option value="1080x1080">Square 1:1 · 1080×1080</option>
+                  <option value="1080x1350">Portrait 4:5 · 1080×1350</option>
+                </select></label
+              >
+              <label
+                >FPS
+                <select id="av-fps">
+                  <option value="23.976">23.976</option>
+                  <option>24</option>
+                  <option>25</option>
+                  <option value="29.97">29.97</option>
+                  <option selected>30</option>
+                  <option>50</option>
+                  <option value="59.94">59.94</option>
+                  <option>60</option>
+                </select></label
+              >
+              <label
+                >Preview
+                <select id="av-preview-quality">
+                  <option value="1">Full</option>
+                  <option value="0.5">1/2</option>
+                  <option value="0.25">1/4</option>
+                </select></label
+              >
+              <label class="av-checkbox"
+                ><input id="av-safe-margins" type="checkbox" /> Safe margins</label
+              >
+              <label class="av-checkbox"><input id="av-loop" type="checkbox" /> Loop in/out</label>
+            </div>
+          </section>
+
+          <aside
+            class="av-panel av-inspector-panel"
+            aria-labelledby="av-inspector-heading"
+            data-af-panel="inspector"
+            data-af-label="Inspector"
+          >
+            <div class="av-panel-heading">
+              <div>
+                <span>EFFECT CONTROLS</span>
+                <h2 id="av-inspector-heading">Selection</h2>
+              </div>
+              <button
+                type="button"
+                data-action="delete-selection"
+                class="av-danger-button"
+                disabled
+              >
+                Delete
+              </button>
+            </div>
+            <div id="av-inspector-empty" class="av-empty-state">
+              <strong>No selection</strong
+              ><span>Select a timeline clip or title to edit its properties.</span>
+            </div>
+            <form id="av-clip-inspector" class="av-inspector-form" hidden>
+              <label class="av-field-wide"
+                >Name<input name="name" type="text" maxlength="100"
+              /></label>
+              <label
+                >Track<select name="track">
+                  <option value="V2">V2</option>
+                  <option value="V1">V1</option>
+                  <option value="A1">A1</option>
+                </select></label
+              >
+              <label>Start<input name="start" type="number" min="0" step="0.01" /></label>
+              <label>Duration<input name="duration" type="number" min="0.04" step="0.01" /></label>
+              <label>Source in<input name="in" type="number" min="0" step="0.01" /></label>
+              <fieldset class="av-field-wide av-speed-section" data-av-speed-section>
+                <legend>Speed / Duration</legend>
+                <label
+                  >Speed<select name="speed">
+                    <option value="0.25">25%</option>
+                    <option value="0.5">50%</option>
+                    <option value="0.75">75%</option>
+                    <option value="1" selected>100%</option>
+                    <option value="1.25">125%</option>
+                    <option value="1.5">150%</option>
+                    <option value="2">200%</option>
+                    <option value="4">400%</option>
+                    <option value="8">800%</option>
+                  </select></label
+                >
+                <label class="av-checkbox"
+                  ><input name="reverse" type="checkbox" /> Reverse speed</label
+                >
+                <label class="av-checkbox"
+                  ><input name="rippleSpeed" type="checkbox" /> Ripple edit, shifting trailing
+                  clips</label
+                >
+                <div class="av-inline-actions">
+                  <button type="button" data-action="frame-hold">Add frame hold</button
+                  ><button type="button" data-action="frame-hold-insert">
+                    Insert frame hold segment
+                  </button>
+                </div>
+              </fieldset>
+              <label
+                >Opacity<input name="opacity" type="range" min="0" max="1" step="0.01"
+              /></label>
+              <fieldset
+                class="av-field-wide av-audio-section"
+                data-av-audio-section
+                data-af-panel="audio"
+                data-af-label="Audio"
+              >
+                <legend>Audio</legend>
+                <label
+                  >Volume<input name="volume" type="range" min="0" max="1" step="0.01"
+                /></label>
+                <label
+                  >Gain (dB)<input name="gain" type="number" min="-60" max="12" step="0.5"
+                /></label>
+                <label>Pan<input name="pan" type="range" min="-100" max="100" step="1" /></label>
+                <label class="av-checkbox"><input name="muted" type="checkbox" /> Mute clip</label>
+              </fieldset>
+              <div class="av-inspector-actions av-field-wide">
+                <button type="button" data-action="split">Split at playhead</button
+                ><button type="button" data-action="duplicate">Duplicate</button
+                ><button type="button" data-action="link">Link / unlink</button>
+              </div>
+            </form>
+            <form id="av-title-inspector" class="av-inspector-form" hidden>
+              <label class="av-field-wide"
+                >Text<textarea name="text" rows="3" maxlength="240"></textarea>
+              </label>
+              <label>Start<input name="start" type="number" min="0" step="0.01" /></label>
+              <label>Duration<input name="duration" type="number" min="0.1" step="0.01" /></label>
+              <label
+                >Font<select name="font">
+                  <option value="sans">Modern Sans</option>
+                  <option value="arial">Arial</option>
+                  <option value="heavy">Heavy</option>
+                  <option value="trebuchet">Trebuchet</option>
+                  <option value="serif">Georgia</option>
+                  <option value="times">Times</option>
+                  <option value="palatino">Palatino</option>
+                  <option value="mono">Mono</option>
+                  <option value="courier">Courier</option>
+                  <option value="display">Impact</option>
+                  <option value="rounded">Rounded</option>
+                  <option value="script">Script</option>
+                  <option value="cursive">Cursive</option>
+                </select></label
+              >
+              <label>Size<input name="size" type="number" min="12" max="200" step="1" /></label>
+              <label
+                >Align<select name="align">
+                  <option value="left">Left</option>
+                  <option value="center">Center</option>
+                  <option value="right">Right</option>
+                </select></label
+              >
+              <label>Horizontal %<input name="x" type="number" min="0" max="100" step="1" /></label>
+              <label>Vertical %<input name="y" type="number" min="0" max="100" step="1" /></label>
+              <label>Text color<input name="color" type="color" /></label>
+              <label>Outline<input name="stroke" type="color" /></label>
+              <label
+                >Outline width<input name="strokeWidth" type="number" min="0" max="20" step="1"
+              /></label>
+              <label>Backdrop<input name="background" type="color" /></label>
+              <label
+                >Backdrop opacity<input
+                  name="backgroundOpacity"
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.05"
+              /></label>
+              <label>Fade in<input name="fadeIn" type="number" min="0" step="0.05" /></label>
+              <label>Fade out<input name="fadeOut" type="number" min="0" step="0.05" /></label>
+              <label class="av-checkbox"><input name="bold" type="checkbox" /> Bold</label>
+              <label class="av-checkbox"><input name="italic" type="checkbox" /> Italic</label>
+              <label class="av-checkbox"><input name="shadow" type="checkbox" /> Shadow</label>
+            </form>
+          </aside>
+        </div>
+
+        <section
+          class="av-timeline-panel"
+          aria-labelledby="av-timeline-heading"
+          data-af-dock="timeline"
+        >
+          <div class="av-timeline-toolbar">
+            <div>
+              <span>SEQUENCE</span>
+              <h2 id="av-timeline-heading">Main timeline</h2>
+            </div>
+            <div class="av-tools" role="toolbar" aria-label="Timeline tools" data-af-toolbar>
+              <button
+                type="button"
+                data-tool="select"
+                aria-pressed="true"
+                aria-label="Selection tool (V)"
+                title="Selection (V)"
+              >
+                <svg
+                  class="av-tool-icon"
+                  viewBox="0 0 16 16"
+                  aria-hidden="true"
+                  focusable="false"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M3.5 2.5l9 5.2-3.9 1.1-1.8 3.7z" /></svg
+                ><kbd>V</kbd>
+              </button>
+              <button
+                type="button"
+                data-tool="razor"
+                aria-pressed="false"
+                aria-label="Razor tool (C)"
+                title="Razor (C)"
+              >
+                <svg
+                  class="av-tool-icon"
+                  viewBox="0 0 16 16"
+                  aria-hidden="true"
+                  focusable="false"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M2.5 13.5l6.8-6.8M9.3 6.7l2.2-4.2 2 2-4.2 2.2" />
+                  <circle cx="4" cy="12" r="1.6" /></svg
+                ><kbd>C</kbd>
+              </button>
+              <button
+                type="button"
+                data-tool="ripple"
+                aria-pressed="false"
+                aria-label="Ripple edit tool (B)"
+                title="Ripple edit (B)"
+              >
+                <svg
+                  class="av-tool-icon"
+                  viewBox="0 0 16 16"
+                  aria-hidden="true"
+                  focusable="false"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M3.5 2.5v11M12.5 2.5v11M6 8h4.5M8.8 6.2L10.6 8l-1.8 1.8" /></svg
+                ><kbd>B</kbd>
+              </button>
+              <button
+                type="button"
+                data-tool="roll"
+                aria-pressed="false"
+                aria-label="Rolling edit tool (N)"
+                title="Rolling edit (N)"
+              >
+                <svg
+                  class="av-tool-icon"
+                  viewBox="0 0 16 16"
+                  aria-hidden="true"
+                  focusable="false"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M8 2.5v11M5.5 5L3 8l2.5 3M10.5 5L13 8l-2.5 3" /></svg
+                ><kbd>N</kbd>
+              </button>
+              <button
+                type="button"
+                data-tool="slip"
+                aria-pressed="false"
+                aria-label="Slip tool (Y)"
+                title="Slip (Y)"
+              >
+                <svg
+                  class="av-tool-icon"
+                  viewBox="0 0 16 16"
+                  aria-hidden="true"
+                  focusable="false"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M2.5 5h11v6h-11zM5.5 8h5M5.5 8l1.3-1.3M5.5 8l1.3 1.3M10.5 8l-1.3-1.3M10.5 8l-1.3 1.3"
+                  /></svg
+                ><kbd>Y</kbd>
+              </button>
+              <button
+                type="button"
+                data-tool="slide"
+                aria-pressed="false"
+                aria-label="Slide tool (U)"
+                title="Slide (U)"
+              >
+                <svg
+                  class="av-tool-icon"
+                  viewBox="0 0 16 16"
+                  aria-hidden="true"
+                  focusable="false"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M1.5 5h3.5v6H1.5zM11 5h3.5v6H11zM6.5 8h3.5M8.7 6.7L10 8l-1.3 1.3" /></svg
+                ><kbd>U</kbd>
+              </button>
+            </div>
+            <div class="av-timeline-tools">
+              <button
+                type="button"
+                data-action="undo"
+                data-af-action="undo"
+                disabled
+                title="Undo (Ctrl/Cmd+Z)"
+              >
+                Undo
+              </button>
+              <button
+                type="button"
+                data-action="redo"
+                data-af-action="redo"
+                disabled
+                title="Redo (Ctrl/Cmd+Shift+Z)"
+              >
+                Redo
+              </button>
+              <button
+                type="button"
+                data-action="split"
+                title="Add edit at the playhead (Ctrl/Cmd+K)"
+              >
+                Split
+              </button>
+              <button
+                type="button"
+                data-action="ripple-delete"
+                title="Ripple delete (Shift+Delete)"
+              >
+                Ripple delete
+              </button>
+              <button type="button" data-action="add-title" data-preset="caption">Add title</button>
+              <button type="button" data-action="add-marker" title="Add marker (M)">Marker</button>
+              <button type="button" data-action="add-video-track" title="Add a video track">
+                + Video track
+              </button>
+              <button type="button" data-action="add-audio-track" title="Add an audio track">
+                + Audio track
+              </button>
+              <label>Snap <input id="av-snap" type="checkbox" checked /></label>
+              <label>Linked <input id="av-linked" type="checkbox" checked /></label>
+              <label>Zoom <input id="av-zoom" type="range" min="6" max="480" value="72" /></label>
+              <button type="button" data-action="zoom-fit" title="Zoom to sequence (\)">Fit</button>
+            </div>
+          </div>
+          <div class="av-timeline-scroll" id="av-timeline-scroll">
+            <div class="av-timeline" id="av-timeline" style="--av-px-per-second: 72px">
+              <div class="av-ruler-row">
+                <div class="av-track-label">TIME</div>
+                <div id="av-ruler" class="av-ruler"></div>
+              </div>
+              <div id="av-tracks" class="av-tracks"></div>
+              <button
+                id="av-playhead"
+                class="av-playhead"
+                type="button"
+                aria-label="Timeline playhead"
+              >
+                <span></span>
+              </button>
+            </div>
+          </div>
+          <div class="av-statusbar">
+            <span id="av-project-stats">0 clips · 0 titles · 00:00</span
+            ><span id="av-status" role="status">Ready</span
+            ><span class="av-shortcut-hint"
+              >Space play · J K L shuttle · I/O in-out · Ctrl+K cut · Shift+Del ripple · V C B N Y U
+              tools</span
+            >
+          </div>
+        </section>
+      </main>
+      <div
+        id="av-shortcuts"
+        class="av-shortcuts"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="av-shortcuts-title"
+        hidden
+      >
+        <div class="av-shortcuts-card">
+          <div class="av-shortcuts-head">
+            <h2 id="av-shortcuts-title">Keyboard shortcuts</h2>
+            <button type="button" data-action="close-shortcuts" aria-label="Close">×</button>
+          </div>
+          <dl>
+            <div>
+              <dt><kbd>Space</kbd></dt>
+              <dd>Play / pause</dd>
+            </div>
+            <div>
+              <dt><kbd>J</kbd><kbd>K</kbd><kbd>L</kbd></dt>
+              <dd>Shuttle back, stop, forward</dd>
+            </div>
+            <div>
+              <dt><kbd>I</kbd><kbd>O</kbd></dt>
+              <dd>Mark in / out</dd>
+            </div>
+            <div>
+              <dt><kbd>V</kbd></dt>
+              <dd>Selection tool</dd>
+            </div>
+            <div>
+              <dt><kbd>C</kbd></dt>
+              <dd>Razor</dd>
+            </div>
+            <div>
+              <dt><kbd>B</kbd></dt>
+              <dd>Ripple edit</dd>
+            </div>
+            <div>
+              <dt><kbd>N</kbd></dt>
+              <dd>Rolling edit</dd>
+            </div>
+            <div>
+              <dt><kbd>Y</kbd></dt>
+              <dd>Slip</dd>
+            </div>
+            <div>
+              <dt><kbd>U</kbd></dt>
+              <dd>Slide</dd>
+            </div>
+            <div>
+              <dt><kbd>Ctrl</kbd><kbd>K</kbd></dt>
+              <dd>Cut at the playhead</dd>
+            </div>
+            <div>
+              <dt><kbd>Shift</kbd><kbd>Del</kbd></dt>
+              <dd>Ripple delete</dd>
+            </div>
+            <div>
+              <dt><kbd>Ctrl</kbd><kbd>D</kbd></dt>
+              <dd>Default transition</dd>
+            </div>
+            <div>
+              <dt><kbd>M</kbd></dt>
+              <dd>Add marker</dd>
+            </div>
+            <div>
+              <dt><kbd>Ctrl</kbd><kbd>Z</kbd></dt>
+              <dd>Undo (<kbd>Shift</kbd> to redo)</dd>
+            </div>
+            <div>
+              <dt><kbd>Ctrl</kbd><kbd>S</kbd></dt>
+              <dd>Save project</dd>
+            </div>
+            <div>
+              <dt><kbd>Ctrl</kbd><kbd>M</kbd></dt>
+              <dd>Export</dd>
+            </div>
+            <div>
+              <dt><kbd>Ctrl</kbd><kbd>wheel</kbd></dt>
+              <dd>Zoom the timeline</dd>
+            </div>
+            <div>
+              <dt><kbd>\</kbd></dt>
+              <dd>Zoom to fit</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+      <div
+        id="av-render-dialog"
+        class="av-render-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="av-render-title"
+        data-af-panel="export"
+        data-af-label="Export"
+        data-stage="settings"
+        hidden
+      >
+        <div class="av-render-card">
+          <span>EXPORT ON THIS DEVICE</span>
+          <h2 id="av-render-title">Export video</h2>
+          <form id="av-export-form" class="av-export-form">
+            <label
+              >Preset<select name="preset">
+                <option value="match">Match sequence</option>
+                <option value="1080p">1080p · 1920×1080</option>
+                <option value="720p">720p · 1280×720</option>
+                <option value="2160p">4K UHD · 3840×2160</option>
+                <option value="vertical">Vertical 9:16 · 1080×1920</option>
+                <option value="square">Square 1:1 · 1080×1080</option>
+              </select></label
+            >
+            <label
+              >Format<select name="format">
+                <option value="auto">Best available</option>
+                <option value="mp4">MP4 (H.264 or VP9, AAC or Opus)</option>
+                <option value="webm">WebM (real time)</option>
+                <option value="webm-fast">WebM · VP9/VP8 + Opus (offline)</option>
+                <option value="gif">Animated GIF (up to 15 s)</option>
+                <option value="png">PNG still (frame at the playhead)</option>
+                <option value="png-seq">PNG image sequence (.zip)</option>
+                <option value="jpeg-seq">JPEG image sequence (.zip)</option>
+                <option value="wav">Audio only · WAV</option>
+                <option value="srt">Captions · SRT</option>
+                <option value="vtt">Captions · WebVTT</option>
+              </select></label
+            >
+            <label
+              >Quality<select name="quality">
+                <option value="high">High</option>
+                <option value="medium">Medium</option>
+                <option value="low">Small file</option>
+              </select></label
+            >
+            <label
+              >Range<select name="range">
+                <option value="all">Entire sequence</option>
+                <option value="inout">In to out</option>
+              </select></label
+            >
+            <p id="av-export-support" class="av-export-support" role="status"></p>
+            <p class="av-export-note">
+              A preset with a different shape than the sequence is letterboxed. To fill a vertical
+              or square frame, set the sequence to that shape.
+            </p>
+          </form>
+          <p id="av-render-message">Preparing media…</p>
+          <progress id="av-render-progress" max="1" value="0"></progress>
+          <div class="av-render-actions">
+            <button type="button" data-action="export-close" class="av-export-close">Close</button>
+            <button type="button" data-action="render" class="av-export-start">Export</button>
+            <button type="button" data-action="cancel-render">Cancel render</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <a class="footer-wordmark" href="https://alcor-industries.com/"
+            ><img
+              class="brand-star"
+              src="../assets/site/logos/alcor-star.svg"
+              width="48"
+              height="48"
+              alt=""
+              loading="lazy"
+              decoding="async"
+            />Alcor Industries</a
+          >
+          <p class="footer-line">
+            Ask Alcor is free for individuals. Businesses get a written quote.
+          </p>
+        </div>
+        <nav class="footer-links" aria-label="Footer">
+          <div class="footer-group">
+            <p class="footer-group__title">Products</p>
+            <ul role="list">
+              <li><a href="https://alcor-industries.com/platform/">All apps</a></li>
+              <li><a href="https://alcor-industries.com/archetypes/">Archetypes</a></li>
+              <li><a href="https://alcor-industries.com/arcana/">Arcana</a></li>
+            </ul>
+          </div>
+          <div class="footer-group">
+            <p class="footer-group__title">Company</p>
+            <ul role="list">
+              <li><a href="https://alcor-industries.com/agi/">AGI research</a></li>
+              <li><a href="https://alcor-industries.com/agents/">For AI agents</a></li>
+              <li><a href="https://alcor-industries.com/blog/">Blog</a></li>
+              <li><a href="https://alcor-industries.com/privacy/">Privacy</a></li>
+              <li><a href="https://alcor-industries.com/archetype-terms/">Archetype terms</a></li>
+            </ul>
+          </div>
+          <div class="footer-group footer-group--contact">
+            <p class="footer-group__title">Contact</p>
+            <ul role="list">
+              <li><a href="https://alcor-industries.com/#contact">Get a written quote</a></li>
+            </ul>
+          </div>
+        </nav>
+        <p class="footer-legal">
+          &copy; 2026 Alcor Systems LLC. Alcor Industries is a product of Alcor Systems LLC &middot;
+          Austin, Texas
+        </p>
+      </div>
+    </footer>
+    <script type="speculationrules">
+      {
+        "prefetch": [
+          {
+            "source": "document",
+            "where": {
+              "and": [
+                { "href_matches": "/*" },
+                {
+                  "not": {
+                    "href_matches": [
+                      "/wp-*.php",
+                      "/wp-admin/*",
+                      "/wp-content/uploads/*",
+                      "/wp-content/*",
+                      "/wp-content/plugins/*",
+                      "/wp-content/themes/alcor-industries/*",
+                      "/*\\?(.+)"
+                    ]
+                  }
+                },
+                { "not": { "selector_matches": "a[rel~=\"nofollow\"]" } },
+                { "not": { "selector_matches": ".no-prefetch, .no-prefetch a" } }
+              ]
+            },
+            "eagerness": "conservative"
+          }
+        ]
+      }
+    </script>
+    <style id="global-styles-inline-css">
+      :root {
+        --wp--preset--aspect-ratio--square: 1;
+        --wp--preset--aspect-ratio--4-3: 4/3;
+        --wp--preset--aspect-ratio--3-4: 3/4;
+        --wp--preset--aspect-ratio--3-2: 3/2;
+        --wp--preset--aspect-ratio--2-3: 2/3;
+        --wp--preset--aspect-ratio--16-9: 16/9;
+        --wp--preset--aspect-ratio--9-16: 9/16;
+        --wp--preset--color--black: #000000;
+        --wp--preset--color--cyan-bluish-gray: #abb8c3;
+        --wp--preset--color--white: #ffffff;
+        --wp--preset--color--pale-pink: #f78da7;
+        --wp--preset--color--vivid-red: #cf2e2e;
+        --wp--preset--color--luminous-vivid-orange: #ff6900;
+        --wp--preset--color--luminous-vivid-amber: #fcb900;
+        --wp--preset--color--light-green-cyan: #7bdcb5;
+        --wp--preset--color--vivid-green-cyan: #00d084;
+        --wp--preset--color--pale-cyan-blue: #8ed1fc;
+        --wp--preset--color--vivid-cyan-blue: #0693e3;
+        --wp--preset--color--vivid-purple: #9b51e0;
+        --wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(
+          135deg,
+          rgb(6, 147, 227) 0%,
+          rgb(155, 81, 224) 100%
+        );
+        --wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(
+          135deg,
+          rgb(122, 220, 180) 0%,
+          rgb(0, 208, 130) 100%
+        );
+        --wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(
+          135deg,
+          rgb(252, 185, 0) 0%,
+          rgb(255, 105, 0) 100%
+        );
+        --wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(
+          135deg,
+          rgb(255, 105, 0) 0%,
+          rgb(207, 46, 46) 100%
+        );
+        --wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(
+          135deg,
+          rgb(238, 238, 238) 0%,
+          rgb(169, 184, 195) 100%
+        );
+        --wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(
+          135deg,
+          rgb(74, 234, 220) 0%,
+          rgb(151, 120, 209) 20%,
+          rgb(207, 42, 186) 40%,
+          rgb(238, 44, 130) 60%,
+          rgb(251, 105, 98) 80%,
+          rgb(254, 248, 76) 100%
+        );
+        --wp--preset--gradient--blush-light-purple: linear-gradient(
+          135deg,
+          rgb(255, 206, 236) 0%,
+          rgb(152, 150, 240) 100%
+        );
+        --wp--preset--gradient--blush-bordeaux: linear-gradient(
+          135deg,
+          rgb(254, 205, 165) 0%,
+          rgb(254, 45, 45) 50%,
+          rgb(107, 0, 62) 100%
+        );
+        --wp--preset--gradient--luminous-dusk: linear-gradient(
+          135deg,
+          rgb(255, 203, 112) 0%,
+          rgb(199, 81, 192) 50%,
+          rgb(65, 88, 208) 100%
+        );
+        --wp--preset--gradient--pale-ocean: linear-gradient(
+          135deg,
+          rgb(255, 245, 203) 0%,
+          rgb(182, 227, 212) 50%,
+          rgb(51, 167, 181) 100%
+        );
+        --wp--preset--gradient--electric-grass: linear-gradient(
+          135deg,
+          rgb(202, 248, 128) 0%,
+          rgb(113, 206, 126) 100%
+        );
+        --wp--preset--gradient--midnight: linear-gradient(
+          135deg,
+          rgb(2, 3, 129) 0%,
+          rgb(40, 116, 252) 100%
+        );
+        --wp--preset--font-size--small: 13px;
+        --wp--preset--font-size--medium: 20px;
+        --wp--preset--font-size--large: 36px;
+        --wp--preset--font-size--x-large: 42px;
+        --wp--preset--spacing--20: 0.44rem;
+        --wp--preset--spacing--30: 0.67rem;
+        --wp--preset--spacing--40: 1rem;
+        --wp--preset--spacing--50: 1.5rem;
+        --wp--preset--spacing--60: 2.25rem;
+        --wp--preset--spacing--70: 3.38rem;
+        --wp--preset--spacing--80: 5.06rem;
+        --wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2);
+        --wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4);
+        --wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2);
+        --wp--preset--shadow--outlined: 6px 6px 0px -3px rgb(255, 255, 255), 6px 6px rgb(0, 0, 0);
+        --wp--preset--shadow--crisp: 6px 6px 0px rgb(0, 0, 0);
+      }
+      .wp-block-button {
+        --wp--preset--dimension--25: 25%;
+        --wp--preset--dimension--50: 50%;
+        --wp--preset--dimension--75: 75%;
+        --wp--preset--dimension--100: 100%;
+      }
+      :where(body) {
+        margin: 0;
+      }
+      :where(.is-layout-flex) {
+        gap: 0.5em;
+      }
+      :where(.is-layout-grid) {
+        gap: 0.5em;
+      }
+      body .is-layout-flex {
+        display: flex;
+      }
+      .is-layout-flex {
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .is-layout-flex > :is(*, div) {
+        margin: 0;
+      }
+      body .is-layout-grid {
+        display: grid;
+      }
+      .is-layout-grid > :is(*, div) {
+        margin: 0;
+      }
+      body {
+        padding-top: 0px;
+        padding-right: 0px;
+        padding-bottom: 0px;
+        padding-left: 0px;
+      }
+      :root :where(.wp-element-button, .wp-block-button__link) {
+        background-color: #32373c;
+        border-width: 0;
+        color: #fff;
+        font-family: inherit;
+        font-size: inherit;
+        font-style: inherit;
+        font-weight: inherit;
+        letter-spacing: inherit;
+        line-height: inherit;
+        padding-top: calc(0.667em + 2px);
+        padding-right: calc(1.333em + 2px);
+        padding-bottom: calc(0.667em + 2px);
+        padding-left: calc(1.333em + 2px);
+        text-decoration: none;
+        text-transform: inherit;
+      }
+      .has-black-color {
+        color: var(--wp--preset--color--black) !important;
+      }
+      .has-cyan-bluish-gray-color {
+        color: var(--wp--preset--color--cyan-bluish-gray) !important;
+      }
+      .has-white-color {
+        color: var(--wp--preset--color--white) !important;
+      }
+      .has-pale-pink-color {
+        color: var(--wp--preset--color--pale-pink) !important;
+      }
+      .has-vivid-red-color {
+        color: var(--wp--preset--color--vivid-red) !important;
+      }
+      .has-luminous-vivid-orange-color {
+        color: var(--wp--preset--color--luminous-vivid-orange) !important;
+      }
+      .has-luminous-vivid-amber-color {
+        color: var(--wp--preset--color--luminous-vivid-amber) !important;
+      }
+      .has-light-green-cyan-color {
+        color: var(--wp--preset--color--light-green-cyan) !important;
+      }
+      .has-vivid-green-cyan-color {
+        color: var(--wp--preset--color--vivid-green-cyan) !important;
+      }
+      .has-pale-cyan-blue-color {
+        color: var(--wp--preset--color--pale-cyan-blue) !important;
+      }
+      .has-vivid-cyan-blue-color {
+        color: var(--wp--preset--color--vivid-cyan-blue) !important;
+      }
+      .has-vivid-purple-color {
+        color: var(--wp--preset--color--vivid-purple) !important;
+      }
+      .has-black-background-color {
+        background-color: var(--wp--preset--color--black) !important;
+      }
+      .has-cyan-bluish-gray-background-color {
+        background-color: var(--wp--preset--color--cyan-bluish-gray) !important;
+      }
+      .has-white-background-color {
+        background-color: var(--wp--preset--color--white) !important;
+      }
+      .has-pale-pink-background-color {
+        background-color: var(--wp--preset--color--pale-pink) !important;
+      }
+      .has-vivid-red-background-color {
+        background-color: var(--wp--preset--color--vivid-red) !important;
+      }
+      .has-luminous-vivid-orange-background-color {
+        background-color: var(--wp--preset--color--luminous-vivid-orange) !important;
+      }
+      .has-luminous-vivid-amber-background-color {
+        background-color: var(--wp--preset--color--luminous-vivid-amber) !important;
+      }
+      .has-light-green-cyan-background-color {
+        background-color: var(--wp--preset--color--light-green-cyan) !important;
+      }
+      .has-vivid-green-cyan-background-color {
+        background-color: var(--wp--preset--color--vivid-green-cyan) !important;
+      }
+      .has-pale-cyan-blue-background-color {
+        background-color: var(--wp--preset--color--pale-cyan-blue) !important;
+      }
+      .has-vivid-cyan-blue-background-color {
+        background-color: var(--wp--preset--color--vivid-cyan-blue) !important;
+      }
+      .has-vivid-purple-background-color {
+        background-color: var(--wp--preset--color--vivid-purple) !important;
+      }
+      .has-black-border-color {
+        border-color: var(--wp--preset--color--black) !important;
+      }
+      .has-cyan-bluish-gray-border-color {
+        border-color: var(--wp--preset--color--cyan-bluish-gray) !important;
+      }
+      .has-white-border-color {
+        border-color: var(--wp--preset--color--white) !important;
+      }
+      .has-pale-pink-border-color {
+        border-color: var(--wp--preset--color--pale-pink) !important;
+      }
+      .has-vivid-red-border-color {
+        border-color: var(--wp--preset--color--vivid-red) !important;
+      }
+      .has-luminous-vivid-orange-border-color {
+        border-color: var(--wp--preset--color--luminous-vivid-orange) !important;
+      }
+      .has-luminous-vivid-amber-border-color {
+        border-color: var(--wp--preset--color--luminous-vivid-amber) !important;
+      }
+      .has-light-green-cyan-border-color {
+        border-color: var(--wp--preset--color--light-green-cyan) !important;
+      }
+      .has-vivid-green-cyan-border-color {
+        border-color: var(--wp--preset--color--vivid-green-cyan) !important;
+      }
+      .has-pale-cyan-blue-border-color {
+        border-color: var(--wp--preset--color--pale-cyan-blue) !important;
+      }
+      .has-vivid-cyan-blue-border-color {
+        border-color: var(--wp--preset--color--vivid-cyan-blue) !important;
+      }
+      .has-vivid-purple-border-color {
+        border-color: var(--wp--preset--color--vivid-purple) !important;
+      }
+      .has-vivid-cyan-blue-to-vivid-purple-gradient-background {
+        background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;
+      }
+      .has-light-green-cyan-to-vivid-green-cyan-gradient-background {
+        background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;
+      }
+      .has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background {
+        background: var(
+          --wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange
+        ) !important;
+      }
+      .has-luminous-vivid-orange-to-vivid-red-gradient-background {
+        background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;
+      }
+      .has-very-light-gray-to-cyan-bluish-gray-gradient-background {
+        background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;
+      }
+      .has-cool-to-warm-spectrum-gradient-background {
+        background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;
+      }
+      .has-blush-light-purple-gradient-background {
+        background: var(--wp--preset--gradient--blush-light-purple) !important;
+      }
+      .has-blush-bordeaux-gradient-background {
+        background: var(--wp--preset--gradient--blush-bordeaux) !important;
+      }
+      .has-luminous-dusk-gradient-background {
+        background: var(--wp--preset--gradient--luminous-dusk) !important;
+      }
+      .has-pale-ocean-gradient-background {
+        background: var(--wp--preset--gradient--pale-ocean) !important;
+      }
+      .has-electric-grass-gradient-background {
+        background: var(--wp--preset--gradient--electric-grass) !important;
+      }
+      .has-midnight-gradient-background {
+        background: var(--wp--preset--gradient--midnight) !important;
+      }
+      .has-small-font-size {
+        font-size: var(--wp--preset--font-size--small) !important;
+      }
+      .has-medium-font-size {
+        font-size: var(--wp--preset--font-size--medium) !important;
+      }
+      .has-large-font-size {
+        font-size: var(--wp--preset--font-size--large) !important;
+      }
+      .has-x-large-font-size {
+        font-size: var(--wp--preset--font-size--x-large) !important;
+      }
+      /*# sourceURL=global-styles-inline-css */
+    </style>
+    <script id="alcor-video-js-extra">
+      var AlcorVideoConfig = {
+        version: '0.5.0',
+        hostedAccess: 'free',
+        price: '0',
+        localInquiryUrl:
+          'https://alcor-industries.com/#contact',
+        maxImportBytes: '2147483648',
+        enhancementServiceWorkerUrl: 'https://alcor-industries.com/video/sw.js?v=0.5.0',
+        enhancementScope: '/video/',
+        lazy: {
+          export: 'editor-export.js',
+          effects: 'editor-effects.js',
+          grade: 'editor-grade.js',
+          waveform: 'editor-waveform.js',
+          sample: 'editor-sample.js',
+          'sample-webm': 'editor-sample-webm.js',
+        },
+      };
+      //# sourceURL=alcor-video-js-extra
+    </script>
+    <script data-wp-strategy="defer" defer id="alcor-video-js" src="editor-core.js"></script>
+    <script id="alcor-industries-site-js" src="../assets/js/site.js"></script>
+    <script
+      data-wp-strategy="defer"
+      defer
+      id="alcor-motion-js"
+      src="../assets/js/motion.js"
+    ></script>
+    <script
+      data-wp-strategy="defer"
+      defer
+      id="alcor-frame-js"
+      src="../assets/js/alcor-frame.js"
+    ></script>
+    <script
+      data-wp-strategy="defer"
+      defer
+      id="alcor-product-names-js"
+      src="../assets/js/alcor-product-names.js"
+    ></script>
+  </body>
+</html>

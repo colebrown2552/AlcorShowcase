@@ -1,0 +1,10 @@
+{
+  "schema": "alcor.computer.strict-mediator.v1",
+  "accepts_arm": "computer bundle",
+  "allowed_operations": ["click"],
+  "allowed_buttons": ["left"],
+  "binding": ["read_chain_sha256", "scope_id", "target_ref"],
+  "consume_before_act": true,
+  "owner_gated": true,
+  "actuator_included": false
+}

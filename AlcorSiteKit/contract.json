@@ -1,0 +1,19 @@
+{
+  "about": "The standing contract: every suite here must report zero FAIL against staging, exactly as served, before anything is promoted. A suite is any script that takes the base URL as its first argument, prints PASS/FAIL lines and exits non-zero on failure. Add a suite by adding a row. 'prod_safe' suites only read pages, so they may also run against production. 'alone' suites measure pixels or speed and run after the others, one at a time. 'out_flag' names the option that receives a folder for files a suite writes (for example screenshots).",
+  "suites": [
+    {
+      "name": "structure",
+      "file": "suites/site_checks.py",
+      "args": ["--check", "structure"],
+      "prod_safe": true,
+      "covers": "every page reachable from / answers 200 and has a title, one h1, a language and image alt text"
+    },
+    {
+      "name": "links",
+      "file": "suites/site_checks.py",
+      "args": ["--check", "links"],
+      "prod_safe": true,
+      "covers": "every internal link, stylesheet, script and image resolves"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+# Lint and format settings shared by every Python component (see STYLE.md).
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+# pycodestyle, pyflakes, isort, pyupgrade, bugbear, simplify, docstrings (Google), annotations on public API.
+select = ["E", "F", "W", "I", "UP", "B", "SIM", "D", "ANN001", "ANN201", "ANN202", "ANN204"]
+ignore = [
+  "D105",  # magic methods document themselves
+  "D107",  # __init__ is documented on the class
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.per-file-ignores]
+"**/demo/*.py" = ["D", "ANN"]
+"**/tests/*.py" = ["D", "ANN"]
+
+[tool.ruff.format]
+quote-style = "double"

@@ -1,0 +1,1083 @@
+/* AlcorFinance calculators. Uses the site.css tokens; everything is scoped under .af or .af-*. */
+
+.af-skip {
+  position: absolute;
+  left: 16px;
+  top: -80px;
+  z-index: 60;
+  padding: 10px 14px;
+  border-radius: 6px;
+  background: var(--paper);
+  color: #050608;
+  font-weight: 800;
+}
+
+.af-skip:focus {
+  top: 12px;
+}
+
+.af-main {
+  /* Same gutters as the homepage sections: 72px, 34px under 1100px, 16px on phones. */
+  width: min(1180px, 100% - 144px);
+  margin: 0 auto;
+  padding: 132px 0 80px;
+}
+
+.af-hero {
+  margin-bottom: 34px;
+}
+
+/* Signature constellation (theme helper) behind the hero copy, on the right of the column. The
+   drawing rules are polish.css; the star order is repeated here because this page's CSP blocks
+   the helper's inline style attributes. */
+.af-hero.has-constellation > .alcor-constellation {
+  right: 0;
+  width: min(440px, 36vw);
+}
+
+.af-hero .alcor-constellation > circle:nth-of-type(2) {
+  --i: 1;
+}
+.af-hero .alcor-constellation > circle:nth-of-type(3) {
+  --i: 2;
+}
+.af-hero .alcor-constellation > circle:nth-of-type(4) {
+  --i: 3;
+}
+.af-hero .alcor-constellation > circle:nth-of-type(5) {
+  --i: 4;
+}
+.af-hero .alcor-constellation > circle:nth-of-type(6) {
+  --i: 5;
+}
+.af-hero .alcor-constellation > circle:nth-of-type(7) {
+  --i: 6;
+}
+
+.af-hero h1 {
+  max-width: 860px;
+  margin-bottom: 18px;
+  font-size: clamp(2.5rem, 4.4vw, 4rem);
+  line-height: 1.04;
+  letter-spacing: -0.02em;
+}
+
+/* Eyebrow standard: a category in Inter 600 12px, .14em, uppercase. */
+.af-hero .section-kicker {
+  display: block;
+  margin: 0 0 14px;
+  font-family: Inter, 'Inter Fallback', system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.af-lede {
+  max-width: 58ch;
+  color: rgba(246, 240, 228, 0.8);
+  font-size: 19px;
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+/* ---- tool card ---- */
+
+.af {
+  position: relative;
+  border: 1px solid rgba(179, 140, 255, 0.3);
+  background: linear-gradient(135deg, rgba(83, 217, 212, 0.06), transparent 42%), #0b0d13;
+  box-shadow: 0 0 44px rgba(179, 140, 255, 0.08);
+  color: var(--paper);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.af :where(button, input, select) {
+  line-height: inherit;
+}
+
+.af:focus {
+  outline: none;
+}
+
+.af :where(h2, h3, p) {
+  margin: 0;
+}
+
+.af-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 18px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.af-tabs {
+  display: inline-flex;
+  gap: 8px;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(5, 6, 8, 0.6);
+}
+
+.af-tab {
+  min-height: 44px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.af-tab:hover {
+  color: var(--paper);
+}
+
+.af-tab[aria-selected='true'] {
+  background: rgba(179, 140, 255, 0.16);
+  box-shadow: inset 0 0 0 1px rgba(179, 140, 255, 0.5);
+  color: var(--paper);
+}
+
+.af-actions,
+.af-row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Site pill standard: Inter 600 14px, sentence case, 40px tall inside the app, fully rounded. */
+.af-button {
+  min-height: 40px;
+  padding: 0 18px;
+  border: 1px solid rgba(246, 240, 228, 0.26);
+  border-radius: 999px;
+  background: rgba(246, 240, 228, 0.04);
+  color: var(--paper);
+  font-family: Inter, 'Inter Fallback', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0;
+  text-transform: none;
+  cursor: pointer;
+}
+
+.af-button:hover {
+  border-color: var(--violet);
+}
+
+.af-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.af-button-quiet {
+  border-color: rgba(83, 217, 212, 0.35);
+  color: #bff4ec;
+}
+
+.af-status {
+  padding: 0 18px;
+  color: var(--cyan);
+  font-family: Consolas, 'SFMono-Regular', Menlo, monospace;
+  font-size: 13px;
+}
+
+.af-status:not(:empty) {
+  padding-top: 10px;
+}
+
+.af-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.af-noscript {
+  padding: 18px;
+  color: var(--gold);
+}
+
+.af-print-head {
+  display: none;
+}
+
+.af-panel {
+  padding: 28px 28px 22px;
+}
+
+.af-panel[hidden] {
+  display: none;
+}
+
+.af-grid {
+  display: grid;
+  grid-template-columns: minmax(280px, 340px) minmax(0, 1fr);
+  gap: 32px;
+  align-items: start;
+}
+
+.af-inputs {
+  display: grid;
+  gap: 16px;
+}
+
+.af-title {
+  font-size: 25px;
+  line-height: 1.2;
+}
+
+.af-intro {
+  margin-top: -4px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.af-hint {
+  margin-top: -8px;
+  color: var(--quiet);
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+/* ---- fields ---- */
+
+.af-field {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.af-field label {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.af-input {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  border: 1px solid rgba(246, 240, 228, 0.18);
+  border-radius: 6px;
+  background: rgba(5, 6, 8, 0.6);
+}
+
+.af-input:focus-within {
+  border-color: var(--violet);
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+}
+
+.af-input input {
+  width: 100%;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 0;
+  background: transparent;
+  color: var(--paper);
+  font-size: 16px;
+  font-variant-numeric: tabular-nums;
+}
+
+.af-input input:focus,
+.af-input input:focus-visible {
+  outline: none;
+}
+
+.af-input input::placeholder {
+  color: var(--quiet);
+}
+
+.af-affix {
+  padding-left: 12px;
+  color: var(--quiet);
+  font-size: 15px;
+}
+
+.af-affix + input {
+  padding-left: 4px;
+}
+
+.af-affix-end {
+  padding: 0 12px 0 0;
+  font-size: 13px;
+}
+
+.af-input.is-invalid {
+  border-color: var(--red);
+}
+
+.af-error {
+  color: #ff8a9e;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.af-holdings {
+  display: grid;
+  gap: 12px;
+}
+
+.af-holding {
+  display: grid;
+  gap: 10px;
+  padding: 12px 14px 14px;
+  border: 1px solid rgba(246, 240, 228, 0.1);
+  border-radius: 8px;
+  background: rgba(246, 240, 228, 0.025);
+}
+
+.af-holding-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 24px;
+}
+
+.af-holding-title {
+  color: var(--gold);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.af-remove {
+  padding: 2px 4px;
+  border: 0;
+  background: none;
+  color: #ff8a9e;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.af-remove:hover {
+  text-decoration: underline;
+}
+
+.af-holding-numbers {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr 0.9fr;
+  align-items: start;
+  gap: 10px;
+}
+
+.af-holding-numbers .af-field label {
+  font-size: 11px;
+}
+
+/* Opportunity cost: one column, holdings as rows on wide screens. */
+
+.af-grid-stacked {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 28px;
+}
+
+.af-grid-stacked .af-intro {
+  max-width: 60ch;
+}
+
+.af-grid-stacked .af-hint {
+  max-width: 760px;
+}
+
+.af-grid-stacked .af-inputs > .af-field {
+  max-width: 300px;
+}
+
+@media (min-width: 761px) {
+  .af-grid-stacked .af-holdings {
+    gap: 10px;
+  }
+
+  .af-grid-stacked .af-holding {
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 2.5fr) 72px;
+    align-items: start;
+    gap: 12px;
+    padding: 0;
+    border: 0;
+    background: none;
+  }
+
+  .af-grid-stacked .af-holding-head {
+    display: contents;
+  }
+
+  .af-grid-stacked .af-holding-title,
+  .af-grid-stacked .af-holding + .af-holding .af-field label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .af-grid-stacked .af-holding > .af-field {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .af-grid-stacked .af-holding-numbers {
+    grid-column: 2;
+    grid-row: 1;
+    grid-template-columns: 1.4fr 1fr 1fr;
+  }
+
+  .af-grid-stacked .af-remove {
+    grid-column: 3;
+    grid-row: 1;
+    min-height: 44px;
+    text-align: left;
+  }
+
+  /* Line up with the inputs under the first row's labels (18px label + 6px gap). */
+  .af-grid-stacked .af-holding:first-child .af-remove {
+    margin-top: 24px;
+  }
+
+  .af-grid-stacked .af-holding .af-field label {
+    font-size: 12px;
+  }
+}
+
+@media (min-width: 1025px) {
+  .af-grid-stacked .af-summary {
+    grid-template-columns: minmax(280px, auto) minmax(0, 1fr);
+    align-items: end;
+    gap: 16px 40px;
+  }
+
+  .af-grid-stacked .af-stats {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .af-grid-stacked .af-note {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ---- results ---- */
+
+.af-results {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 20px;
+  min-width: 0;
+}
+
+.af-summary {
+  display: grid;
+  gap: 16px;
+  padding: 22px 24px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(5, 6, 8, 0.45);
+}
+
+.af-summary:empty {
+  display: none;
+}
+
+.af-hero-stat {
+  display: grid;
+  gap: 4px;
+}
+
+.af-hero-label {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.af-hero-value {
+  font-size: clamp(34px, 4vw, 48px);
+  font-weight: 800;
+  line-height: 1.05;
+  font-variant-numeric: tabular-nums;
+}
+
+.af-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 14px 20px;
+  margin: 0;
+}
+
+.af-stats div {
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+
+.af-stats dt {
+  color: var(--quiet);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.af-stats dd {
+  margin: 2px 0 0;
+  font-size: 18px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.af-note {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.af-invalid {
+  padding: 18px 20px;
+  border: 1px dashed rgba(255, 78, 106, 0.5);
+  border-radius: 8px;
+  color: #ff8a9e;
+}
+
+.af-invalid:not([hidden]) ~ .af-toggle {
+  display: none;
+}
+
+.af-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: -8px;
+  color: var(--muted);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.af-toggle input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--violet);
+}
+
+.af .is-good {
+  color: var(--cyan);
+}
+
+.af .is-bad {
+  color: #ff7f9c;
+}
+
+/* ---- tables ---- */
+
+.af-table-scroll {
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.af-table-scroll:not(.is-cards) {
+  max-height: 460px;
+}
+
+.af-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.af-table caption {
+  padding: 12px 14px 10px;
+  color: var(--gold);
+  font-size: 12px;
+  font-weight: 800;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.af-table th,
+.af-table td {
+  padding: 9px 14px;
+  border-bottom: 1px solid rgba(246, 240, 228, 0.07);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.af-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #0f1119;
+  color: var(--quiet);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  border-bottom-color: var(--line);
+}
+
+.af-table tbody th {
+  font-weight: 700;
+  white-space: normal;
+}
+
+.af-table .is-num {
+  text-align: right;
+}
+
+.af-cell-sub {
+  display: block;
+  margin-top: 2px;
+  color: var(--quiet);
+  font-size: 12.5px;
+  font-weight: 400;
+}
+
+.af-table tr.is-mark {
+  background: rgba(179, 140, 255, 0.1);
+}
+
+.af-table tfoot th,
+.af-table tfoot td {
+  border-top: 1px solid var(--line);
+  border-bottom: 0;
+  font-weight: 800;
+}
+
+.af-table tbody tr:last-child th,
+.af-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.af-table-cards th,
+.af-table-cards td {
+  white-space: normal;
+}
+
+/* ---- explanation, disclaimer, call to action ---- */
+
+.af-math {
+  margin-top: 26px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+
+.af-math summary {
+  min-height: 44px;
+  padding-block: 10px;
+  color: var(--gold);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+/* "How it's calculated": a mouse click shows no ring; the keyboard ring is a thin, rounded, soft one rather than the
+   site's 3px cyan box (polish.css), which read as a heavy outline across the full card width (owner, 2026-10-29). */
+html body .af-math summary {
+  border-radius: 8px;
+}
+html body .af-math summary:focus:not(:focus-visible) {
+  outline: none;
+}
+html body .af-math summary:focus-visible {
+  outline: 2px solid rgba(83, 217, 212, 0.55);
+  outline-offset: 2px;
+}
+
+.af-math p {
+  max-width: 820px;
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 14.5px;
+  line-height: 1.65;
+}
+
+.af-disclaimer {
+  padding: 14px 28px 18px;
+  border-top: 1px solid var(--line);
+  color: var(--quiet);
+  font-size: 13.5px;
+}
+
+/* Closing call to action: an open section on the page column, like the homepage's closing block. */
+.af-cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px 28px;
+  margin-top: 64px;
+  padding: 64px 0 0;
+  border-top: 1px solid var(--line);
+}
+
+.af-cta p {
+  max-width: 58ch;
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+/* ---- smaller screens ---- */
+
+@media (max-width: 1100px) {
+  .af-main {
+    width: calc(100% - 68px);
+  }
+}
+
+@media (max-width: 1024px) {
+  .af-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+  }
+}
+
+@media (max-width: 760px) {
+  .af-main {
+    width: calc(100% - 32px);
+    padding: 96px 0 56px;
+  }
+
+  .af-hero {
+    margin-bottom: 24px;
+  }
+
+  .af-hero h1 {
+    font-size: 38px;
+    line-height: 1.05;
+  }
+
+  .af-lede {
+    font-size: 17px;
+  }
+
+  .af-toolbar {
+    padding: 12px;
+  }
+
+  .af-tabs {
+    display: grid;
+    grid-template-columns: 1.45fr 1fr 1.1fr;
+    width: 100%;
+  }
+
+  .af-tab {
+    padding: 0 6px;
+    font-size: 13.5px;
+  }
+
+  .af-actions {
+    width: 100%;
+  }
+
+  .af-actions .af-button {
+    flex: 1 1 auto;
+    padding: 0 8px;
+  }
+
+  .af-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .af-status {
+    padding: 0 12px;
+  }
+
+  .af-panel {
+    padding: 20px 14px 18px;
+  }
+
+  .af-title {
+    font-size: 22px;
+  }
+
+  .af-summary {
+    padding: 18px;
+  }
+
+  .af-disclaimer {
+    padding: 14px;
+  }
+
+  .af-cta {
+    margin-top: 48px;
+    padding: 48px 0 0;
+  }
+
+  .af-cta .primary-link {
+    width: 100%;
+  }
+}
+
+@media (max-width: 560px) {
+  .af-table-cards thead {
+    display: none;
+  }
+
+  .af-table-cards caption {
+    display: block;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .af-table-cards,
+  .af-table-cards tbody,
+  .af-table-cards tfoot,
+  .af-table-cards tr,
+  .af-table-cards th,
+  .af-table-cards td {
+    display: block;
+    width: 100%;
+  }
+
+  .af-table-cards tr {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .af-table-cards th,
+  .af-table-cards td {
+    padding: 3px 0;
+    border: 0;
+  }
+
+  .af-table-cards tbody th,
+  .af-table-cards tfoot th {
+    padding-bottom: 6px;
+    font-size: 15px;
+  }
+
+  .af-table-cards td {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .af-table-cards td[data-label]::before {
+    content: attr(data-label);
+    color: var(--quiet);
+    font-size: 13px;
+    font-weight: 400;
+    text-align: left;
+  }
+
+  .af-table-cards td:not([data-label]) {
+    display: none;
+  }
+
+  .af-table-cards tfoot th,
+  .af-table-cards tfoot td {
+    border-top: 0;
+  }
+
+  .af-table-cards tbody tr:last-child {
+    border-bottom: 0;
+  }
+
+  .af-table-cards tfoot tr {
+    border-top: 1px solid var(--line);
+    border-bottom: 0;
+  }
+
+  .af-holding-numbers {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  /* The payment is already in the summary, so the schedule drops that column to fit a phone. */
+  .af-table-schedule th:nth-child(2),
+  .af-table-schedule td:nth-child(2) {
+    display: none;
+  }
+
+  /* Tight padding and 12 px text so Month, Principal and Balance (with cents) fit a 390 px phone. */
+  .af-table-schedule th,
+  .af-table-schedule td {
+    padding: 8px 3px;
+    font-size: 12px;
+  }
+
+  .af-table-schedule th:first-child,
+  .af-table-schedule td:first-child {
+    padding-left: 6px;
+  }
+
+  .af-table-schedule th:last-child,
+  .af-table-schedule td:last-child {
+    padding-right: 6px;
+  }
+
+  .af-table-schedule tfoot th,
+  .af-table-schedule tfoot td {
+    font-weight: 700;
+  }
+
+  .af-holding-numbers .af-field:first-child {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ---- print: the active calculator, its inputs and results, black on white ---- */
+
+@media print {
+  @page {
+    margin: 14mm;
+  }
+
+  html,
+  body,
+  .alcor-finance-page {
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  .site-header,
+  .site-footer,
+  .af-skip,
+  .af-hero,
+  .af-cta,
+  .aui-close,
+  .apx-bar,
+  .af-toolbar,
+  .af-status,
+  .af-sr,
+  .af-row-actions,
+  .af-remove,
+  .af-toggle,
+  .af-math,
+  .af-intro,
+  .af-hint,
+  .af-error,
+  .af-invalid,
+  .af-panel[hidden] {
+    display: none !important;
+  }
+
+  .af-main {
+    padding: 0;
+  }
+
+  .af,
+  .af * {
+    background: transparent !important;
+    box-shadow: none !important;
+    color: #000 !important;
+    text-shadow: none !important;
+  }
+
+  .af {
+    border: 0;
+    font-size: 11pt;
+  }
+
+  .af-print-head {
+    display: grid;
+    gap: 2px;
+    margin-bottom: 14pt;
+    font-size: 10pt;
+  }
+
+  .af-print-head strong {
+    font-size: 15pt;
+  }
+
+  .af-print-link {
+    word-break: break-all;
+    font-size: 8.5pt;
+  }
+
+  .af-panel {
+    padding: 0;
+  }
+
+  .af-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14pt;
+  }
+
+  .af-inputs {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8pt;
+  }
+
+  .af-title {
+    grid-column: 1 / -1;
+  }
+
+  /* Each holding's amount, rate and years print in the results table. */
+  .af-holdings {
+    display: none !important;
+  }
+
+  .af-input,
+  .af-holding,
+  .af-summary,
+  .af-table-scroll {
+    border-color: #999 !important;
+  }
+
+  .af-table-scroll,
+  .af-table-scroll:not(.is-cards) {
+    max-height: none;
+    overflow: visible;
+  }
+
+  .af-summary {
+    break-inside: avoid;
+  }
+
+  .af-table thead {
+    display: table-header-group;
+  }
+
+  .af-table thead th {
+    position: static;
+  }
+
+  /* Print the total once, at the end, instead of at the foot of every page. */
+  .af-table tfoot {
+    display: table-row-group;
+  }
+
+  .af-table th,
+  .af-table td {
+    padding: 4pt 8pt;
+  }
+
+  .af-table tr {
+    break-inside: avoid;
+  }
+
+  .af-disclaimer {
+    padding: 10pt 0 0;
+    border-color: #999;
+  }
+}
+
+/* Phones: the row Remove button gets a finger-sized target. */
+@media (max-width: 760px) {
+  .af-remove {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* The app screen (/finance/): the calculators sit right under the slim product bar, no hero above them.
+   The explainer is the /alcor-finance/ details page. Beats the landing offset in alcor-product-header.css. */
+html body.alcor-finance-page.alcor-finance-app .af-main {
+  padding: 20px 0 56px;
+}
+@media (max-width: 760px) {
+  html body.alcor-finance-page.alcor-finance-app .af-main {
+    padding: 12px 0 40px;
+  }
+}

@@ -1,0 +1,7 @@
+[
+  { "name": "Cole Brown", "role": "Frontend", "commits": 81, "tests": 20 },
+  { "name": "Alex Morales", "role": "Backend and Database", "commits": 56, "tests": 10 },
+  { "name": "Adonay Tesfaye", "role": "Frontend and Database", "commits": 30, "tests": 6 },
+  { "name": "Omar Abouelazm", "role": "Frontend", "commits": 76, "tests": 1 },
+  { "name": "Ryan Park", "role": "Backend and Database", "commits": 73, "tests": 4 }
+]

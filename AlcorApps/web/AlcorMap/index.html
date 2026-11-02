@@ -1,0 +1,1111 @@
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script>
+      try {
+        sessionStorage.removeItem('alcor_first_touch');
+      } catch (e) {}
+    </script>
+    <title>AlcorMap — open the app | Alcor Industries</title>
+    <meta name="robots" content="max-image-preview:large, noindex, nofollow, noarchive" />
+    <meta
+      name="description"
+      content="Open the free AlcorMap editor: search a place, drop labeled pins, then share or export your map. Your pins stay in this browser."
+    />
+    <link rel="canonical" href="https://alcor-industries.com/map/" />
+    <link rel="icon" type="image/svg+xml" href="../assets/site/logos/alcor-star-small.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/site/icons/favicon-32.png" />
+    <link rel="icon" sizes="16x16 32x32 48x48" href="../assets/site/icons/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="../assets/site/icons/apple-touch-icon.png" />
+    <link rel="manifest" href="../assets/site/site.webmanifest" />
+    <link
+      rel="alternate"
+      type="application/ld+json"
+      href="https://alcor-industries.com/schema.json"
+    />
+    <meta name="theme-color" content="#050608" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Alcor Industries" />
+    <meta property="og:title" content="AlcorMap — open the app | Alcor Industries" />
+    <meta
+      property="og:description"
+      content="Open the free AlcorMap editor: search a place, drop labeled pins, then share or export your map. Your pins stay in this browser."
+    />
+    <meta property="og:url" content="https://alcor-industries.com/map/" />
+    <meta property="og:image" content="../assets/site/social/pages/alcor-map.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="AlcorMap — open the app | Alcor Industries" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="AlcorMap — open the app | Alcor Industries" />
+    <meta
+      name="twitter:description"
+      content="Open the free AlcorMap editor: search a place, drop labeled pins, then share or export your map. Your pins stay in this browser."
+    />
+    <meta name="twitter:image" content="../assets/site/social/pages/alcor-map.png" />
+    <meta name="twitter:image:alt" content="AlcorMap — open the app | Alcor Industries" />
+    <link
+      rel="preload"
+      href="../assets/fonts/brands/inter-normal-400-700.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <style id="wp-img-auto-sizes-contain-inline-css">
+      img:is([sizes='auto' i], [sizes^='auto,' i]) {
+        contain-intrinsic-size: 3000px 1500px;
+      }
+      /*# sourceURL=wp-img-auto-sizes-contain-inline-css */
+    </style>
+    <style id="wp-block-library-inline-css">
+      :root {
+        --wp-block-synced-color: #7a00df;
+        --wp-block-synced-color--rgb: 122, 0, 223;
+        --wp-bound-block-color: var(--wp-block-synced-color);
+        --wp-editor-canvas-background: #ddd;
+        --wp-admin-theme-color: #007cba;
+        --wp-admin-theme-color--rgb: 0, 124, 186;
+        --wp-admin-theme-color-darker-10: #006ba1;
+        --wp-admin-theme-color-darker-10--rgb: 0, 107, 160.5;
+        --wp-admin-theme-color-darker-20: #005a87;
+        --wp-admin-theme-color-darker-20--rgb: 0, 90, 135;
+        --wp-admin-border-width-focus: 2px;
+      }
+      @media (min-resolution: 192dpi) {
+        :root {
+          --wp-admin-border-width-focus: 1.5px;
+        }
+      }
+      .wp-element-button {
+        cursor: pointer;
+      }
+      :root .has-very-light-gray-background-color {
+        background-color: #eee;
+      }
+      :root .has-very-dark-gray-background-color {
+        background-color: #313131;
+      }
+      :root .has-very-light-gray-color {
+        color: #eee;
+      }
+      :root .has-very-dark-gray-color {
+        color: #313131;
+      }
+      :root .has-vivid-green-cyan-to-vivid-cyan-blue-gradient-background {
+        background: linear-gradient(135deg, #00d084, #0693e3);
+      }
+      :root .has-purple-crush-gradient-background {
+        background: linear-gradient(135deg, #34e2e4, #4721fb 50%, #ab1dfe);
+      }
+      :root .has-hazy-dawn-gradient-background {
+        background: linear-gradient(135deg, #faaca8, #dad0ec);
+      }
+      :root .has-subdued-olive-gradient-background {
+        background: linear-gradient(135deg, #fafae1, #67a671);
+      }
+      :root .has-atomic-cream-gradient-background {
+        background: linear-gradient(135deg, #fdd79a, #004a59);
+      }
+      :root .has-nightshade-gradient-background {
+        background: linear-gradient(135deg, #330968, #31cdcf);
+      }
+      :root .has-midnight-gradient-background {
+        background: linear-gradient(135deg, #020381, #2874fc);
+      }
+      :root {
+        --wp--preset--font-size--normal: 16px;
+        --wp--preset--font-size--huge: 42px;
+      }
+      .has-regular-font-size {
+        font-size: 1em;
+      }
+      .has-larger-font-size {
+        font-size: 2.625em;
+      }
+      .has-normal-font-size {
+        font-size: var(--wp--preset--font-size--normal);
+      }
+      .has-huge-font-size {
+        font-size: var(--wp--preset--font-size--huge);
+      }
+      :root .has-text-align-center {
+        text-align: center;
+      }
+      :root .has-text-align-left {
+        text-align: left;
+      }
+      :root .has-text-align-right {
+        text-align: right;
+      }
+      .has-fit-text {
+        white-space: nowrap !important;
+      }
+      #end-resizable-editor-section {
+        display: none;
+      }
+      .aligncenter {
+        clear: both;
+      }
+      .items-justified-left {
+        justify-content: flex-start;
+      }
+      .items-justified-center {
+        justify-content: center;
+      }
+      .items-justified-right {
+        justify-content: flex-end;
+      }
+      .items-justified-space-between {
+        justify-content: space-between;
+      }
+      .screen-reader-text {
+        word-wrap: normal !important;
+        border: 0;
+        clip-path: inset(50%);
+        height: 1px;
+        margin: -1px;
+        overflow: hidden;
+        padding: 0;
+        position: absolute;
+        width: 1px;
+        word-break: normal !important;
+      }
+      .screen-reader-text:focus {
+        background-color: #ddd;
+        clip-path: none;
+        color: #444;
+        display: block;
+        font-size: 1em;
+        height: auto;
+        left: 5px;
+        line-height: normal;
+        padding: 15px 23px 14px;
+        text-decoration: none;
+        top: 5px;
+        width: auto;
+        z-index: 100000;
+      }
+      html :where(.has-border-color) {
+        border-style: solid;
+      }
+      html :where([style^='border-color'], [style*=';border-color'], [style*='; border-color']) {
+        border-style: solid;
+      }
+      html
+        :where(
+          [style^='border-top-color'],
+          [style*=';border-top-color'],
+          [style*='; border-top-color']
+        ) {
+        border-top-style: solid;
+      }
+      html
+        :where(
+          [style^='border-right-color'],
+          [style*=';border-right-color'],
+          [style*='; border-right-color']
+        ) {
+        border-right-style: solid;
+      }
+      html
+        :where(
+          [style^='border-bottom-color'],
+          [style*=';border-bottom-color'],
+          [style*='; border-bottom-color']
+        ) {
+        border-bottom-style: solid;
+      }
+      html
+        :where(
+          [style^='border-left-color'],
+          [style*=';border-left-color'],
+          [style*='; border-left-color']
+        ) {
+        border-left-style: solid;
+      }
+      html :where([style^='border-width'], [style*=';border-width'], [style*='; border-width']) {
+        border-style: solid;
+      }
+      html
+        :where(
+          [style^='border-top-width'],
+          [style*=';border-top-width'],
+          [style*='; border-top-width']
+        ) {
+        border-top-style: solid;
+      }
+      html
+        :where(
+          [style^='border-right-width'],
+          [style*=';border-right-width'],
+          [style*='; border-right-width']
+        ) {
+        border-right-style: solid;
+      }
+      html
+        :where(
+          [style^='border-bottom-width'],
+          [style*=';border-bottom-width'],
+          [style*='; border-bottom-width']
+        ) {
+        border-bottom-style: solid;
+      }
+      html
+        :where(
+          [style^='border-left-width'],
+          [style*=';border-left-width'],
+          [style*='; border-left-width']
+        ) {
+        border-left-style: solid;
+      }
+      html :where(img[class*='wp-image-']) {
+        height: auto;
+        max-width: 100%;
+      }
+      :where(figure) {
+        margin: 0 0 1em;
+      }
+      html :where(.is-position-sticky) {
+        --wp-admin--admin-bar--position-offset: var(--wp-admin--admin-bar--height, 0px);
+      }
+      @media screen and (max-width: 600px) {
+        html :where(.is-position-sticky) {
+          --wp-admin--admin-bar--position-offset: 0px;
+        }
+      }
+      /*# sourceURL=/wp-includes/css/dist/block-library/common.min.css */
+    </style>
+    <style id="classic-theme-styles-inline-css">
+      /*! This file is auto-generated */
+      .wp-block-button__link {
+        color: #fff;
+        background-color: #32373c;
+        border-radius: 9999px;
+        box-shadow: none;
+        text-decoration: none;
+        padding: calc(0.667em + 2px) calc(1.333em + 2px);
+        font-size: 1.125em;
+      }
+      .wp-block-file__button {
+        background: #32373c;
+        color: #fff;
+        text-decoration: none;
+      }
+      /*# sourceURL=/wp-includes/css/classic-themes.min.css */
+    </style>
+    <style id="wp-block-styles-placeholder-inline-css">
+      :root {
+        --wp-internal-comment: 'Placeholder for wp_hoist_late_printed_styles() to replace with the block styles printed at wp_footer.';
+      }
+      /*# sourceURL=wp-block-styles-placeholder-inline-css */
+    </style>
+    <style id="wp-global-styles-placeholder-inline-css">
+      :root {
+        --wp-internal-comment: 'Placeholder for wp_hoist_late_printed_styles() to replace with the global-styles printed at wp_footer.';
+      }
+      /*# sourceURL=wp-global-styles-placeholder-inline-css */
+    </style>
+    <link
+      rel="stylesheet"
+      id="maplibre-gl-6-6-0-css"
+      href="../assets/lib/maplibre-gl/maplibre-gl.css"
+      media="all"
+    />
+    <link rel="stylesheet" id="alcormap-css" href="../assets/css/alcor-map.css" media="all" />
+    <link
+      rel="stylesheet"
+      id="alcor-industries-site-css"
+      href="../assets/css/site.css"
+      media="all"
+    />
+    <link
+      rel="stylesheet"
+      id="alcor-industries-polish-css"
+      href="../assets/css/polish.css"
+      media="all"
+    />
+    <link rel="stylesheet" id="alcor-motion-css" href="../assets/css/motion.css" media="all" />
+    <link
+      rel="stylesheet"
+      id="alcor-app-ui-css"
+      href="../assets/css/alcor-app-ui.css"
+      media="all"
+    />
+    <link
+      rel="stylesheet"
+      id="alcor-design-system-css"
+      href="../assets/css/design-system.css"
+      media="all"
+    />
+    <link rel="stylesheet" id="arcana-base-css" href="../assets/css/arcana.css" media="all" />
+    <link
+      rel="stylesheet"
+      id="alcor-arcana-theme-css"
+      href="../assets/css/alcor-arcana.css"
+      media="all"
+    />
+    <style id="wp-custom-css">
+      .primary-link {
+        background: var(--cyan);
+        border: 1px solid var(--cyan);
+      }
+
+      .primary-link:hover {
+        background: var(--cyan);
+        border: 1px solid var(--cyan);
+      }
+
+      .eyebrow {
+        color: var(--paper);
+      }
+
+      .eyebrow::before {
+        content: '';
+        width: 44px;
+        height: 1px;
+        background: var(--paper);
+      }
+
+      .readout-track::before {
+        content: '';
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: 36%;
+        background: linear-gradient(90deg, transparent, var(--paper), transparent);
+        animation: scan 3.8s ease-in-out infinite;
+      }
+
+      .wordpress-band {
+        border-block: 1px solid rgba(246, 240, 228, 0.1);
+        background: linear-gradient(
+            90deg,
+            rgba(000, 94, 196, 0.08),
+            transparent 42%,
+            rgba(000, 000, 109, 0.07)
+          ),
+          rgba(5, 6, 8, 0.9);
+      }
+
+      .feature-list li::before {
+        content: '';
+        width: 8px;
+        height: 8px;
+        margin-top: 8px;
+        border-radius: 50%;
+        background: var(--cyan);
+        box-shadow: 0 0 18px rgba(255, 94, 196, 0.46);
+      }
+
+      .package.is-featured {
+        background: linear-gradient(135deg, rgba(215, 181, 109, 0.16), transparent 54%), #11101a;
+      }
+    </style>
+  </head>
+  <body
+    class="wp-singular -template-default single wp-embed-responsive wp-theme-alcor-industries alcormap-page alcormap-app"
+  >
+    <link
+      rel="stylesheet"
+      id="alcor-product-header-css"
+      href="../assets/css/alcor-product-header.css"
+    />
+    <a class="apx-skip" href="#top">Skip to content</a>
+    <header class="apx-bar" data-alcor-product-header data-mode="app" data-product="AlcorMap">
+      <div class="apx-bar__inner">
+        <a class="apx-wordmark" href="https://alcor-industries.com/alcor-map/"
+          ><img
+            class="apx-wordmark__mark"
+            src="../assets/site/logos/alcor-star-small.svg"
+            width="22"
+            height="22"
+            alt=""
+            decoding="async"
+          /><span><b>Alcor</b>Map</span></a
+        >
+        <nav class="apx-nav" aria-label="AlcorMap">
+          <a href="https://alcor-industries.com/alcor-map/">About</a
+          ><a href="https://alcor-industries.com/platform/#platform-products">All apps</a>
+        </nav>
+      </div>
+    </header>
+    <main class="am-shell" id="top" tabindex="-1">
+      <div class="am-map-stage" id="alcormap-stage" data-state="idle">
+        <div class="am-poster" aria-hidden="true"></div>
+        <div
+          id="alcormap"
+          class="am-map"
+          role="application"
+          aria-label="Interactive world map. Drag or use arrow keys to pan, pinch or plus and minus to zoom. Press Escape to move focus to the search box."
+          aria-describedby="alcormap-instructions"
+          tabindex="0"
+        ></div>
+        <div class="am-ambient" aria-hidden="true"></div>
+        <h1 id="am-title" class="am-sr-only">AlcorMap</h1>
+        <div class="am-map-chrome" aria-hidden="true" inert>
+          <form
+            id="alcormap-search-form"
+            class="am-search"
+            role="search"
+            aria-label="Find a place"
+            autocomplete="off"
+          >
+            <label class="am-sr-only" for="alcormap-search"
+              >Search a city, state, country, or coordinates</label
+            >
+            <span class="am-search-icon" aria-hidden="true"></span>
+            <input
+              id="alcormap-search"
+              type="search"
+              enterkeyhint="search"
+              placeholder="Search a city, state, or country"
+              role="combobox"
+              aria-autocomplete="list"
+              aria-expanded="false"
+              aria-controls="alcormap-suggestions"
+              aria-describedby="alcormap-search-help"
+              maxlength="80"
+              spellcheck="false"
+              disabled
+            />
+            <p id="alcormap-search-help" class="am-sr-only">
+              Type to see places. Use the up and down arrow keys to choose, then Enter. You can also
+              type latitude and longitude, like 30.27, -97.74.
+            </p>
+            <ul
+              id="alcormap-suggestions"
+              class="am-suggest"
+              role="listbox"
+              aria-label="Places"
+              hidden
+            ></ul>
+          </form>
+          <section
+            id="alcormap-place"
+            class="am-place"
+            aria-labelledby="alcormap-place-title"
+            hidden
+          >
+            <div class="am-place-text">
+              <h2 id="alcormap-place-title"></h2>
+              <p id="alcormap-place-detail"></p>
+            </div>
+            <div class="am-place-actions">
+              <button id="alcormap-place-add" class="am-cta" type="button">Add marker here</button>
+              <button
+                id="alcormap-place-close"
+                class="am-icon-button"
+                type="button"
+                aria-label="Dismiss place"
+              >
+                ×
+              </button>
+            </div>
+          </section>
+          <p class="am-zoom-readout" id="alcormap-zoom" aria-live="polite">Globe view</p>
+        </div>
+        <aside
+          id="alcormap-marker-panel"
+          class="am-marker-panel am-sheet"
+          data-sheet="collapsed"
+          aria-labelledby="alcormap-marker-panel-title"
+          aria-hidden="true"
+          inert
+        >
+          <div class="am-sheet-head">
+            <button
+              id="alcormap-sheet-toggle"
+              class="am-sheet-toggle"
+              type="button"
+              aria-expanded="false"
+              aria-controls="alcormap-sheet-body"
+            >
+              <span class="am-sheet-grip" aria-hidden="true"></span>
+              <span class="am-marker-panel-head"
+                ><span class="am-sheet-title" id="alcormap-marker-panel-title">Your map</span
+                ><output id="alcormap-marker-count">0 markers</output></span
+              >
+              <span class="am-sheet-chevron" aria-hidden="true"></span>
+            </button>
+            <div class="am-quick" role="toolbar" aria-label="Map tools">
+              <button type="button" data-tool="fit" disabled>Fit all</button>
+              <button type="button" data-tool="share" disabled>Share link</button>
+              <button type="button" data-tool="png">Save image</button>
+            </div>
+          </div>
+          <div id="alcormap-sheet-body" class="am-sheet-body">
+            <p id="alcormap-marker-empty">
+              No markers yet. Search for a place, or tap the map, then choose Add marker.
+            </p>
+            <ol id="alcormap-marker-list" aria-label="Markers"></ol>
+            <form id="alcormap-editor" class="am-mk-editor" aria-label="Edit marker" hidden>
+              <label for="alcormap-edit-title"
+                ><span>Label</span
+                ><input id="alcormap-edit-title" maxlength="80" autocomplete="off" required
+              /></label>
+              <fieldset class="am-swatches">
+                <legend>Color</legend>
+                <div id="alcormap-swatches"></div>
+              </fieldset>
+              <p class="am-mk-coords" id="alcormap-edit-coords"></p>
+              <div class="am-mk-editor-actions">
+                <button type="submit" class="am-cta">Save</button>
+                <button type="button" data-editor="cancel">Cancel</button>
+                <button type="button" data-editor="delete" class="am-danger">Delete</button>
+              </div>
+            </form>
+            <section class="am-tools" aria-labelledby="alcormap-share-title">
+              <h2 id="alcormap-share-title">Share &amp; export</h2>
+              <div class="am-share-row">
+                <label class="am-sr-only" for="alcormap-share-url">Share link</label>
+                <input
+                  id="alcormap-share-url"
+                  readonly
+                  placeholder="Add a marker to create a link"
+                />
+                <button type="button" data-tool="copy" disabled>Copy link</button>
+              </div>
+              <p class="am-tool-note">
+                The link itself carries your labels and coordinates. Anyone you send it to can read
+                them.
+              </p>
+              <div class="am-tool-grid">
+                <button type="button" data-tool="geojson" disabled>GeoJSON</button>
+                <button type="button" data-tool="csv" disabled>CSV</button>
+                <button type="button" data-tool="png">PNG image</button>
+                <label class="am-file-button" for="alcormap-import">Import file</label>
+                <input
+                  id="alcormap-import"
+                  class="am-sr-only"
+                  type="file"
+                  accept=".geojson,.json,.csv,application/geo+json,application/json,text/csv"
+                />
+              </div>
+            </section>
+            <details class="am-exact">
+              <summary>Exact coordinates</summary>
+              <form
+                id="alcormap-marker-form"
+                class="am-marker-form"
+                aria-label="Place a marker by coordinates"
+                aria-describedby="alcormap-marker-help"
+              >
+                <label class="am-marker-label" for="alcormap-marker-title"
+                  ><span>Label</span
+                  ><input
+                    id="alcormap-marker-title"
+                    maxlength="80"
+                    autocomplete="off"
+                    placeholder="Our studio"
+                    disabled
+                /></label>
+                <label for="alcormap-marker-lat"
+                  ><span>Latitude</span
+                  ><input
+                    id="alcormap-marker-lat"
+                    inputmode="text"
+                    autocomplete="off"
+                    autocapitalize="off"
+                    spellcheck="false"
+                    placeholder="30.2672"
+                    disabled
+                /></label>
+                <label for="alcormap-marker-lng"
+                  ><span>Longitude</span
+                  ><input
+                    id="alcormap-marker-lng"
+                    inputmode="text"
+                    autocomplete="off"
+                    autocapitalize="off"
+                    spellcheck="false"
+                    placeholder="-97.7431"
+                    disabled
+                /></label>
+                <div class="am-marker-form-actions">
+                  <button id="alcormap-coordinate-go" type="button" disabled>Focus</button>
+                  <button type="submit" disabled>Place marker</button>
+                </div>
+                <p id="alcormap-marker-help">
+                  Tapping the map fills these fields. Latitude runs −90 to 90 and longitude −180 to
+                  180.
+                </p>
+              </form>
+            </details>
+            <div class="am-danger-zone">
+              <button type="button" data-tool="restore" hidden>Restore my previous map</button>
+              <button type="button" data-tool="clear" class="am-danger" disabled>Clear map</button>
+              <div
+                class="am-confirm"
+                id="alcormap-clear-confirm"
+                role="group"
+                aria-labelledby="alcormap-clear-question"
+                hidden
+              >
+                <p id="alcormap-clear-question">Delete every marker on this map?</p>
+                <button type="button" data-tool="clear-yes" class="am-danger">Delete all</button>
+                <button type="button" data-tool="clear-no">Keep them</button>
+              </div>
+            </div>
+          </div>
+        </aside>
+        <div class="am-map-actions" aria-hidden="true" inert>
+          <div class="am-pan-pad" aria-label="Pan map" role="group">
+            <button type="button" data-map-action="north" aria-label="Pan north">N</button>
+            <button type="button" data-map-action="west" aria-label="Pan west">W</button>
+            <button type="button" data-map-action="reset" aria-label="Reset globe view">
+              Reset
+            </button>
+            <button type="button" data-map-action="east" aria-label="Pan east">E</button>
+            <button type="button" data-map-action="south" aria-label="Pan south">S</button>
+          </div>
+          <button type="button" data-map-action="zoom-in" aria-label="Zoom in">+</button>
+          <button type="button" data-map-action="zoom-out" aria-label="Zoom out">−</button>
+        </div>
+        <p id="alcormap-instructions" class="am-instructions">
+          Search for a place or tap the map, then add a marker. Drag with one finger or the mouse to
+          pan; pinch, Control plus wheel, or the plus and minus buttons zoom; arrow keys pan when
+          the map has focus. Press Escape to move focus from the map to the search box.
+        </p>
+        <div class="am-status" id="alcormap-status" role="status" aria-live="polite"></div>
+        <noscript
+          ><p class="am-fallback">
+            The local globe poster remains available, but the interactive map needs JavaScript and
+            WebGL. You can still browse <a href="https://www.openstreetmap.org/">OpenStreetMap</a>.
+          </p></noscript
+        >
+      </div>
+      <p class="am-tilenote" id="alcormap-tilenote">
+        Map tiles load from OpenStreetMap, which sees your IP address like any website. Your pins
+        and labels stay in this browser.
+        <a href="https://alcor-industries.com/alcor-map/#privacy">Privacy details</a>
+      </p>
+    </main>
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <a class="footer-wordmark" href="https://alcor-industries.com/"
+            ><img
+              class="brand-star"
+              src="../assets/site/logos/alcor-star.svg"
+              width="48"
+              height="48"
+              alt=""
+              loading="lazy"
+              decoding="async"
+            />Alcor Industries</a
+          >
+          <p class="footer-line">
+            Ask Alcor is free for individuals. Businesses get a written quote.
+          </p>
+        </div>
+        <nav class="footer-links" aria-label="Footer">
+          <div class="footer-group">
+            <p class="footer-group__title">Products</p>
+            <ul role="list">
+              <li><a href="https://alcor-industries.com/platform/">All apps</a></li>
+              <li><a href="https://alcor-industries.com/archetypes/">Archetypes</a></li>
+              <li><a href="https://alcor-industries.com/arcana/">Arcana</a></li>
+            </ul>
+          </div>
+          <div class="footer-group">
+            <p class="footer-group__title">Company</p>
+            <ul role="list">
+              <li><a href="https://alcor-industries.com/agi/">AGI research</a></li>
+              <li><a href="https://alcor-industries.com/agents/">For AI agents</a></li>
+              <li><a href="https://alcor-industries.com/blog/">Blog</a></li>
+              <li><a href="https://alcor-industries.com/privacy/">Privacy</a></li>
+              <li><a href="https://alcor-industries.com/archetype-terms/">Archetype terms</a></li>
+            </ul>
+          </div>
+          <div class="footer-group footer-group--contact">
+            <p class="footer-group__title">Contact</p>
+            <ul role="list">
+              <li><a href="https://alcor-industries.com/#contact">Get a written quote</a></li>
+            </ul>
+          </div>
+        </nav>
+        <p class="footer-legal">
+          &copy; 2026 Alcor Systems LLC. Alcor Industries is a product of Alcor Systems LLC &middot;
+          Austin, Texas
+        </p>
+      </div>
+    </footer>
+    <script type="speculationrules">
+      {
+        "prefetch": [
+          {
+            "source": "document",
+            "where": {
+              "and": [
+                { "href_matches": "/*" },
+                {
+                  "not": {
+                    "href_matches": [
+                      "/wp-*.php",
+                      "/wp-admin/*",
+                      "/wp-content/uploads/*",
+                      "/wp-content/*",
+                      "/wp-content/plugins/*",
+                      "/wp-content/themes/alcor-industries/*",
+                      "/*\\?(.+)"
+                    ]
+                  }
+                },
+                { "not": { "selector_matches": "a[rel~=\"nofollow\"]" } },
+                { "not": { "selector_matches": ".no-prefetch, .no-prefetch a" } }
+              ]
+            },
+            "eagerness": "conservative"
+          }
+        ]
+      }
+    </script>
+    <style id="global-styles-inline-css">
+      :root {
+        --wp--preset--aspect-ratio--square: 1;
+        --wp--preset--aspect-ratio--4-3: 4/3;
+        --wp--preset--aspect-ratio--3-4: 3/4;
+        --wp--preset--aspect-ratio--3-2: 3/2;
+        --wp--preset--aspect-ratio--2-3: 2/3;
+        --wp--preset--aspect-ratio--16-9: 16/9;
+        --wp--preset--aspect-ratio--9-16: 9/16;
+        --wp--preset--color--black: #000000;
+        --wp--preset--color--cyan-bluish-gray: #abb8c3;
+        --wp--preset--color--white: #ffffff;
+        --wp--preset--color--pale-pink: #f78da7;
+        --wp--preset--color--vivid-red: #cf2e2e;
+        --wp--preset--color--luminous-vivid-orange: #ff6900;
+        --wp--preset--color--luminous-vivid-amber: #fcb900;
+        --wp--preset--color--light-green-cyan: #7bdcb5;
+        --wp--preset--color--vivid-green-cyan: #00d084;
+        --wp--preset--color--pale-cyan-blue: #8ed1fc;
+        --wp--preset--color--vivid-cyan-blue: #0693e3;
+        --wp--preset--color--vivid-purple: #9b51e0;
+        --wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(
+          135deg,
+          rgb(6, 147, 227) 0%,
+          rgb(155, 81, 224) 100%
+        );
+        --wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(
+          135deg,
+          rgb(122, 220, 180) 0%,
+          rgb(0, 208, 130) 100%
+        );
+        --wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(
+          135deg,
+          rgb(252, 185, 0) 0%,
+          rgb(255, 105, 0) 100%
+        );
+        --wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(
+          135deg,
+          rgb(255, 105, 0) 0%,
+          rgb(207, 46, 46) 100%
+        );
+        --wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(
+          135deg,
+          rgb(238, 238, 238) 0%,
+          rgb(169, 184, 195) 100%
+        );
+        --wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(
+          135deg,
+          rgb(74, 234, 220) 0%,
+          rgb(151, 120, 209) 20%,
+          rgb(207, 42, 186) 40%,
+          rgb(238, 44, 130) 60%,
+          rgb(251, 105, 98) 80%,
+          rgb(254, 248, 76) 100%
+        );
+        --wp--preset--gradient--blush-light-purple: linear-gradient(
+          135deg,
+          rgb(255, 206, 236) 0%,
+          rgb(152, 150, 240) 100%
+        );
+        --wp--preset--gradient--blush-bordeaux: linear-gradient(
+          135deg,
+          rgb(254, 205, 165) 0%,
+          rgb(254, 45, 45) 50%,
+          rgb(107, 0, 62) 100%
+        );
+        --wp--preset--gradient--luminous-dusk: linear-gradient(
+          135deg,
+          rgb(255, 203, 112) 0%,
+          rgb(199, 81, 192) 50%,
+          rgb(65, 88, 208) 100%
+        );
+        --wp--preset--gradient--pale-ocean: linear-gradient(
+          135deg,
+          rgb(255, 245, 203) 0%,
+          rgb(182, 227, 212) 50%,
+          rgb(51, 167, 181) 100%
+        );
+        --wp--preset--gradient--electric-grass: linear-gradient(
+          135deg,
+          rgb(202, 248, 128) 0%,
+          rgb(113, 206, 126) 100%
+        );
+        --wp--preset--gradient--midnight: linear-gradient(
+          135deg,
+          rgb(2, 3, 129) 0%,
+          rgb(40, 116, 252) 100%
+        );
+        --wp--preset--font-size--small: 13px;
+        --wp--preset--font-size--medium: 20px;
+        --wp--preset--font-size--large: 36px;
+        --wp--preset--font-size--x-large: 42px;
+        --wp--preset--spacing--20: 0.44rem;
+        --wp--preset--spacing--30: 0.67rem;
+        --wp--preset--spacing--40: 1rem;
+        --wp--preset--spacing--50: 1.5rem;
+        --wp--preset--spacing--60: 2.25rem;
+        --wp--preset--spacing--70: 3.38rem;
+        --wp--preset--spacing--80: 5.06rem;
+        --wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2);
+        --wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4);
+        --wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2);
+        --wp--preset--shadow--outlined: 6px 6px 0px -3px rgb(255, 255, 255), 6px 6px rgb(0, 0, 0);
+        --wp--preset--shadow--crisp: 6px 6px 0px rgb(0, 0, 0);
+      }
+      .wp-block-button {
+        --wp--preset--dimension--25: 25%;
+        --wp--preset--dimension--50: 50%;
+        --wp--preset--dimension--75: 75%;
+        --wp--preset--dimension--100: 100%;
+      }
+      :where(body) {
+        margin: 0;
+      }
+      :where(.is-layout-flex) {
+        gap: 0.5em;
+      }
+      :where(.is-layout-grid) {
+        gap: 0.5em;
+      }
+      body .is-layout-flex {
+        display: flex;
+      }
+      .is-layout-flex {
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .is-layout-flex > :is(*, div) {
+        margin: 0;
+      }
+      body .is-layout-grid {
+        display: grid;
+      }
+      .is-layout-grid > :is(*, div) {
+        margin: 0;
+      }
+      body {
+        padding-top: 0px;
+        padding-right: 0px;
+        padding-bottom: 0px;
+        padding-left: 0px;
+      }
+      :root :where(.wp-element-button, .wp-block-button__link) {
+        background-color: #32373c;
+        border-width: 0;
+        color: #fff;
+        font-family: inherit;
+        font-size: inherit;
+        font-style: inherit;
+        font-weight: inherit;
+        letter-spacing: inherit;
+        line-height: inherit;
+        padding-top: calc(0.667em + 2px);
+        padding-right: calc(1.333em + 2px);
+        padding-bottom: calc(0.667em + 2px);
+        padding-left: calc(1.333em + 2px);
+        text-decoration: none;
+        text-transform: inherit;
+      }
+      .has-black-color {
+        color: var(--wp--preset--color--black) !important;
+      }
+      .has-cyan-bluish-gray-color {
+        color: var(--wp--preset--color--cyan-bluish-gray) !important;
+      }
+      .has-white-color {
+        color: var(--wp--preset--color--white) !important;
+      }
+      .has-pale-pink-color {
+        color: var(--wp--preset--color--pale-pink) !important;
+      }
+      .has-vivid-red-color {
+        color: var(--wp--preset--color--vivid-red) !important;
+      }
+      .has-luminous-vivid-orange-color {
+        color: var(--wp--preset--color--luminous-vivid-orange) !important;
+      }
+      .has-luminous-vivid-amber-color {
+        color: var(--wp--preset--color--luminous-vivid-amber) !important;
+      }
+      .has-light-green-cyan-color {
+        color: var(--wp--preset--color--light-green-cyan) !important;
+      }
+      .has-vivid-green-cyan-color {
+        color: var(--wp--preset--color--vivid-green-cyan) !important;
+      }
+      .has-pale-cyan-blue-color {
+        color: var(--wp--preset--color--pale-cyan-blue) !important;
+      }
+      .has-vivid-cyan-blue-color {
+        color: var(--wp--preset--color--vivid-cyan-blue) !important;
+      }
+      .has-vivid-purple-color {
+        color: var(--wp--preset--color--vivid-purple) !important;
+      }
+      .has-black-background-color {
+        background-color: var(--wp--preset--color--black) !important;
+      }
+      .has-cyan-bluish-gray-background-color {
+        background-color: var(--wp--preset--color--cyan-bluish-gray) !important;
+      }
+      .has-white-background-color {
+        background-color: var(--wp--preset--color--white) !important;
+      }
+      .has-pale-pink-background-color {
+        background-color: var(--wp--preset--color--pale-pink) !important;
+      }
+      .has-vivid-red-background-color {
+        background-color: var(--wp--preset--color--vivid-red) !important;
+      }
+      .has-luminous-vivid-orange-background-color {
+        background-color: var(--wp--preset--color--luminous-vivid-orange) !important;
+      }
+      .has-luminous-vivid-amber-background-color {
+        background-color: var(--wp--preset--color--luminous-vivid-amber) !important;
+      }
+      .has-light-green-cyan-background-color {
+        background-color: var(--wp--preset--color--light-green-cyan) !important;
+      }
+      .has-vivid-green-cyan-background-color {
+        background-color: var(--wp--preset--color--vivid-green-cyan) !important;
+      }
+      .has-pale-cyan-blue-background-color {
+        background-color: var(--wp--preset--color--pale-cyan-blue) !important;
+      }
+      .has-vivid-cyan-blue-background-color {
+        background-color: var(--wp--preset--color--vivid-cyan-blue) !important;
+      }
+      .has-vivid-purple-background-color {
+        background-color: var(--wp--preset--color--vivid-purple) !important;
+      }
+      .has-black-border-color {
+        border-color: var(--wp--preset--color--black) !important;
+      }
+      .has-cyan-bluish-gray-border-color {
+        border-color: var(--wp--preset--color--cyan-bluish-gray) !important;
+      }
+      .has-white-border-color {
+        border-color: var(--wp--preset--color--white) !important;
+      }
+      .has-pale-pink-border-color {
+        border-color: var(--wp--preset--color--pale-pink) !important;
+      }
+      .has-vivid-red-border-color {
+        border-color: var(--wp--preset--color--vivid-red) !important;
+      }
+      .has-luminous-vivid-orange-border-color {
+        border-color: var(--wp--preset--color--luminous-vivid-orange) !important;
+      }
+      .has-luminous-vivid-amber-border-color {
+        border-color: var(--wp--preset--color--luminous-vivid-amber) !important;
+      }
+      .has-light-green-cyan-border-color {
+        border-color: var(--wp--preset--color--light-green-cyan) !important;
+      }
+      .has-vivid-green-cyan-border-color {
+        border-color: var(--wp--preset--color--vivid-green-cyan) !important;
+      }
+      .has-pale-cyan-blue-border-color {
+        border-color: var(--wp--preset--color--pale-cyan-blue) !important;
+      }
+      .has-vivid-cyan-blue-border-color {
+        border-color: var(--wp--preset--color--vivid-cyan-blue) !important;
+      }
+      .has-vivid-purple-border-color {
+        border-color: var(--wp--preset--color--vivid-purple) !important;
+      }
+      .has-vivid-cyan-blue-to-vivid-purple-gradient-background {
+        background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;
+      }
+      .has-light-green-cyan-to-vivid-green-cyan-gradient-background {
+        background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;
+      }
+      .has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background {
+        background: var(
+          --wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange
+        ) !important;
+      }
+      .has-luminous-vivid-orange-to-vivid-red-gradient-background {
+        background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;
+      }
+      .has-very-light-gray-to-cyan-bluish-gray-gradient-background {
+        background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;
+      }
+      .has-cool-to-warm-spectrum-gradient-background {
+        background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;
+      }
+      .has-blush-light-purple-gradient-background {
+        background: var(--wp--preset--gradient--blush-light-purple) !important;
+      }
+      .has-blush-bordeaux-gradient-background {
+        background: var(--wp--preset--gradient--blush-bordeaux) !important;
+      }
+      .has-luminous-dusk-gradient-background {
+        background: var(--wp--preset--gradient--luminous-dusk) !important;
+      }
+      .has-pale-ocean-gradient-background {
+        background: var(--wp--preset--gradient--pale-ocean) !important;
+      }
+      .has-electric-grass-gradient-background {
+        background: var(--wp--preset--gradient--electric-grass) !important;
+      }
+      .has-midnight-gradient-background {
+        background: var(--wp--preset--gradient--midnight) !important;
+      }
+      .has-small-font-size {
+        font-size: var(--wp--preset--font-size--small) !important;
+      }
+      .has-medium-font-size {
+        font-size: var(--wp--preset--font-size--medium) !important;
+      }
+      .has-large-font-size {
+        font-size: var(--wp--preset--font-size--large) !important;
+      }
+      .has-x-large-font-size {
+        font-size: var(--wp--preset--font-size--x-large) !important;
+      }
+      /*# sourceURL=global-styles-inline-css */
+    </style>
+    <script id="alcormap-js-extra">
+      var AlcorMapConfig = {
+        tileUrl: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+        attributionHtml:
+          '\u00a9 \u003Ca href="https://www.openstreetmap.org/copyright"\u003EOpenStreetMap contributors\u003C/a\u003E \u00b7 \u003Ca href="https://opendatacommons.org/licenses/odbl/"\u003EODbL\u003C/a\u003E',
+        maxZoom: '19',
+        streetZoom: '4',
+        initialCenter: [-20, 25],
+        initialZoom: '1.45',
+        placesUrl: '../assets/js/alcor-map-places.mjs',
+      };
+      //# sourceURL=alcormap-js-extra
+    </script>
+    <script type="module" id="alcormap-js" src="../assets/js/alcor-map.mjs"></script>
+    <script id="alcor-industries-site-js" src="../assets/js/site.js"></script>
+    <script
+      data-wp-strategy="defer"
+      defer
+      id="alcor-motion-js"
+      src="../assets/js/motion.js"
+    ></script>
+    <script
+      data-wp-strategy="defer"
+      defer
+      id="alcor-product-names-js"
+      src="../assets/js/alcor-product-names.js"
+    ></script>
+  </body>
+</html>

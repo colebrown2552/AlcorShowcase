@@ -1,0 +1,816 @@
+/*
+ * AlcorFrame: the phone layout shared by AlcorPhoto and AlcorVideo (and any app that adopts it).
+ * Pattern from phone editors people already know (Lightroom, Photoshop Express, CapCut):
+ * the stage fills the middle, menus live in a drawer, tools sit on a bottom strip, and each panel
+ * opens as a bottom sheet that the stage shrinks above instead of being covered by.
+ *
+ * Contract (added by each editor's markup, nothing here depends on its classes):
+ *   [data-af-app]            editor root            [data-af-stage]     canvas / monitor wrapper
+ *   [data-af-menu]           File/Edit/... menubar  [data-af-toolbar]   primary tool palette
+ *   [data-af-panel][data-af-label]  side panels     [data-af-dock]      video timeline
+ *   [data-af-primary]        Export / Render        [data-af-action=undo|redo]  optional
+ *   [data-af-transport]      playback strip (AlcorVideo): sits under the stage, above the timeline  optional
+ * Active only when alcor-frame.js adds html.af-on (phones, contract present). Desktop is untouched.
+ */
+
+html.af-on {
+  --af-top: calc(52px + env(safe-area-inset-top));
+  --af-tools: 56px;
+  --af-tabs: calc(52px + env(safe-area-inset-bottom));
+  --af-dock-h: 0px;
+  --af-sheet-h: 0px;
+  --af-transport: 56px;
+  --af-transport-h: 0px;
+  --af-bottom: calc(
+    var(--af-tools) + var(--af-tabs) + var(--af-dock-h) + var(--af-sheet-h) + var(--af-transport-h)
+  );
+  --af-bg: #07090e;
+  --af-surface: #10131b;
+  --af-line: rgba(246, 240, 228, 0.1);
+  --af-text: #f1f3f7;
+  --af-muted: rgba(241, 243, 247, 0.62);
+  --af-accent: #53d9d4;
+  --af-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+html.af-on body {
+  overflow: hidden;
+  height: 100dvh;
+  background: var(--af-bg);
+}
+html.af-on:has([data-af-transport]) {
+  --af-transport-h: var(--af-transport);
+}
+html.af-on.af-has-dock {
+  --af-dock-h: 30dvh;
+}
+html.af-on.af-has-dock.af-dock-collapsed {
+  --af-dock-h: 40px;
+}
+html.af-on.af-sheet-half {
+  --af-sheet-h: 44dvh;
+  --af-dock-h: 0px;
+}
+/* Full keeps a strip of the stage in view (about a fifth of the screen), so the image never disappears. */
+html.af-on.af-sheet-full {
+  --af-sheet-h: calc(
+    100dvh - var(--af-top) - var(--af-tools) - var(--af-tabs) - var(--af-transport-h) -
+      max(20dvh, 140px)
+  );
+  --af-dock-h: 0px;
+}
+
+/* Everything the contract does not name steps out of the way; named parts come back. */
+html.af-on [data-af-app] {
+  visibility: hidden;
+  height: 100dvh;
+  overflow: hidden;
+}
+/* Keep the keyboard destination available while untagged editor panels remain hidden. */
+html.af-on [data-af-app] main {
+  visibility: visible;
+}
+html.af-on
+  [data-af-app]
+  main
+  > :not(
+    [data-af-stage],
+    [data-af-menu],
+    [data-af-toolbar],
+    [data-af-panel],
+    [data-af-dock],
+    .af-chrome
+  ) {
+  visibility: hidden;
+}
+html.af-on
+  :is(
+    [data-af-stage],
+    [data-af-menu],
+    [data-af-toolbar],
+    [data-af-transport],
+    [data-af-panel],
+    [data-af-dock],
+    .af-chrome
+  ) {
+  visibility: visible;
+}
+html.af-on :is(.site-header, .site-footer, .alcor-parent-bar, #wpadminbar) {
+  display: none !important;
+}
+
+/* ---------- Top bar ---------- */
+html.af-on .af-chrome,
+html.af-on .af-chrome *,
+html.af-on
+  :is(
+    [data-af-stage],
+    [data-af-toolbar],
+    [data-af-transport],
+    [data-af-panel],
+    [data-af-dock],
+    [data-af-menu]
+  ) {
+  box-sizing: border-box;
+}
+.af-chrome {
+  font:
+    400 14px/1.2 'Segoe UI',
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    Arial,
+    sans-serif;
+  color: var(--af-text);
+  -webkit-tap-highlight-color: transparent;
+}
+.af-chrome button {
+  font: inherit;
+  color: inherit;
+}
+.af-top {
+  position: fixed;
+  z-index: 60;
+  inset: 0 0 auto 0;
+  height: var(--af-top);
+  padding: env(safe-area-inset-top) max(8px, env(safe-area-inset-right)) 0
+    max(8px, env(safe-area-inset-left));
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(7, 9, 14, 0.92);
+  border-bottom: 1px solid var(--af-line);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+.af-btn {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 10px;
+  display: inline-grid;
+  place-items: center;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  cursor: pointer;
+}
+.af-btn:active {
+  background: rgba(255, 255, 255, 0.08);
+}
+.af-btn:disabled {
+  opacity: 0.35;
+}
+.af-btn svg {
+  width: 22px;
+  height: 22px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.af-title {
+  flex: 1;
+  min-width: 0;
+  padding: 0 4px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-weight: 700;
+  font-size: 15px;
+}
+.af-title small {
+  display: block;
+  color: var(--af-muted);
+  font-weight: 400;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.af-primary {
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: var(--af-text);
+  color: #07090e !important;
+  font-weight: 700;
+  font-size: 13px;
+}
+.af-primary:active {
+  transform: scale(0.97);
+  background: #fff;
+}
+.af-secondary {
+  flex: none;
+  min-height: 36px;
+  padding: 0 11px;
+  border: 1px solid var(--af-line);
+  border-radius: 999px;
+  color: var(--af-text);
+  font-weight: 700;
+  font-size: 13px;
+}
+
+/* ---------- Stage: centred between the bars, never covered ---------- */
+html.af-on [data-af-stage] {
+  position: fixed !important;
+  z-index: 10;
+  left: 0;
+  right: 0;
+  top: var(--af-top);
+  bottom: var(--af-bottom);
+  margin: 0 !important;
+  padding: 12px !important;
+  max-width: none !important;
+  width: auto !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  aspect-ratio: auto !important;
+  display: grid !important;
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr) !important;
+  place-items: center;
+  overflow: hidden;
+  background: var(--af-bg);
+  transition: bottom 0.32s var(--af-ease);
+}
+html.af-on [data-af-stage] > :is(canvas, video, img, svg) {
+  max-width: 100% !important;
+  max-height: 100% !important;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+/* ---------- Tool strip ---------- */
+html.af-on [data-af-toolbar] {
+  position: fixed !important;
+  z-index: 40;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--af-tabs) + var(--af-sheet-h));
+  height: var(--af-tools);
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 6px max(10px, env(safe-area-inset-left)) !important;
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: center;
+  gap: 4px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  background: var(--af-surface);
+  border-top: 1px solid var(--af-line);
+  border-radius: 0 !important;
+  transition: bottom 0.32s var(--af-ease);
+}
+html.af-on [data-af-toolbar]::-webkit-scrollbar {
+  display: none;
+}
+html.af-on [data-af-toolbar] :is(button, [role='button'], label) {
+  flex: none;
+  min-width: 44px;
+  min-height: 44px;
+  scroll-snap-align: start;
+}
+
+/* ---------- Transport strip (video): playback controls between the stage and the timeline ---------- */
+html.af-on [data-af-transport] {
+  position: fixed;
+  z-index: 35;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--af-bottom) - var(--af-transport-h));
+  height: var(--af-transport);
+  min-height: 0;
+  margin: 0;
+  padding: 6px max(10px, env(safe-area-inset-left));
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 4px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x proximity;
+  scroll-padding-inline: max(10px, env(safe-area-inset-left));
+  scrollbar-width: none;
+  background: var(--af-surface);
+  border-top: 1px solid var(--af-line);
+  transition: bottom 0.32s var(--af-ease);
+}
+html.af-on [data-af-transport]::-webkit-scrollbar {
+  display: none;
+}
+html.af-on [data-af-transport] > * {
+  flex: none;
+  scroll-snap-align: start;
+}
+html.af-on [data-af-transport] :is(button, input, select) {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* ---------- Panel tabs (bottom) ---------- */
+.af-tabs {
+  position: fixed;
+  z-index: 50;
+  inset: auto 0 0 0;
+  height: var(--af-tabs);
+  padding: 0 max(4px, env(safe-area-inset-right)) env(safe-area-inset-bottom)
+    max(4px, env(safe-area-inset-left));
+  display: flex;
+  align-items: stretch;
+  overflow-x: auto;
+  scrollbar-width: none;
+  background: rgba(7, 9, 14, 0.96);
+  border-top: 1px solid var(--af-line);
+}
+.af-tabs::-webkit-scrollbar {
+  display: none;
+}
+.af-tab {
+  flex: 1 0 auto;
+  min-width: 64px;
+  min-height: 48px;
+  padding: 6px 10px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  gap: 2px;
+  color: var(--af-muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.af-tab i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: transparent;
+}
+.af-tab[aria-expanded='true'] {
+  color: var(--af-text);
+}
+.af-tab[aria-expanded='true'] i {
+  background: var(--af-accent);
+  box-shadow: 0 0 8px var(--af-accent);
+}
+
+/* ---------- Bottom sheets: the editor's own panels ---------- */
+html.af-on [data-af-panel] {
+  /* !important on the box: a panel that is also the editor's dialog brings its own inset:0 overlay. */
+  position: fixed !important;
+  z-index: 45 !important;
+  inset: auto 0 var(--af-tabs) 0 !important;
+  height: var(--af-sheet-h) !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  width: auto !important;
+  margin: 0 !important;
+  padding: 44px max(16px, env(safe-area-inset-left)) 16px !important;
+  overflow: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  background: var(--af-surface);
+  border: 0 !important;
+  border-top: 1px solid var(--af-line) !important;
+  border-radius: 16px 16px 0 0 !important;
+  box-shadow: 0 -24px 60px rgba(0, 0, 0, 0.5);
+  transform: translateY(calc(100% + var(--af-tabs)));
+  transition:
+    transform 0.32s var(--af-ease),
+    height 0.32s var(--af-ease);
+  visibility: hidden;
+}
+html.af-on [data-af-panel].af-open {
+  transform: none;
+  visibility: visible;
+}
+html.af-on:not(.af-sheet-half):not(.af-sheet-full) [data-af-panel] {
+  height: 44dvh !important;
+}
+.af-sheet-bar {
+  position: fixed;
+  z-index: 46;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--af-tabs) + var(--af-sheet-h) - 44px);
+  height: 44px;
+  display: none;
+  align-items: center;
+  gap: 4px;
+  padding: 0 6px 0 16px;
+  border-radius: 16px 16px 0 0;
+  background: var(--af-surface);
+  touch-action: none;
+}
+html.af-on:is(.af-sheet-half, .af-sheet-full) .af-sheet-bar {
+  display: flex;
+}
+.af-sheet-bar::before {
+  content: '';
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  width: 36px;
+  height: 4px;
+  margin-left: -18px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.22);
+}
+.af-sheet-bar strong {
+  flex: 1;
+  font-size: 15px;
+}
+
+/* ---------- Timeline dock (video) ---------- */
+html.af-on [data-af-dock] {
+  position: fixed !important;
+  z-index: 30;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--af-tools) + var(--af-tabs));
+  height: var(--af-dock-h);
+  margin: 0 !important;
+  padding-top: 40px !important;
+  width: auto !important;
+  max-height: none !important;
+  overflow: auto;
+  background: var(--af-bg);
+  border-top: 1px solid var(--af-line);
+  transition: height 0.32s var(--af-ease);
+}
+html.af-on:is(.af-sheet-half, .af-sheet-full) [data-af-dock] {
+  visibility: hidden;
+}
+.af-dock-bar {
+  position: fixed;
+  z-index: 31;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--af-tools) + var(--af-tabs) + var(--af-dock-h) - 40px);
+  height: 40px;
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px 0 16px;
+  background: var(--af-bg);
+  color: var(--af-muted);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+html.af-on.af-has-dock:not(.af-sheet-half):not(.af-sheet-full) .af-dock-bar {
+  display: flex;
+}
+
+/* ---------- Menu drawer ---------- */
+html.af-on [data-af-menu] {
+  position: fixed !important;
+  z-index: 80;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: min(84vw, 320px) !important;
+  height: auto !important;
+  margin: 0 !important;
+  padding: calc(var(--af-top) + 8px) 8px 24px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  gap: 2px;
+  overflow: auto;
+  background: var(--af-surface);
+  border-right: 1px solid var(--af-line);
+  transform: translateX(-102%);
+  transition: transform 0.28s var(--af-ease);
+  visibility: hidden;
+}
+html.af-on.af-drawer-open [data-af-menu] {
+  transform: none;
+  visibility: visible;
+}
+html.af-on [data-af-menu] :is(button, a, [role='menuitem']) {
+  min-height: 48px;
+  justify-content: flex-start;
+  text-align: left;
+  font-size: 16px;
+}
+.af-drawer-head {
+  position: fixed;
+  z-index: 81;
+  top: 0;
+  left: 0;
+  width: min(84vw, 320px);
+  height: var(--af-top);
+  padding: env(safe-area-inset-top) 8px 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  font-size: 12px;
+  transform: translateX(-102%);
+  transition: transform 0.28s var(--af-ease);
+}
+html.af-on.af-drawer-open .af-drawer-head {
+  transform: none;
+}
+.af-scrim {
+  position: fixed;
+  z-index: 70;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.28s ease;
+}
+html.af-on.af-drawer-open .af-scrim {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.af-on
+    :is(
+      [data-af-stage],
+      [data-af-toolbar],
+      [data-af-transport],
+      [data-af-panel],
+      [data-af-dock],
+      [data-af-menu]
+    ),
+  .af-drawer-head,
+  .af-scrim {
+    transition: none !important;
+  }
+}
+
+/* The frame chrome exists only in phone mode. */
+html:not(.af-on) .af-chrome {
+  display: none !important;
+}
+
+/* Ancestors that would trap fixed layers (transform, filter, backdrop-filter) are neutralised on phones. */
+html.af-on .af-unclip {
+  transform: none !important;
+  filter: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  perspective: none !important;
+  contain: none !important;
+  content-visibility: visible !important;
+  container-type: normal !important;
+  will-change: auto !important;
+}
+/* The desktop shell's sticky stacking context otherwise puts its menu above the
+   frame's drawer header, hiding Close menu and intercepting its pointer events. */
+html.af-on .aa-shell {
+  position: static;
+  z-index: auto;
+}
+/* A panel the editor hides while inactive is shown while its sheet is open. */
+html.af-on [data-af-panel].af-open.af-force-show {
+  display: block !important;
+}
+
+/* Menus that are <details> dropdowns become an accordion in the drawer. */
+html.af-on [data-af-menu] details {
+  width: 100%;
+  border-bottom: 1px solid var(--af-line);
+}
+/* Grid, not flex: WebKit squeezed the anonymous text item of some summaries to a letter's width
+   ("Fil/e"). The text column takes the room, the chevron sizes to itself, and labels never wrap. */
+html.af-on [data-af-menu] details {
+  flex: none !important;
+  min-width: 0;
+}
+html.af-on [data-af-menu] summary {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  height: auto !important;
+  min-height: 48px;
+  padding: 0 12px !important;
+  list-style: none;
+  font-size: 16px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow-wrap: normal;
+  word-break: normal;
+  letter-spacing: 0;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+html.af-on [data-af-menu] summary::-webkit-details-marker {
+  display: none;
+}
+html.af-on [data-af-menu] summary::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+  opacity: 0.6;
+  transition: transform 0.2s ease;
+}
+html.af-on [data-af-menu] details[open] > summary::after {
+  transform: rotate(-135deg);
+}
+html.af-on [data-af-menu] details > :not(summary) {
+  position: static !important;
+  inset: auto !important;
+  transform: none !important;
+  width: auto !important;
+  min-width: 0 !important;
+  margin: 0 0 8px !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  border: 0 !important;
+  background: transparent !important;
+  display: flex !important;
+  flex-direction: column;
+}
+html.af-on [data-af-menu] details > :not(summary) :is(button, a) {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 12px 0 24px !important;
+  justify-content: flex-start;
+  font-size: 15px;
+  font-weight: 400;
+  background: transparent !important;
+  border: 0 !important;
+  color: var(--af-text);
+}
+html.af-on [data-af-menu] hr {
+  margin: 4px 12px;
+  border: 0;
+  border-top: 1px solid var(--af-line);
+}
+
+/* Shortcut-letter tools show their name underneath. */
+html.af-on [data-af-toolbar] button[data-af-name] {
+  display: grid !important;
+  grid-template-rows: auto auto;
+  place-items: center;
+  gap: 1px;
+  min-width: 56px;
+  padding: 4px 8px !important;
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 1;
+}
+html.af-on [data-af-toolbar] button[data-af-name]::after {
+  content: attr(data-af-name);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  opacity: 0.75;
+}
+/* A container the editor hides on phones is rendered (still invisible) while one of its panels is open. */
+html.af-on .af-force-anc {
+  display: block !important;
+}
+html.af-on [data-af-toolbar] button[data-af-name] {
+  font-family:
+    'Segoe UI',
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    Arial,
+    sans-serif !important;
+}
+/* Dialogs the editor opens that are not part of the contract stay visible above the frame. */
+html.af-on
+  [data-af-app]
+  :is(
+    dialog[open],
+    [role='dialog']:not([hidden]):not([data-af-panel]),
+    [aria-modal='true']:not([hidden]):not([data-af-panel])
+  ) {
+  visibility: visible;
+  z-index: 95;
+}
+/* A live status that carries an action (AlcorVideo's "Save rendered video" link) becomes a toast
+   above the tool strip, so a result the editor announces outside the contract is never hidden. */
+html.af-on
+  [data-af-app]
+  [aria-live]:has(a, button):not(:empty):not(
+    :is(
+        [data-af-panel],
+        [data-af-stage],
+        [data-af-toolbar],
+        [data-af-dock],
+        [data-af-menu],
+        .af-chrome
+      )
+      *
+  ) {
+  visibility: visible;
+  position: fixed !important;
+  z-index: 70;
+  left: 12px;
+  right: 12px;
+  bottom: calc(var(--af-bottom) + 12px);
+  top: auto !important;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  margin: 0 !important;
+  padding: 12px 14px !important;
+  background: var(--af-surface);
+  color: var(--af-text);
+  border: 1px solid rgba(83, 217, 212, 0.35);
+  border-radius: 12px;
+  box-shadow: 0 18px 40px -16px rgba(0, 0, 0, 0.8);
+  font:
+    700 14px/1.3 'Segoe UI',
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    Arial,
+    sans-serif;
+}
+html.af-on [data-af-app] [aria-live]:has(a, button) :is(a, button) {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: #53d9d4;
+  color: #04252a;
+  font-weight: 700;
+  text-decoration: none;
+}
+/* An icon tool with a key cap shows the icon and its name on phones; the key cap is for keyboards. */
+html.af-on [data-af-toolbar] button[data-af-name] kbd {
+  display: none;
+}
+/* The command-search button in the drawer: label left, shortcut right, one line. */
+html.af-on [data-af-menu] .aa-find-button {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  white-space: nowrap;
+  flex: none;
+}
+html.af-on [data-af-menu] .aa-find-button kbd {
+  flex: none;
+}
+/* The drawer is one column that scrolls down, never sideways. A menubar with
+   flex-wrap (AlcorVideo's) wrapped into a second column off to the right, and
+   focusing the first item scrolled the drawer over to it. */
+html.af-on [data-af-menu] {
+  flex-wrap: nowrap !important;
+  overflow-x: hidden !important;
+  overflow-y: auto;
+}
+html.af-on [data-af-menu] > * {
+  flex: none !important;
+}
+html.af-on [data-af-menu] > * {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  box-sizing: border-box;
+}
+html.af-on [data-af-menu] :is(button, a, [role='menuitem']) {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+html.af-on [data-af-menu] > :is(div, section, nav, form) {
+  flex-direction: column !important;
+  align-items: stretch !important;
+  flex-wrap: nowrap !important;
+}
+html.af-on
+  [data-af-menu]
+  > *
+  :is(button, a, [role='menuitem']):not(:is([aria-pressed], [role='radio'], [role='tab'])) {
+  font-size: 16px;
+}
+html.af-on [data-af-menu] > :is(div, section, nav, form) > * {
+  flex: none !important;
+}
+/* The menu can live inside an editor shell that is its own stacking context (AlcorPhoto's
+   sticky .aa-shell is z-index 1200), so the drawer head must outrank it or the menu covers
+   the Close button. */
+html.af-on .af-drawer-head {
+  z-index: 1301;
+}

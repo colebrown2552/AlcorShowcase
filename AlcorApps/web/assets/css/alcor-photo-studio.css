@@ -1,0 +1,2993 @@
+/* AlcorPhoto Studio workspace: tool palette, options bar, viewport, dock panels. */
+
+.ap-editor-page[data-studio] {
+  --aps-pasteboard: #181b21;
+  --aps-panel: #10151d;
+  --aps-panel-2: #151b25;
+  --aps-line: rgba(255, 255, 255, 0.1);
+  --aps-text: #e8edf4;
+  --aps-muted: #95a4b5;
+  --aps-accent: #8ab8ff;
+  --aps-accent-strong: #2f6fdd;
+  --aps-danger: #ffb2b2;
+}
+
+/* ---------------------------------------------------------------- layout */
+
+@media (min-width: 901px) {
+  .ap-editor-page[data-studio] .ap-grid {
+    grid-template-columns: 58px minmax(0, 1fr) 340px;
+    grid-template-areas: 'tools canvas side';
+    align-items: start;
+  }
+  .ap-editor-page[data-studio] .ap-toolbar {
+    grid-area: tools;
+    position: sticky;
+    top: 8px;
+  }
+  .ap-editor-page[data-studio] .ap-canvas-panel {
+    grid-area: canvas;
+  }
+  .ap-editor-page[data-studio] .ap-sidebar {
+    grid-area: side;
+    position: sticky;
+    top: 8px;
+    max-height: calc(100vh - 16px);
+    overflow: auto;
+    overscroll-behavior: contain;
+  }
+  .ap-editor-page[data-studio] .ap-canvas-viewport {
+    height: max(420px, calc(100vh - 330px));
+  }
+}
+
+/* Phones run the studio as a full-screen layer, so the site footer stays out of it there: it would only sit under the
+   layer, and it flashed into view when the phone layout collapsed the page, which counted as a layout shift. On wider
+   screens the footer comes after the studio, below the fold (fb-footer, 2026-10-29: one footer on every page). */
+@media (max-width: 900px) {
+  body.alcor-photo-editor .site-footer {
+    display: none;
+  }
+}
+
+/* Compact chrome on precise pointers so the canvas gets the room. */
+@media (min-width: 901px) and (pointer: fine) {
+  .ap-editor-page[data-studio] .aa-appbar {
+    padding-top: 6px;
+    padding-bottom: 6px;
+    margin-bottom: 8px;
+  }
+  .ap-editor-page[data-studio] .aa-appbar button,
+  .ap-editor-page[data-studio] .aa-appbar .aa-file-button,
+  .ap-editor-page[data-studio] .aa-appbar input,
+  .ap-editor-page[data-studio] .ap-editor-controls button,
+  .ap-editor-page[data-studio] .ap-canvas-tools button,
+  .ap-editor-page[data-studio] .ap-canvas-tools select,
+  .ap-editor-page[data-studio] .ap-canvas-tools .aa-file-button,
+  .ap-editor-page[data-studio] .ap-layer-actions button,
+  .ap-editor-page[data-studio] .ap-add-tools button,
+  .ap-editor-page[data-studio] .ap-layers-panel .aa-panel-heading button {
+    min-height: 32px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    font-size: 12px;
+  }
+  .ap-editor-page[data-studio] .ap-editor-controls {
+    padding: 4px 8px;
+    margin-bottom: 8px;
+  }
+  .ap-editor-page[data-studio] .ap-canvas-tools {
+    padding: 5px 10px;
+  }
+}
+
+.ap-sidebar {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  min-width: 0;
+}
+.ap-editor-page[data-studio] .ap-sidebar .ap-inspector {
+  grid-column: auto;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (min-width: 901px) and (max-width: 1180px) {
+  .ap-editor-page[data-studio] .ap-grid {
+    grid-template-columns: 58px minmax(0, 1fr) 290px;
+  }
+}
+
+/* ---------------------------------------------------------------- viewport */
+
+.ap-editor-page[data-studio] .ap-canvas-viewport {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  padding: 0;
+  min-height: 420px;
+  background: var(--aps-pasteboard);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.ap-editor-page[data-studio] #ap-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  box-shadow: none;
+  background: transparent;
+  cursor: default;
+  z-index: 1;
+}
+
+.ap-editor-page[data-studio] #ap-canvas[data-missing-sources]:not([data-missing-sources='0']) {
+  outline: 2px dashed #e4aa6b;
+  outline-offset: -4px;
+}
+
+.ap-doc-underlay {
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+  background-color: #cfd3d8;
+  background-image: linear-gradient(45deg, #9ea4ab 25%, transparent 25%),
+    linear-gradient(-45deg, #9ea4ab 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #9ea4ab 75%),
+    linear-gradient(-45deg, transparent 75%, #9ea4ab 75%);
+  background-position:
+    0 0,
+    0 8px,
+    8px -8px,
+    -8px 0;
+  background-size: 16px 16px;
+  box-shadow:
+    0 14px 40px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(0, 0, 0, 0.6);
+}
+/* Not drawn until the first view event has sized and placed it (that sets its inline style): unplaced, it is an empty box
+   whose large shadow then jumps to the document's rectangle, which counted as a layout shift on every load. */
+.ap-doc-underlay:not([style]) {
+  display: none;
+}
+
+.ap-studio-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.ap-brush-cursor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 3;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.7);
+  pointer-events: none;
+}
+
+.ap-canvas-viewport[data-tool='move'] {
+  cursor: move;
+}
+.ap-canvas-viewport[data-tool='marquee'],
+.ap-canvas-viewport[data-tool='lasso'],
+.ap-canvas-viewport[data-tool='wand'],
+.ap-canvas-viewport[data-tool='crop'],
+.ap-canvas-viewport[data-tool='eyedropper'],
+.ap-canvas-viewport[data-tool='fill'],
+.ap-canvas-viewport[data-tool='heal'] {
+  cursor: crosshair;
+}
+.ap-canvas-viewport[data-tool='brush'],
+.ap-canvas-viewport[data-tool='eraser'],
+.ap-canvas-viewport[data-tool='clone'] {
+  cursor: none;
+}
+.ap-canvas-viewport[data-tool='type'] {
+  cursor: text;
+}
+.ap-canvas-viewport[data-tool='zoom'] {
+  cursor: zoom-in;
+}
+.ap-canvas-viewport[data-tool='hand'],
+.ap-canvas-viewport[data-hand='true'] {
+  cursor: grab;
+}
+.ap-canvas-viewport[data-panning='true'] {
+  cursor: grabbing;
+}
+.ap-canvas-viewport[data-tool] #ap-canvas {
+  cursor: inherit;
+}
+
+.ap-ruler {
+  position: absolute;
+  z-index: 4;
+  cursor: copy;
+}
+.ap-ruler-top {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 18px;
+}
+.ap-ruler-left {
+  top: 0;
+  left: 0;
+  width: 18px;
+  height: 100%;
+}
+
+.ap-text-editor {
+  position: absolute;
+  z-index: 5;
+  min-width: 160px;
+  min-height: 1.4em;
+  transform: translate(-50%, -50%);
+  padding: 4px 6px;
+  border: 1px dashed rgba(138, 184, 255, 0.9);
+  background: rgba(10, 14, 20, 0.35);
+  resize: both;
+  outline: none;
+  field-sizing: content;
+}
+
+/* ---------------------------------------------------------------- tool palette */
+
+.ap-toolbar {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 3px;
+  padding: 6px 5px;
+  border: 1px solid var(--aps-line);
+  border-radius: 8px;
+  background: var(--aps-panel);
+  align-self: start;
+}
+
+.ap-editor-page .ap-app .ap-tool {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 40px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--aps-text);
+  font-size: 18px;
+  line-height: 1;
+}
+
+.ap-tool .ap-tool-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.ap-editor-page .ap-app .ap-tool:hover {
+  background: var(--aps-panel-2);
+}
+.ap-editor-page .ap-app .ap-tool[aria-pressed='true'] {
+  border-color: rgba(138, 184, 255, 0.55);
+  background: #20304a;
+  box-shadow: inset 2px 0 var(--aps-accent);
+}
+
+.ap-swatches {
+  position: relative;
+  height: 56px;
+  margin-top: 8px;
+}
+
+.ap-editor-page .ap-app .ap-swatch {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  min-height: 0;
+  padding: 0;
+  border: 2px solid #e8edf4;
+  border-radius: 3px;
+  box-shadow: 0 0 0 1px #000;
+}
+.ap-editor-page .ap-app .ap-swatch-fg {
+  top: 2px;
+  left: 4px;
+  z-index: 1;
+}
+.ap-editor-page .ap-app .ap-swatch-bg {
+  top: 16px;
+  left: 18px;
+}
+.ap-editor-page .ap-app .ap-swatch-swap,
+.ap-editor-page .ap-app .ap-swatch-reset {
+  position: absolute;
+  min-height: 0;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--aps-muted);
+  font-size: 11px;
+}
+.ap-editor-page .ap-app .ap-swatch-swap {
+  top: 0;
+  right: 0;
+}
+.ap-editor-page .ap-app .ap-swatch-reset {
+  bottom: 0;
+  left: 0;
+}
+
+/* ---------------------------------------------------------------- options bar */
+
+.ap-options-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+  min-height: 40px;
+  padding: 5px 10px;
+  border-bottom: 1px solid var(--aps-line);
+  background: var(--aps-panel);
+  font-size: 12px;
+}
+
+.ap-options-title {
+  color: #fff;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.ap-opt {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--aps-muted);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.ap-opt-range {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.ap-opt-range input[type='range'] {
+  width: 92px;
+}
+.ap-editor-page .ap-app .ap-opt-number,
+.ap-editor-page .ap-app .ap-opt input[type='number'] {
+  width: 64px;
+  min-height: 30px;
+  padding: 3px 5px;
+  border: 1px solid var(--aps-line);
+  border-radius: 4px;
+  background: #080b10;
+  color: #fff;
+}
+.ap-editor-page .ap-app .ap-opt select {
+  min-height: 30px;
+  padding: 3px 6px;
+  border: 1px solid var(--aps-line);
+  border-radius: 4px;
+  background: #080b10;
+  color: #fff;
+}
+
+.ap-opt-group {
+  display: inline-flex;
+  gap: 2px;
+}
+.ap-editor-page .ap-app .ap-options-bar button,
+.ap-editor-page .ap-app .ap-layer-buttons button,
+.ap-editor-page .ap-app .ap-dock button,
+.ap-editor-page .ap-app .ap-legacy-masks button {
+  min-height: 30px;
+  padding: 3px 9px;
+  font-size: 11px;
+}
+.ap-editor-page .ap-app .ap-options-bar button[aria-pressed='true'],
+.ap-editor-page .ap-app .ap-dock button[aria-pressed='true'] {
+  border-color: rgba(138, 184, 255, 0.55);
+  background: #20304a;
+}
+.ap-opt-note {
+  color: var(--aps-muted);
+  font-size: 11px;
+}
+
+/* ---------------------------------------------------------------- dock */
+
+.ap-dock {
+  border: 1px solid var(--aps-line);
+  border-radius: 8px;
+  background: var(--aps-panel);
+  overflow: hidden;
+}
+
+.ap-dock-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--aps-line);
+}
+.ap-editor-page .ap-app .ap-dock-tabs button {
+  flex: 1;
+  min-height: 34px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--aps-muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+.ap-editor-page .ap-app .ap-dock-tabs button[aria-selected='true'] {
+  color: #fff;
+  box-shadow: inset 0 -2px var(--aps-accent);
+}
+
+.ap-dock-panel {
+  display: grid;
+  gap: 8px;
+  max-height: 46vh;
+  overflow: auto;
+  padding: 10px;
+}
+.ap-dock-panel[hidden] {
+  display: none;
+}
+.ap-dock-note {
+  margin: 0;
+  color: var(--aps-muted);
+  font-size: 11px;
+}
+
+.ap-prop-heading {
+  margin: 0;
+  color: #fff;
+  font-size: 13px;
+}
+.ap-prop-sub {
+  margin: 4px 0 0;
+  color: var(--aps-muted);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.ap-prop-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  align-items: center;
+}
+.ap-adjust {
+  display: grid;
+  gap: 7px;
+}
+.ap-adjust .ap-opt {
+  justify-content: space-between;
+}
+.ap-adjust .ap-opt-range input[type='range'] {
+  width: 120px;
+}
+.ap-histogram,
+.ap-curves-canvas {
+  width: 100%;
+  max-width: 256px;
+  border: 1px solid var(--aps-line);
+  border-radius: 4px;
+  background: #07090e;
+}
+.ap-curves-canvas {
+  aspect-ratio: 1;
+  touch-action: none;
+  cursor: crosshair;
+}
+
+.ap-color-targets {
+  display: flex;
+  gap: 4px;
+}
+.ap-color-picker {
+  display: flex;
+  gap: 8px;
+}
+.ap-sb {
+  width: calc(100% - 30px);
+  max-width: 260px;
+  height: 150px;
+  border-radius: 4px;
+  touch-action: none;
+  cursor: crosshair;
+}
+.ap-hue {
+  width: 22px;
+  height: 150px;
+  border-radius: 4px;
+  touch-action: none;
+  cursor: ns-resize;
+}
+.ap-color-fields {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+.ap-color-fields label {
+  display: grid;
+  gap: 3px;
+  color: var(--aps-muted);
+  font-size: 10px;
+}
+.ap-color-fields label:first-child,
+.ap-native-color {
+  grid-column: 1 / -1;
+}
+.ap-editor-page .ap-app .ap-color-fields input {
+  min-height: 30px;
+  width: 100%;
+  padding: 3px 6px;
+  border: 1px solid var(--aps-line);
+  border-radius: 4px;
+  background: #080b10;
+  color: #fff;
+  box-sizing: border-box;
+}
+.ap-recent {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.ap-editor-page .ap-app .ap-recent-swatch {
+  width: 22px;
+  height: 22px;
+  min-height: 0;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 3px;
+}
+
+.ap-history {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ap-editor-page .ap-app .ap-history button {
+  width: 100%;
+  min-height: 28px;
+  justify-content: flex-start;
+  text-align: left;
+  border-color: transparent;
+  background: transparent;
+}
+.ap-editor-page .ap-app .ap-history button[aria-current='step'] {
+  background: #20304a;
+  border-color: rgba(138, 184, 255, 0.5);
+}
+.ap-editor-page .ap-app .ap-history .ap-history-future {
+  opacity: 0.5;
+}
+
+/* ---------------------------------------------------------------- layers */
+
+.ap-layer-controls {
+  display: flex;
+  gap: 8px;
+  padding: 8px 8px 0;
+}
+.ap-layer-controls .ap-opt {
+  flex: 1;
+}
+.ap-editor-page .ap-app .ap-layer-controls select {
+  flex: 1;
+  min-width: 0;
+}
+
+.ap-layer-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+.ap-layer-row > .ap-layer {
+  flex: 1;
+  min-width: 0;
+}
+.ap-layer-row.ap-layer-clipped {
+  padding-left: 16px;
+}
+.ap-layer-row.ap-layer-hidden > .ap-layer {
+  opacity: 0.55;
+}
+.ap-editor-page .ap-app .ap-layer-eye {
+  width: 28px;
+  min-height: 36px;
+  padding: 0;
+  border-color: transparent;
+  background: transparent;
+  color: var(--aps-muted);
+  font-size: 13px;
+}
+.ap-layer-flag {
+  flex: none;
+  color: var(--aps-muted);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+.ap-editor-page .ap-app .ap-layer-mask {
+  min-height: 26px;
+  padding: 2px 5px;
+  border: 1px solid var(--aps-line);
+  border-radius: 3px;
+  background: #fff;
+  color: #000;
+}
+.ap-editor-page .ap-app .ap-layer-mask[aria-pressed='true'] {
+  box-shadow: 0 0 0 2px var(--aps-accent);
+}
+.ap-editor-page .ap-app .ap-layer-mask.ap-mask-off {
+  background: #555;
+  color: #ddd;
+  text-decoration: line-through;
+}
+.ap-editor-page .ap-app .ap-layer-mask:has(.ap-mask-thumb) {
+  padding: 2px;
+  background: #0b0f15;
+  line-height: 0;
+}
+.ap-mask-thumb {
+  display: block;
+  border-radius: 2px;
+}
+.ap-editor-page .ap-app .ap-layer-mask.ap-mask-off .ap-mask-thumb {
+  opacity: 0.35;
+}
+.ap-layer[data-kind='adjustment'] b {
+  color: #c7a8ff;
+}
+
+.ap-layer-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 0 8px 8px;
+}
+.ap-editor-page .ap-app .ap-layer-buttons select {
+  min-height: 30px;
+  flex: 1;
+  min-width: 0;
+  border: 1px solid var(--aps-line);
+  border-radius: 4px;
+  background: #080b10;
+  color: #fff;
+  font-size: 11px;
+}
+
+/* ---------------------------------------------------------------- menus, dialogs, banners */
+
+.ap-studio-menubar {
+  display: flex;
+  gap: 4px;
+  padding: 4px 8px;
+  margin-bottom: 8px;
+  border: 1px solid var(--aps-line);
+  border-radius: 8px;
+  background: var(--aps-panel);
+}
+.ap-studio-menu .aa-menu-panel {
+  max-height: 70vh;
+  overflow: auto;
+}
+.ap-menu-sep {
+  margin: 4px 0;
+  border: 0;
+  border-top: 1px solid var(--aps-line);
+}
+
+.ap-dialog {
+  min-width: min(420px, calc(100vw - 32px));
+  max-width: calc(100vw - 32px);
+  padding: 0;
+  border: 1px solid var(--aps-line);
+  border-radius: 10px;
+  background: var(--aps-panel);
+  color: var(--aps-text);
+}
+.ap-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.35);
+}
+.ap-dialog form {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+}
+.ap-dialog h2 {
+  margin: 0;
+  font-size: 15px;
+}
+.ap-dialog-body {
+  display: grid;
+  gap: 10px;
+}
+.ap-dialog-body .ap-opt {
+  justify-content: space-between;
+}
+.ap-dialog-note {
+  margin: 0;
+  color: var(--aps-muted);
+  font-size: 11px;
+}
+.ap-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.ap-anchor-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 28px);
+  gap: 3px;
+}
+.ap-editor-page .ap-anchor-grid button {
+  min-height: 28px;
+  padding: 0;
+}
+.ap-editor-page .ap-anchor-grid button[aria-pressed='true'] {
+  background: var(--aps-accent-strong);
+}
+.ap-shortcuts {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 4px 14px;
+  margin: 0;
+  max-height: 60vh;
+  overflow: auto;
+  font-size: 12px;
+}
+.ap-shortcuts dt {
+  color: #fff;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+.ap-shortcuts dd {
+  margin: 0;
+  color: var(--aps-muted);
+}
+
+.ap-recovery-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 10px;
+  padding: 10px 12px;
+  border: 1px solid rgba(138, 184, 255, 0.45);
+  border-radius: 8px;
+  background: #13213a;
+  color: #fff;
+  font-size: 13px;
+}
+.ap-recovery-banner span {
+  flex: 1 1 280px;
+}
+.ap-recovery-state {
+  color: var(--aps-muted);
+}
+.ap-editor-page .ap-app .ap-recovery-toggle {
+  min-height: 26px;
+  padding: 2px 8px;
+  font-size: 11px;
+}
+.ap-zoom-readout {
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+
+.ap-legacy-masks {
+  border: 1px solid var(--aps-line);
+  border-radius: 8px;
+  background: var(--aps-panel);
+  padding: 8px 10px;
+}
+.ap-legacy-masks summary {
+  cursor: pointer;
+  color: var(--aps-muted);
+  font-size: 12px;
+}
+.ap-legacy-masks .ap-mask-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+/* ---------------------------------------------------------------- focus and motion */
+
+.ap-editor-page[data-studio] button:focus-visible,
+.ap-editor-page[data-studio] select:focus-visible,
+.ap-editor-page[data-studio] input:focus-visible,
+.ap-editor-page[data-studio] canvas:focus-visible,
+.ap-editor-page[data-studio] summary:focus-visible {
+  outline: 2px solid var(--aps-accent);
+  outline-offset: 2px;
+}
+
+/* ---------------------------------------------------------------- phones and small tablets (lite path) */
+
+@media (max-width: 900px) {
+  .ap-editor-page[data-studio] .ap-toolbar {
+    order: -3;
+    flex-direction: row;
+    overflow-x: auto;
+    align-self: stretch;
+  }
+  .ap-editor-page[data-studio] .ap-app .ap-tool {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .ap-editor-page[data-studio] .ap-swatches {
+    flex: none;
+    width: 48px;
+    height: 44px;
+    margin: 0 0 0 6px;
+  }
+  .ap-editor-page[data-studio] .ap-canvas-viewport {
+    height: 62vh;
+    min-height: 300px;
+  }
+  .ap-options-bar {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+  }
+  .ap-dock-panel {
+    max-height: none;
+  }
+}
+
+/* The eye button replaces the passive visibility glyph inside each row. */
+.ap-editor-page[data-studio] .ap-layer-row > .ap-layer {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+.ap-editor-page[data-studio] .ap-layer-row > .ap-layer > span:first-child {
+  display: none;
+}
+
+.ap-layer-thumb {
+  flex: none;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background-color: #cfd3d8;
+  background-image: linear-gradient(45deg, #9ea4ab 25%, transparent 25%),
+    linear-gradient(-45deg, #9ea4ab 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #9ea4ab 75%),
+    linear-gradient(-45deg, transparent 75%, #9ea4ab 75%);
+  background-size: 8px 8px;
+  background-position:
+    0 0,
+    0 4px,
+    4px -4px,
+    -4px 0;
+}
+.ap-layer-row[data-kind='adjustment'] .ap-layer-thumb {
+  background: #2a2140;
+}
+
+/* Layer groups */
+.ap-group-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  border-top: 1px solid var(--aps-line);
+  padding-top: 4px;
+}
+.ap-group-row.ap-layer-hidden {
+  opacity: 0.55;
+}
+.ap-editor-page .ap-app .ap-group-twisty {
+  width: 24px;
+  min-height: 30px;
+  padding: 0;
+  border-color: transparent;
+  background: transparent;
+  color: var(--aps-muted);
+}
+.ap-editor-page .ap-app .ap-group-name {
+  flex: 1;
+  display: grid;
+  min-width: 0;
+  min-height: 34px;
+  justify-items: start;
+  padding: 4px 8px;
+  text-align: left;
+  background: #151c28;
+}
+.ap-group-name strong,
+.ap-group-name small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+.ap-group-name small {
+  color: var(--aps-muted);
+  font-size: 10px;
+}
+.ap-group-row.ap-group-selected .ap-group-name {
+  background: #243044;
+  box-shadow: inset 2px 0 var(--aps-accent);
+}
+.ap-layer-row.ap-layer-in-group {
+  padding-left: 18px;
+}
+.ap-layer-row[hidden] {
+  display: none;
+}
+
+/* Filter dialogs sit to the side without dimming, so the live preview stays visible. */
+.ap-dialog.ap-dialog-side {
+  margin: 96px 24px auto auto;
+}
+.ap-dialog.ap-dialog-side::backdrop {
+  background: transparent;
+}
+
+@media (min-width: 901px) and (pointer: fine) {
+  .ap-editor-page .ap-app .ap-tool {
+    min-height: 32px;
+    font-size: 16px;
+  }
+  .ap-toolbar {
+    gap: 2px;
+  }
+}
+
+.ap-editor-page[data-studio] .ap-canvas-viewport:focus {
+  outline: none;
+}
+.ap-editor-page[data-studio] .ap-canvas-viewport:focus-visible {
+  outline: 2px solid var(--aps-accent);
+  outline-offset: -2px;
+}
+
+/* Containment: canvas, overlay, cursor and readout updates never re-lay out the page. */
+.ap-editor-page[data-studio] .ap-canvas-viewport {
+  contain: strict;
+}
+.ap-editor-page[data-studio] .aa-statusbar {
+  contain: layout paint;
+}
+.ap-editor-page[data-studio] .ap-zoom-readout {
+  display: inline-block;
+  min-width: 5ch;
+  white-space: nowrap;
+}
+/* One line: the message takes the room and ends in an ellipsis; its full text is on hover. */
+@media (min-width: 901px) {
+  .ap-editor-page[data-studio] .aa-statusbar {
+    flex-wrap: nowrap;
+    white-space: nowrap;
+  }
+  .ap-editor-page[data-studio] .aa-statusbar > * {
+    flex: none;
+  }
+  .ap-editor-page[data-studio] .aa-statusbar > .ap-status {
+    flex: 1 1 0;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+@media (min-width: 901px) and (max-width: 1500px) {
+  .ap-editor-page[data-studio] .aa-statusbar > .ap-free,
+  .ap-editor-page[data-studio] .aa-statusbar > .ap-export-report {
+    display: none;
+  }
+}
+.ap-editor-page[data-studio] .ap-sidebar {
+  contain: layout paint;
+}
+.ap-editor-page[data-studio] .ap-sidebar > .ap-inspector,
+.ap-editor-page[data-studio] .ap-sidebar > .ap-legacy-masks {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 600px;
+}
+
+/* Tool icons, keycap hints, active glow */
+.ap-editor-page .ap-app .ap-tool svg {
+  width: 18px;
+  height: 18px;
+}
+.ap-tool .ap-tool-key {
+  position: absolute;
+  right: 2px;
+  bottom: 1px;
+  font:
+    700 8px/1 'Segoe UI',
+    system-ui,
+    sans-serif;
+  color: rgba(232, 237, 244, 0.45);
+  border: 0;
+  background: none;
+  padding: 0;
+}
+.ap-editor-page .ap-app .ap-tool {
+  transition:
+    background-color 140ms ease,
+    box-shadow 160ms ease,
+    color 140ms ease,
+    transform 140ms ease;
+}
+.ap-editor-page .ap-app .ap-tool[aria-pressed='true'] {
+  color: #53d9d4;
+  border-color: rgba(83, 217, 212, 0.55);
+  background: rgba(83, 217, 212, 0.12);
+  box-shadow:
+    inset 2px 0 #53d9d4,
+    0 0 14px rgba(83, 217, 212, 0.25);
+}
+.ap-editor-page .ap-app .ap-tool:active {
+  transform: scale(0.94);
+}
+.ap-editor-page .ap-app .ap-swatch-swap svg,
+.ap-editor-page .ap-app .ap-swatch-reset svg {
+  display: block;
+  margin: auto;
+}
+.ap-group-twisty svg {
+  display: block;
+  margin: auto;
+}
+.ap-layer-clip svg {
+  display: block;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ap-editor-page .ap-app .ap-tool {
+    transition: none;
+  }
+  .ap-editor-page .ap-app .ap-tool:active {
+    transform: none;
+  }
+}
+
+/* ================================================================ sweep: chrome, empty state, flair */
+.ap-editor-page[data-studio] {
+  --aps-cyan: #53d9d4;
+  --aps-violet: #9b7bff;
+  --aps-gold: #f2c46d;
+  --aps-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.ap-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* One row of chrome on desktop: the project row and workspace row fold into the shell and canvas bar. */
+@media (min-width: 901px) {
+  .ap-editor-page[data-studio] .aa-appbar,
+  .ap-editor-page[data-studio] .ap-editor-controls {
+    display: none;
+  }
+  .ap-editor-page[data-studio] .ap-canvas-tools > div:not(.ap-actionbar):not(.ap-export-tools) {
+    display: none;
+  }
+  /* 322px = shell + canvas bar above the viewport (265px) plus the status bar and padding below it, so the canvas, status bar
+     and side panels end inside the window (Fit % is measured on this box) and the page does not scroll to reach them. */
+  .ap-editor-page[data-studio] .ap-canvas-viewport {
+    height: max(420px, calc(100vh - 322px));
+  }
+  .ap-editor-page[data-studio] .ap-sidebar {
+    max-height: calc(100vh - 190px);
+  }
+  .ap-editor-page[data-studio] .ap-layers-panel .ap-add-tools {
+    display: none;
+  }
+}
+.ap-shell-doc {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.ap-shell-doc [data-document] {
+  display: none;
+}
+.ap-editor-page .ap-title-input {
+  min-width: 8ch;
+  max-width: 36ch;
+  width: auto;
+  min-height: 0 !important;
+  padding: 3px 7px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: #fff;
+  font:
+    700 13px/1.3 'Segoe UI',
+    system-ui,
+    sans-serif;
+  field-sizing: content;
+  transition:
+    border-color 140ms ease,
+    background-color 140ms ease;
+}
+.ap-editor-page .ap-title-input:hover {
+  border-color: rgba(255, 255, 255, 0.14);
+}
+.ap-editor-page .ap-title-input:focus {
+  border-color: var(--aps-cyan, #53d9d4);
+  background: #0b0f15;
+  outline: none;
+}
+
+.ap-actionbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-right: auto;
+}
+.ap-actionbar .ap-history-actions {
+  display: flex;
+  gap: 2px;
+  margin: 0;
+}
+.ap-editor-page .ap-app .ap-actionbar .ap-history-actions button {
+  min-height: 32px;
+  width: 34px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border-color: transparent;
+  background: transparent;
+  color: var(--aps-text);
+}
+.ap-editor-page .ap-app .ap-actionbar .ap-history-actions button:not(:disabled):hover {
+  background: var(--aps-panel-2);
+}
+.ap-mode-compact {
+  gap: 0 !important;
+  padding: 2px;
+  border: 1px solid var(--aps-line);
+  border-radius: 6px;
+}
+.ap-mode-compact > span {
+  display: none;
+}
+.ap-editor-page .ap-app .ap-mode-compact button {
+  min-height: 26px;
+  padding: 2px 10px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  font-size: 11px;
+  box-shadow: none;
+}
+.ap-editor-page .ap-app .ap-mode-compact button[aria-pressed='true'] {
+  background: rgba(83, 217, 212, 0.14);
+  color: var(--aps-cyan, #53d9d4);
+  box-shadow: none;
+}
+.ap-editor-page .ap-app .ap-export-primary {
+  background: var(--aps-cyan, #53d9d4) !important;
+  color: #041314 !important;
+  border-color: transparent !important;
+  font-weight: 700;
+  transition:
+    filter 140ms ease,
+    transform 140ms ease;
+}
+.ap-editor-page .ap-app .ap-export-primary:hover {
+  filter: brightness(1.08);
+}
+.ap-editor-page .ap-app .ap-export-primary:active {
+  transform: scale(0.97);
+}
+
+/* Tooltips with the shortcut (from data-tip; the tool also shows its keycap). */
+[data-tip] {
+  position: relative;
+}
+.ap-toolbar .ap-tool[data-tip]::after,
+.ap-actionbar [data-tip]::after {
+  content: attr(data-tip);
+  position: absolute;
+  z-index: 30;
+  pointer-events: none;
+  white-space: nowrap;
+  padding: 5px 8px;
+  border-radius: 6px;
+  background: #05070b;
+  color: #e8edf4;
+  border: 1px solid rgba(83, 217, 212, 0.35);
+  font:
+    400 11px/1 'Segoe UI',
+    system-ui,
+    sans-serif;
+  letter-spacing: 0;
+  opacity: 0;
+  transform: translateX(-4px);
+  transition:
+    opacity 120ms ease,
+    transform 120ms ease;
+}
+.ap-toolbar .ap-tool[data-tip]::after {
+  left: calc(100% + 10px);
+  top: 50%;
+  margin-top: -11px;
+}
+.ap-actionbar [data-tip]::after {
+  left: 50%;
+  top: calc(100% + 6px);
+  transform: translate(-50%, -4px);
+}
+.ap-toolbar .ap-tool[data-tip]:hover::after,
+.ap-toolbar .ap-tool[data-tip]:focus-visible::after {
+  opacity: 1;
+  transform: none;
+  transition-delay: 350ms;
+}
+.ap-actionbar [data-tip]:hover::after,
+.ap-actionbar [data-tip]:focus-visible::after {
+  opacity: 1;
+  transform: translate(-50%, 0);
+  transition-delay: 350ms;
+}
+@media (max-width: 900px) {
+  .ap-toolbar .ap-tool[data-tip]::after,
+  .ap-actionbar [data-tip]::after {
+    display: none;
+  }
+}
+
+/* Empty state: an inviting drop zone with samples. */
+.ap-empty {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  overflow: auto;
+  background: radial-gradient(60% 50% at 50% 40%, rgba(83, 217, 212, 0.08), transparent 70%),
+    radial-gradient(40% 40% at 70% 70%, rgba(155, 123, 255, 0.07), transparent 70%),
+    var(--aps-pasteboard);
+}
+.ap-empty[hidden] {
+  display: none;
+}
+.ap-empty-card {
+  width: min(520px, 100%);
+  padding: 28px 28px 22px;
+  text-align: center;
+  color: var(--aps-text);
+  border: 1.5px dashed rgba(83, 217, 212, 0.35);
+  border-radius: 6px;
+  background: rgba(8, 11, 16, 0.72);
+}
+.ap-empty-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  color: var(--aps-cyan, #53d9d4);
+  background: rgba(83, 217, 212, 0.1);
+  box-shadow: 0 0 30px rgba(83, 217, 212, 0.18);
+}
+.ap-empty h2 {
+  margin: 12px 0 6px;
+  font:
+    700 20px/1.2 'Segoe UI',
+    system-ui,
+    sans-serif;
+}
+.ap-empty p {
+  margin: 0 auto 16px;
+  max-width: 40ch;
+  color: var(--aps-muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.ap-empty-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+.ap-editor-page .ap-app .ap-empty-actions button {
+  min-height: 36px;
+  padding: 6px 14px;
+  border-radius: 6px;
+}
+.ap-editor-page .ap-app .ap-empty-open {
+  background: var(--aps-cyan, #53d9d4);
+  color: #041314;
+  border-color: transparent;
+  font-weight: 700;
+}
+.ap-samples {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  min-height: 118px;
+}
+.ap-editor-page .ap-app .ap-sample {
+  display: grid;
+  gap: 6px;
+  padding: 6px;
+  min-height: 0;
+  border: 1px solid var(--aps-line);
+  border-radius: 6px;
+  background: #0b0f15;
+  color: var(--aps-muted);
+  font-size: 11px;
+  cursor: pointer;
+  transition:
+    border-color 150ms ease,
+    transform 150ms var(--aps-ease),
+    box-shadow 150ms ease;
+}
+.ap-editor-page .ap-app .ap-sample:hover,
+.ap-editor-page .ap-app .ap-sample:focus-visible {
+  border-color: rgba(83, 217, 212, 0.6);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.4);
+  color: #fff;
+}
+.ap-sample canvas {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 2;
+  border-radius: 4px;
+  display: block;
+}
+
+/* Whole-window drag highlight. */
+.ap-drop-hint {
+  position: absolute;
+  inset: 10px;
+  z-index: 6;
+  display: none;
+  place-items: center;
+  border: 2px dashed var(--aps-cyan, #53d9d4);
+  border-radius: 6px;
+  background: rgba(83, 217, 212, 0.08);
+  color: #fff;
+  pointer-events: none;
+}
+.ap-drop-hint div {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  text-align: center;
+}
+.ap-drop-hint svg {
+  color: var(--aps-cyan, #53d9d4);
+}
+.ap-drop-hint span {
+  color: var(--aps-muted);
+  font-size: 12px;
+}
+.ap-drop-active .ap-drop-hint {
+  display: grid;
+  animation: ap-pulse 1.4s ease-in-out infinite;
+}
+@keyframes ap-pulse {
+  50% {
+    background: rgba(83, 217, 212, 0.14);
+  }
+}
+
+/* First picture arrives with a short scale-in. */
+#ap-canvas.ap-canvas-enter {
+  animation: ap-canvas-in 220ms var(--aps-ease, ease-out);
+}
+@keyframes ap-canvas-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Toasts. */
+.ap-toasts {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 60;
+  display: grid;
+  gap: 8px;
+  justify-items: end;
+  pointer-events: none;
+}
+.ap-toast {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: min(460px, calc(100vw - 36px));
+  padding: 10px 14px;
+  border: 1px solid rgba(83, 217, 212, 0.4);
+  border-radius: 6px;
+  background: #0a0f15;
+  color: #e8edf4;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+  font:
+    400 13px/1.3 'Segoe UI',
+    system-ui,
+    sans-serif;
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity 180ms ease,
+    transform 180ms var(--aps-ease, ease-out);
+}
+.ap-toast.ap-toast-has-action {
+  pointer-events: auto;
+}
+.ap-toast-action {
+  flex: none;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0 16px;
+  border: 1px solid rgba(83, 217, 212, 0.55);
+  border-radius: 8px;
+  background: rgba(83, 217, 212, 0.14);
+  color: #e8edf4;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+}
+.ap-toast svg {
+  flex: none;
+  color: var(--aps-cyan, #53d9d4);
+}
+.ap-toast-error svg {
+  color: #ff9b9b;
+}
+.ap-toast.ap-toast-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* Busy: a thin progress sweep over the canvas panel for imports, filters and exports. */
+.ap-progress {
+  height: 2px;
+  margin-bottom: -2px;
+  position: relative;
+  z-index: 5;
+  opacity: 0;
+  transition: opacity 150ms ease;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--aps-cyan, #53d9d4),
+    var(--aps-violet, #9b7bff),
+    transparent
+  );
+  background-size: 40% 100%;
+  background-repeat: no-repeat;
+}
+.ap-editor-page[aria-busy='true'] .ap-progress {
+  opacity: 1;
+  animation: ap-progress 1s linear infinite;
+}
+@keyframes ap-progress {
+  from {
+    background-position: -40% 0;
+  }
+  to {
+    background-position: 140% 0;
+  }
+}
+
+/* Panel and tab transitions. */
+.ap-editor-page .ap-app .ap-dock-tabs button {
+  transition:
+    color 140ms ease,
+    box-shadow 160ms ease;
+}
+.ap-dock-panel:not([hidden]) {
+  animation: ap-fade 150ms ease;
+}
+.ap-studio-menu .aa-menu-panel {
+  animation: ap-drop 140ms var(--aps-ease, ease-out);
+}
+@keyframes ap-fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes ap-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+/* Compact layer actions. */
+.ap-editor-page[data-studio] .ap-layer-actions {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 4px;
+}
+.ap-editor-page[data-studio] .ap-app .ap-layer-actions button {
+  min-height: 30px;
+  padding: 3px 4px;
+  font-size: 11px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ap-editor-page[data-studio] *,
+  .ap-editor-page[data-studio] *::after,
+  .ap-toast {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+.ap-editor-page[data-studio] .ap-canvas-tools > .ap-actionbar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+.ap-editor-page[data-studio] .ap-canvas-tools {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+.ap-editor-page[data-studio] .ap-app .ap-export-tools .aa-file-button {
+  background: transparent;
+  border-color: transparent;
+  color: var(--aps-muted);
+  font-size: 11px;
+}
+.ap-editor-page[data-studio] .ap-app .ap-export-tools .aa-file-button:hover {
+  color: #fff;
+  border-color: var(--aps-line);
+}
+
+/* The viewport's height comes from the rule above, not from flex-basis (it is size-contained). */
+.ap-editor-page[data-studio] .ap-canvas-viewport {
+  flex: none;
+}
+
+/* Phone frame (AlcorFrame, html.af-on): parts it hides with visibility are still laid out.
+   Skip their layout until they are shown: closed sheets, the closed menu drawer, and the
+   desktop-only project and canvas bars (their buttons stay clickable through the frame's proxies). */
+html.af-on .ap-editor-page [data-af-panel]:not(.af-open),
+html.af-on:not(.af-drawer-open) .ap-editor-page .aa-shell-menubar,
+html.af-on .ap-editor-page .ap-canvas-tools,
+html.af-on .ap-editor-page .aa-appbar {
+  content-visibility: hidden;
+}
+
+/* ------------------------------------------------------------------------------------------------
+   Flair round (owner 2026-09-29: "give it some flair"). Static finishes plus short press/hover
+   feedback. Budget: Segoe UI 400/700 only, SVG only, no animation on idle screens, transitions
+   of 180 ms or less on transform/opacity, nothing animated on backdrop-filter/blur/box-shadow,
+   and prefers-reduced-motion turns every transition off.
+   ------------------------------------------------------------------------------------------------ */
+.ap-editor-page .ap-app {
+  --apf-sig: linear-gradient(135deg, #53d9d4, #b38cff 60%, #d7b56d);
+  --apf-line: rgba(246, 240, 228, 0.08);
+  --apf-ink: #f1f3f7;
+}
+
+/* Tool rail: the active tool gets a lit pill and a signature bar; presses give a small squeeze. */
+.ap-editor-page .ap-app .ap-tool {
+  position: relative;
+  border-radius: 10px;
+  transition:
+    transform 0.12s ease,
+    opacity 0.12s ease;
+}
+.ap-editor-page .ap-app .ap-tool:hover:not([aria-pressed='true']) {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--apf-ink);
+}
+.ap-editor-page .ap-app .ap-tool[aria-pressed='true'] {
+  background: rgba(83, 217, 212, 0.13);
+  color: #fff;
+  box-shadow: inset 0 0 0 1px rgba(83, 217, 212, 0.35);
+}
+.ap-editor-page .ap-app .ap-tool[aria-pressed='true'] svg {
+  color: #7ee8e3;
+}
+.ap-editor-page .ap-app .ap-tool[aria-pressed='true']::before {
+  content: '';
+  position: absolute;
+  left: -6px;
+  top: 22%;
+  bottom: 22%;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--apf-sig);
+}
+.ap-editor-page .ap-app .ap-tool:active {
+  transform: scale(0.92);
+}
+
+/* Stage: a quiet vignette and a faint dot field behind the artboard, which floats on a soft shadow. */
+.ap-editor-page .ap-app .ap-canvas-viewport {
+  background-color: #07090e;
+  background-image: radial-gradient(
+    ellipse 70% 60% at 50% 40%,
+    rgba(179, 140, 255, 0.07),
+    transparent 70%
+  );
+}
+.ap-editor-page .ap-app .ap-doc-underlay {
+  box-shadow:
+    0 0 0 1px rgba(246, 240, 228, 0.09),
+    0 18px 40px -24px rgba(0, 0, 0, 0.9);
+  border-radius: 2px;
+}
+/* The dot field and the deep float shadow are desktop-only: on a throttled phone they cost ~120 ms of
+   first-load paint (measured 215 -> 335 ms TBT at 390/4x, back to 211 without them). */
+@media (min-width: 761px) and (hover: hover) {
+  .ap-editor-page .ap-app .ap-canvas-viewport {
+    background-image: radial-gradient(
+        ellipse 70% 60% at 50% 40%,
+        rgba(179, 140, 255, 0.07),
+        transparent 70%
+      ),
+      radial-gradient(rgba(246, 240, 228, 0.06) 1px, transparent 1.2px);
+    background-size:
+      100% 100%,
+      22px 22px;
+  }
+  .ap-editor-page .ap-app .ap-doc-underlay {
+    box-shadow:
+      0 36px 90px -36px rgba(0, 0, 0, 0.95),
+      0 0 0 1px rgba(246, 240, 228, 0.09);
+  }
+}
+
+/* Primary action: the signature gradient, bold type, a clean press. */
+.ap-editor-page .ap-app .ap-export-primary {
+  background: linear-gradient(135deg, #53d9d4, #8fe3df) !important;
+  color: #04252a !important;
+  font-weight: 700;
+  border-color: transparent !important;
+  transition:
+    transform 0.12s ease,
+    opacity 0.12s ease;
+}
+
+/* Dock tabs: one lit underline in the signature colours instead of boxed buttons. */
+.ap-editor-page .ap-app .ap-dock-tabs {
+  border-bottom: 1px solid var(--apf-line);
+}
+.ap-editor-page .ap-app .ap-dock-tabs button {
+  position: relative;
+  background: transparent;
+  border-color: transparent;
+  color: rgba(241, 243, 247, 0.6);
+  font-weight: 700;
+}
+.ap-editor-page .ap-app .ap-dock-tabs button:hover {
+  color: var(--apf-ink);
+}
+.ap-editor-page .ap-app .ap-dock-tabs button[aria-selected='true'] {
+  background: transparent;
+  color: #fff;
+}
+.ap-editor-page .ap-app .ap-dock-tabs button[aria-selected='true']::after {
+  content: '';
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: -1px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--apf-sig);
+}
+
+/* Layers: the selected row carries the signature bar. */
+.ap-editor-page .ap-app .ap-layer[aria-pressed='true'],
+.ap-editor-page .ap-app .ap-layer.is-selected,
+.ap-editor-page .ap-app .ap-layer[aria-selected='true'] {
+  position: relative;
+  box-shadow:
+    inset 3px 0 0 #53d9d4,
+    inset 0 0 0 1px rgba(83, 217, 212, 0.28);
+}
+
+/* Empty state: a gradient hairline around the card, a signature mark, sample cards that lift. */
+.ap-editor-page .ap-app .ap-empty-card {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(#0d1018, #0d1018) padding-box,
+    linear-gradient(
+        135deg,
+        rgba(83, 217, 212, 0.55),
+        rgba(179, 140, 255, 0.45) 55%,
+        rgba(215, 181, 109, 0.45)
+      )
+      border-box;
+  box-shadow: 0 40px 100px -50px rgba(0, 0, 0, 0.95);
+}
+.ap-editor-page .ap-app .ap-empty-mark {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: var(--apf-sig);
+  color: #07090e;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+.ap-editor-page .ap-app .ap-sample {
+  transition:
+    transform 0.16s ease,
+    opacity 0.16s ease;
+}
+.ap-editor-page .ap-app .ap-sample img {
+  border-radius: 8px;
+}
+.ap-editor-page .ap-app .ap-sample:active {
+  transform: scale(0.97);
+}
+
+/* Toasts: a crisp pill with a cyan edge (the existing slide-in stays). */
+.ap-toast {
+  border-radius: 12px;
+  border: 1px solid rgba(83, 217, 212, 0.28);
+  background: rgba(13, 16, 24, 0.96);
+  box-shadow:
+    0 18px 44px -18px rgba(0, 0, 0, 0.9),
+    inset 3px 0 0 #53d9d4;
+  font-weight: 700;
+}
+.ap-toast-error {
+  border-color: rgba(255, 155, 155, 0.35);
+  box-shadow:
+    0 18px 44px -18px rgba(0, 0, 0, 0.9),
+    inset 3px 0 0 #ff9b9b;
+}
+
+/* Status bar: the zoom reads as a small pill; the rest stays quiet. */
+.ap-editor-page .ap-app .ap-zoom-readout {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--apf-ink);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ap-editor-page .ap-app :is(.ap-tool, .ap-export-primary, .ap-sample) {
+    transition: none;
+  }
+  .ap-editor-page .ap-app :is(.ap-tool, .ap-sample):active {
+    transform: none;
+  }
+}
+
+/* Creator rail: thumb-reachable on phones; in desktop Basic it is the quick-edit strip. */
+.ap-creator {
+  display: none;
+}
+.ap-editor-page[data-mode='advanced'] .ap-creator {
+  display: none !important;
+}
+
+@media all {
+  .ap-editor-page[data-mode='essentials'] .ap-creator,
+  .ap-editor-page:not([data-mode]) .ap-creator {
+    display: block;
+    position: relative;
+    z-index: 26;
+    margin: 0;
+    border-top: 1px solid rgba(246, 240, 228, 0.08);
+    border-bottom: 1px solid rgba(246, 240, 228, 0.08);
+    background: #0b0d13;
+    color: #f1f3f7;
+  }
+  .ap-creator-rail {
+    display: flex;
+    align-items: stretch;
+    gap: 2px;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: none;
+    padding: 7px 5px 8px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .ap-creator-rail::-webkit-scrollbar {
+    display: none;
+  }
+  .ap-creator-button {
+    flex: 0 0 76px;
+    display: grid;
+    place-items: center;
+    align-content: center;
+    gap: 5px;
+    min-height: 68px;
+    padding: 6px 5px;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: #f1f3f7;
+    font:
+      600 11px/1.15 'Segoe UI',
+      system-ui,
+      sans-serif;
+    white-space: nowrap;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .ap-creator-button svg {
+    width: 25px;
+    height: 25px;
+  }
+  .ap-creator-button.is-accent svg {
+    color: #53d9d4;
+  }
+  .ap-creator-button:active {
+    background: rgba(255, 255, 255, 0.08);
+    transform: scale(0.97);
+  }
+  .ap-creator-button:focus-visible {
+    outline: 2px solid #f3d48a;
+    outline-offset: -2px;
+  }
+
+  .ap-creator-sheet {
+    max-height: min(42vh, 390px);
+    overflow: auto;
+    overscroll-behavior: contain;
+    padding: 10px 12px calc(12px + env(safe-area-inset-bottom));
+    border-top: 1px solid rgba(246, 240, 228, 0.1);
+    background: #11141c;
+    box-shadow: 0 -18px 50px -35px #000;
+  }
+  .ap-creator-sheet[hidden] {
+    display: none;
+  }
+  .ap-creator-sheet-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .ap-creator-sheet-head strong {
+    font-size: 14px;
+    letter-spacing: 0.01em;
+  }
+  .ap-creator-sheet-close {
+    width: 40px;
+    height: 40px;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.06);
+    color: #f1f3f7;
+    font:
+      400 25px/1 system-ui,
+      sans-serif;
+  }
+  .ap-creator-chips,
+  .ap-creator-fonts {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding: 2px 0 10px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .ap-creator-chips::-webkit-scrollbar,
+  .ap-creator-fonts::-webkit-scrollbar {
+    display: none;
+  }
+  .ap-creator-chip {
+    flex: 0 0 auto;
+    min-height: 44px;
+    padding: 9px 13px;
+    border: 1px solid rgba(246, 240, 228, 0.14);
+    border-radius: 10px;
+    background: #171b25;
+    color: #f1f3f7;
+    font:
+      600 12px/1.2 'Segoe UI',
+      system-ui,
+      sans-serif;
+  }
+  .ap-creator-chip[aria-pressed='true'] {
+    border-color: #53d9d4;
+    box-shadow: inset 0 0 0 1px rgba(83, 217, 212, 0.3);
+  }
+  .ap-creator-chip.is-primary {
+    border-color: #53d9d4;
+    background: #53d9d4;
+    color: #052327;
+    font-weight: 800;
+  }
+  .ap-font-chip {
+    min-width: 92px;
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .ap-creator-compose {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .ap-creator-text {
+    min-height: 48px;
+    max-height: 96px;
+    resize: vertical;
+    border: 1px solid rgba(246, 240, 228, 0.18);
+    border-radius: 10px;
+    background: #080a0f;
+    color: #f1f3f7;
+    padding: 10px 12px;
+    font:
+      500 15px/1.35 'Segoe UI',
+      system-ui,
+      sans-serif;
+  }
+  .ap-creator-controls {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    align-items: end;
+  }
+  .ap-creator-controls > .ap-creator-chip {
+    width: 100%;
+  }
+  .ap-creator-color,
+  .ap-creator-range {
+    display: grid;
+    gap: 6px;
+    min-width: 0;
+    color: #b8bec8;
+    font:
+      600 11px/1.2 'Segoe UI',
+      system-ui,
+      sans-serif;
+  }
+  .ap-creator-color {
+    grid-template-columns: 1fr 44px;
+    align-items: center;
+    min-height: 44px;
+    padding: 7px 9px;
+    border: 1px solid rgba(246, 240, 228, 0.1);
+    border-radius: 10px;
+  }
+  .ap-creator-color input[type='color'] {
+    width: 40px;
+    height: 32px;
+    padding: 2px;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+  }
+  .ap-creator-range > span {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .ap-creator-range output {
+    color: #f1f3f7;
+    font-variant-numeric: tabular-nums;
+  }
+  .ap-creator-range input {
+    width: 100%;
+    accent-color: #53d9d4;
+  }
+  .ap-creator-note {
+    margin: 7px 0 0;
+    color: #9da6b4;
+    font:
+      500 11px/1.45 'Segoe UI',
+      system-ui,
+      sans-serif;
+  }
+}
+
+/* Layer Style dialog */
+.ap-style-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.ap-style-preset {
+  min-height: 36px;
+  padding: 6px 12px;
+  border: 1px solid var(--aps-line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--aps-text);
+}
+.ap-style-sections {
+  display: grid;
+  gap: 6px;
+  max-height: min(52vh, 520px);
+  overflow: auto;
+}
+.ap-style-section {
+  border: 1px solid var(--aps-line);
+  border-radius: 8px;
+  padding: 6px 10px;
+}
+.ap-style-section summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.ap-style-section[open] {
+  display: grid;
+  gap: 8px;
+  padding-bottom: 10px;
+}
+@media (max-width: 900px) {
+  .ap-dialog.ap-dialog-side {
+    margin: auto 0 0;
+    width: 100vw;
+    max-width: 100vw;
+    max-height: 70vh;
+    border-radius: 14px 14px 0 0;
+  }
+  .ap-dialog.ap-dialog-side form {
+    max-height: 70vh;
+    overflow: auto;
+  }
+}
+
+/* ------------------------------------------------------------------ Basic mode
+   Phones: slim bar, the photo, one tray. Advanced restores the full studio. */
+.ap-basic-bar {
+  display: none;
+}
+.ap-basic-button {
+  display: inline-grid;
+  place-items: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: #f1f3f7;
+  font:
+    700 13px/1 'Segoe UI',
+    system-ui,
+    sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+.ap-basic-button svg {
+  width: 22px;
+  height: 22px;
+}
+.ap-basic-button:disabled {
+  opacity: 0.35;
+}
+.ap-basic-button[aria-pressed='true'] {
+  background: rgba(83, 217, 212, 0.18);
+  color: #53d9d4;
+}
+.ap-basic-export {
+  background: #53d9d4;
+  color: #052327;
+  padding: 0 16px;
+}
+.ap-basic-pro {
+  border: 1px solid rgba(246, 240, 228, 0.16);
+}
+.ap-basic-spacer {
+  flex: 1;
+}
+.ap-basic-layers {
+  display: grid;
+  gap: 6px;
+}
+.ap-basic-layer {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto auto auto;
+  gap: 6px;
+  align-items: center;
+}
+.ap-basic-layer[aria-current='true'] .ap-basic-layer-name {
+  border-color: #53d9d4;
+}
+.ap-basic-layer-name {
+  min-height: 44px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+  padding: 0 12px;
+  border: 1px solid rgba(246, 240, 228, 0.14);
+  border-radius: 10px;
+  background: #171b25;
+  color: #f1f3f7;
+  font:
+    600 13px/1.2 'Segoe UI',
+    system-ui,
+    sans-serif;
+}
+
+@media (max-width: 760px) {
+  /* Before the script marks the phone layer, the page already sits where the fixed layer will be (top of the
+     screen, over the in-flow product bar), so the boot does not move it 56 px up. */
+  .ap-editor-page:not([data-phone]):not([data-ready]) {
+    margin-top: calc(-1 * var(--apx-h, 56px));
+  }
+  /* z-index 46: above the sticky product bar (.apx-bar, z-index 45), which otherwise covers Undo, Redo and Export. */
+  .ap-editor-page[data-phone][data-mode='essentials'] {
+    position: fixed;
+    inset: 0;
+    z-index: 46;
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+    background: #07090d;
+  }
+  .ap-editor-page[data-phone][data-mode='essentials'] .aa-shell-menubar,
+  .ap-editor-page[data-phone][data-mode='essentials'] .aa-appbar,
+  .ap-editor-page[data-phone][data-mode='essentials'] .ap-editor-controls,
+  .ap-editor-page[data-phone][data-mode='essentials'] .ap-mobile-tabs,
+  .ap-editor-page[data-phone][data-mode='essentials'] .ap-toolbar,
+  .ap-editor-page[data-phone][data-mode='essentials'] .ap-sidebar,
+  .ap-editor-page[data-phone][data-mode='essentials'] .ap-inspector,
+  .ap-editor-page[data-phone][data-mode='essentials'] .ap-layers-panel,
+  .ap-editor-page[data-phone][data-mode='essentials'] .ap-canvas-tools,
+  .ap-editor-page[data-phone][data-mode='essentials'] .ap-tool-options,
+  .ap-editor-page[data-phone][data-mode='essentials'] .aa-statusbar {
+    display: none !important;
+  }
+  .ap-editor-page[data-phone][data-mode='essentials'] .aa-shell {
+    border-bottom: 0;
+  }
+  .ap-editor-page[data-phone][data-mode='essentials'] .ap-basic-home {
+    display: inline-grid;
+    place-items: center;
+    width: 40px;
+    height: 44px;
+    flex: none;
+  }
+  .ap-editor-page[data-phone][data-mode='essentials'] .ap-app {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    gap: 0;
+  }
+  .ap-editor-page[data-phone][data-mode='essentials'] .ap-basic-bar {
+    order: 0;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    flex: 0 0 auto;
+    padding: 4px 8px;
+    background: #0b0d13;
+    border-bottom: 1px solid rgba(246, 240, 228, 0.08);
+  }
+  .ap-editor-page[data-phone][data-mode='essentials'] .ap-grid {
+    order: 1;
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    gap: 0;
+  }
+  /* Tool hints only where a tool needs a confirm step. */
+  .ap-editor-page[data-phone][data-mode='essentials'] .ap-options-bar {
+    display: none;
+  }
+  .ap-editor-page[data-phone][data-mode='essentials']
+    .ap-canvas-panel:has(
+      .ap-canvas-viewport:is([data-tool='crop'], [data-tool='type'], [data-tool='heal'])
+    )
+    .ap-options-bar {
+    display: flex;
+  }
+  .ap-editor-page[data-phone][data-mode='essentials'] .ap-canvas-panel {
+    flex: 1 1 auto;
+    min-height: 0;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    padding: 0;
+  }
+  .ap-editor-page[data-phone][data-mode='essentials'] .ap-canvas-viewport {
+    flex: 1 1 auto;
+    position: relative;
+    min-height: 0;
+    height: auto;
+    max-height: none;
+    margin: 0;
+    border-radius: 0;
+  }
+  .ap-editor-page[data-phone][data-mode='essentials'] .ap-creator {
+    order: 2;
+    flex: 0 0 auto;
+    position: relative;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  /* Sheets sit in the flow above the tray, so the photo shrinks and stays visible. */
+  .ap-editor-page[data-phone][data-mode='essentials'] .ap-creator {
+    display: flex;
+    flex-direction: column-reverse;
+  }
+  .ap-editor-page[data-phone][data-mode='essentials'] .ap-creator-sheet {
+    position: static;
+    max-height: 38dvh;
+    border-radius: 16px 16px 0 0;
+    padding-top: 6px;
+  }
+  .ap-editor-page[data-phone][data-mode='essentials'] .ap-creator-sheet-head {
+    margin-bottom: 4px;
+  }
+  .ap-editor-page[data-phone][data-mode='essentials'] .ap-develop-controls {
+    gap: 2px;
+  }
+  .ap-editor-page[data-phone][data-mode='essentials'] .ap-develop-controls .ap-creator-range {
+    grid-template-columns: 84px minmax(0, 1fr);
+    align-items: center;
+    gap: 8px;
+    min-height: 40px;
+  }
+  .ap-editor-page[data-phone][data-mode='essentials']
+    .ap-develop-controls
+    .ap-creator-range
+    > span {
+    display: grid;
+    gap: 1px;
+  }
+  .ap-editor-page[data-phone][data-mode='essentials'] .ap-creator-button {
+    flex-basis: 68px;
+    min-height: 60px;
+  }
+  /* Advanced on a phone: offer the way back to Basic first. */
+  .ap-editor-page[data-phone][data-mode='advanced'] .ap-basic-bar {
+    display: flex;
+    gap: 6px;
+    padding: 6px 8px;
+  }
+  .ap-editor-page[data-phone][data-mode='advanced'] .ap-basic-bar > :not(.ap-basic-pro) {
+    display: none;
+  }
+  .ap-editor-page[data-phone][data-mode='advanced'] .ap-basic-bar {
+    order: -1;
+  }
+  .ap-editor-page[data-phone][data-mode='advanced']
+    :is(.aa-appbar, .ap-editor-controls, .ap-creator, .ap-canvas-tools) {
+    display: none !important;
+  }
+  .ap-editor-page[data-phone][data-mode='advanced'] .ap-canvas-viewport {
+    min-height: 58dvh;
+  }
+}
+
+/* Looks: live thumbnails of the current photo. */
+.ap-looks {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 2px 0 8px;
+}
+.ap-looks::-webkit-scrollbar {
+  display: none;
+}
+.ap-look {
+  flex: 0 0 auto;
+  display: grid;
+  justify-items: center;
+  gap: 5px;
+  padding: 4px;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  background: transparent;
+  color: #d7dce4;
+  font:
+    600 11px/1.2 'Segoe UI',
+    system-ui,
+    sans-serif;
+}
+.ap-look canvas {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 8px;
+  background: #171b25;
+}
+.ap-look[aria-pressed='true'] {
+  border-color: #53d9d4;
+  color: #fff;
+}
+.ap-develop-controls {
+  grid-template-columns: 1fr;
+}
+@media (min-width: 761px) and (max-width: 900px) {
+  .ap-develop-controls {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (min-width: 761px) {
+  .ap-editor-page[data-mode='essentials'] .ap-creator {
+    border: 1px solid rgba(246, 240, 228, 0.08);
+    border-radius: 10px;
+    margin: 8px 0;
+  }
+  .ap-editor-page[data-mode='essentials'] .ap-creator-rail {
+    justify-content: safe center;
+  }
+  .ap-editor-page[data-mode='essentials'] .ap-creator-button {
+    flex-basis: 72px;
+    min-height: 50px;
+    gap: 3px;
+    padding: 3px;
+  }
+  .ap-editor-page[data-mode='essentials'] .ap-creator {
+    position: relative;
+    z-index: 30;
+  }
+}
+/* The tray docks over the side column (alcor-photo-creator.js measures it), so it never covers the picture. */
+@media (min-width: 901px) {
+  .ap-editor-page[data-mode='essentials'] .ap-creator[data-sheet] ~ .ap-grid .ap-sidebar {
+    visibility: hidden;
+  }
+  .ap-editor-page[data-mode='essentials'] .ap-creator-sheet {
+    position: absolute;
+    top: var(--ap-sheet-top, calc(100% + 8px));
+    right: 0;
+    box-sizing: border-box;
+    width: var(--ap-sheet-width, 340px);
+    height: var(--ap-sheet-height, auto);
+    max-height: none;
+    padding: 12px 14px;
+    border: 1px solid rgba(246, 240, 228, 0.12);
+    border-radius: 8px;
+    box-shadow: none;
+  }
+  .ap-editor-page[data-mode='essentials'] .ap-creator-sheet::before {
+    display: none;
+  }
+  .ap-editor-page[data-mode='essentials'] .ap-creator-chips,
+  .ap-editor-page[data-mode='essentials'] .ap-creator-fonts {
+    flex-wrap: wrap;
+    overflow: visible;
+  }
+  .ap-editor-page[data-mode='essentials'] .ap-creator-sheet .ap-creator-chip {
+    min-height: 36px;
+    padding: 8px 12px;
+  }
+  .ap-editor-page[data-mode='essentials'] .ap-creator-sheet .ap-font-chip {
+    min-width: 0;
+    flex: 1 1 88px;
+  }
+  .ap-editor-page[data-mode='essentials'] .ap-creator-controls,
+  .ap-editor-page[data-mode='essentials'] .ap-creator-compose {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .ap-editor-page[data-mode='essentials'] .ap-looks {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    overflow: visible;
+  }
+  .ap-editor-page[data-mode='essentials'] .ap-look canvas {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+  }
+  .ap-editor-page[data-mode='essentials'] .ap-basic-layer {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .ap-editor-page[data-mode='essentials'] .ap-basic-layer-name {
+    grid-column: 1 / -1;
+    min-height: 36px;
+  }
+  .ap-editor-page[data-mode='essentials'] .ap-basic-layers {
+    gap: 12px;
+  }
+  .ap-editor-page[data-mode='essentials'] .ap-basic-layer .ap-creator-chip {
+    padding: 6px 4px;
+    min-width: 0;
+  }
+}
+.ap-remove-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 6;
+  touch-action: none;
+  cursor: crosshair;
+}
+.ap-creator-select {
+  flex: 0 0 auto;
+  min-height: 44px;
+  max-width: 220px;
+  padding: 0 10px;
+  border: 1px solid rgba(246, 240, 228, 0.14);
+  border-radius: 10px;
+  background: #171b25;
+  color: #f1f3f7;
+  font:
+    600 12px/1.2 'Segoe UI',
+    system-ui,
+    sans-serif;
+}
+.ap-dialog.ap-dialog-wide {
+  width: min(980px, calc(100vw - 24px));
+}
+.ap-liquify-canvas {
+  display: block;
+  max-width: 100%;
+  max-height: min(62vh, 720px);
+  margin: 0 auto;
+  touch-action: none;
+  cursor: crosshair;
+  background: repeating-conic-gradient(#2a2f3a 0 25%, #1c2029 0 50%) 0 0 / 16px 16px;
+  border-radius: 6px;
+}
+
+/* ==================================================================
+   Alcor Studio look for Basic mode: one type family, one accent
+   gradient, glass bars, pill controls, slide-up sheets.
+   ================================================================== */
+.ap-editor-page {
+  --ab-font: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    sans-serif;
+  --ab-bg: #06080c;
+  --ab-surface: rgba(15, 19, 27, 0.92);
+  --ab-surface-2: #161b25;
+  --ab-line: rgba(255, 255, 255, 0.08);
+  --ab-line-strong: rgba(255, 255, 255, 0.14);
+  --ab-text: #eef2f7;
+  --ab-muted: #98a2b3;
+  --ab-accent: #53d9d4;
+  --ab-accent-2: #9b8cff;
+  --ab-grad: linear-gradient(135deg, #53d9d4 0%, #7fb6ff 52%, #9b8cff 100%);
+  --ab-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  font-family: var(--ab-font);
+}
+.ap-editor-page button,
+.ap-editor-page input,
+.ap-editor-page select,
+.ap-editor-page textarea {
+  font-family: inherit;
+}
+
+/* Top bar */
+.ap-basic-button {
+  font: 600 13px/1 var(--ab-font);
+  letter-spacing: 0.01em;
+  border-radius: 12px;
+  transition:
+    background-color 0.15s var(--ab-ease),
+    transform 0.12s var(--ab-ease),
+    opacity 0.15s;
+}
+.ap-basic-button:active {
+  transform: scale(0.94);
+}
+.ap-basic-button:focus-visible {
+  outline: 2px solid var(--ab-accent);
+  outline-offset: 2px;
+}
+.ap-basic-button:not(.ap-basic-export):not(.ap-basic-pro):hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+.ap-basic-export {
+  background: var(--ab-grad);
+  color: #051318;
+  font-weight: 800;
+  border-radius: 999px;
+  padding: 0 18px;
+  box-shadow: 0 6px 22px -10px rgba(83, 217, 212, 0.9);
+}
+.ap-basic-pro {
+  border: 1px solid var(--ab-line-strong);
+  border-radius: 999px;
+  padding: 0 14px;
+  color: var(--ab-muted);
+  font-weight: 600;
+}
+.ap-basic-pro:hover {
+  color: var(--ab-text);
+  border-color: rgba(255, 255, 255, 0.28);
+}
+
+/* Tray */
+.ap-editor-page[data-mode='essentials'] .ap-creator {
+  font-family: var(--ab-font);
+  background: var(--ab-surface);
+  backdrop-filter: blur(18px) saturate(1.2);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+}
+.ap-editor-page[data-mode='essentials'] .ap-creator-rail {
+  scroll-snap-type: x proximity;
+  scroll-padding-inline: 12px;
+  mask-image: linear-gradient(
+    90deg,
+    transparent 0,
+    #000 18px,
+    #000 calc(100% - 18px),
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent 0,
+    #000 18px,
+    #000 calc(100% - 18px),
+    transparent 100%
+  );
+}
+.ap-editor-page[data-mode='essentials'] .ap-creator-button {
+  scroll-snap-align: start;
+  position: relative;
+  color: #c9d1dd;
+  font: 600 11px/1.15 var(--ab-font);
+  letter-spacing: 0.01em;
+  border-radius: 14px;
+  transition:
+    color 0.15s var(--ab-ease),
+    background-color 0.15s var(--ab-ease),
+    transform 0.12s var(--ab-ease);
+}
+.ap-editor-page[data-mode='essentials'] .ap-creator-button svg {
+  width: 24px;
+  height: 24px;
+  transition: transform 0.2s var(--ab-ease);
+}
+.ap-editor-page[data-mode='essentials'] .ap-creator-button:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.05);
+}
+.ap-editor-page[data-mode='essentials'] .ap-creator-button.is-accent svg {
+  color: var(--ab-accent);
+}
+.ap-editor-page[data-mode='essentials'] .ap-creator-button[aria-current='true'] {
+  color: #fff;
+  background: rgba(83, 217, 212, 0.1);
+}
+.ap-editor-page[data-mode='essentials'] .ap-creator-button[aria-current='true'] svg {
+  color: var(--ab-accent);
+  transform: translateY(-1px);
+}
+.ap-editor-page[data-mode='essentials'] .ap-creator-button[aria-current='true']::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 3px;
+  width: 18px;
+  height: 3px;
+  margin-left: -9px;
+  border-radius: 3px;
+  background: var(--ab-grad);
+}
+
+/* Sheets */
+.ap-editor-page[data-mode='essentials'] .ap-creator-sheet {
+  background: linear-gradient(180deg, #121722 0%, #0d1119 100%);
+  color: var(--ab-text);
+  border-top: 1px solid var(--ab-line-strong);
+  padding-left: 16px;
+  padding-right: 16px;
+  animation: ab-sheet-in 0.24s var(--ab-ease);
+}
+.ap-editor-page[data-mode='essentials'] .ap-creator-sheet::before {
+  content: '';
+  display: block;
+  width: 38px;
+  height: 4px;
+  margin: 0 auto 8px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.18);
+}
+@keyframes ab-sheet-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.ap-editor-page[data-mode='essentials'] .ap-creator-sheet-head strong {
+  font: 700 15px/1.2 var(--ab-font);
+  letter-spacing: 0.005em;
+}
+.ap-editor-page[data-mode='essentials'] .ap-creator-sheet-close {
+  width: 36px;
+  height: 36px;
+  font-size: 20px;
+  background: rgba(255, 255, 255, 0.06);
+  transition: background-color 0.15s;
+}
+.ap-editor-page[data-mode='essentials'] .ap-creator-sheet-close:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+.ap-editor-page[data-mode='essentials'] .ap-creator-chip {
+  border-radius: 999px;
+  border-color: var(--ab-line-strong);
+  background: var(--ab-surface-2);
+  font: 600 13px/1.1 var(--ab-font);
+  padding: 10px 16px;
+  transition:
+    border-color 0.15s,
+    background-color 0.15s,
+    transform 0.12s var(--ab-ease);
+}
+.ap-editor-page[data-mode='essentials'] .ap-creator-chip:active {
+  transform: scale(0.96);
+}
+.ap-editor-page[data-mode='essentials'] .ap-creator-chip:hover {
+  border-color: rgba(255, 255, 255, 0.26);
+}
+.ap-editor-page[data-mode='essentials'] .ap-creator-chip[aria-pressed='true'] {
+  border-color: transparent;
+  background: rgba(83, 217, 212, 0.14);
+  box-shadow: inset 0 0 0 1.5px var(--ab-accent);
+  color: #fff;
+}
+.ap-editor-page[data-mode='essentials'] .ap-creator-chip.is-primary {
+  background: var(--ab-grad);
+  color: #051318;
+  border: 0;
+  font-weight: 800;
+  box-shadow: 0 8px 24px -12px rgba(83, 217, 212, 0.9);
+}
+.ap-editor-page[data-mode='essentials'] .ap-creator-note {
+  color: var(--ab-muted);
+  font: 500 12px/1.45 var(--ab-font);
+}
+.ap-editor-page[data-mode='essentials'] .ap-creator-select {
+  border-radius: 999px;
+  background: var(--ab-surface-2);
+  font: 600 13px/1 var(--ab-font);
+  padding: 0 14px;
+}
+
+/* Sliders: a quiet track, a filled side from the neutral point, a big thumb. */
+.ap-editor-page[data-mode='essentials'] .ap-creator-range {
+  color: var(--ab-muted);
+  font: 600 12px/1.2 var(--ab-font);
+}
+.ap-editor-page[data-mode='essentials'] .ap-creator-range output {
+  color: var(--ab-text);
+  font-weight: 700;
+  min-width: 3ch;
+  text-align: right;
+}
+.ap-editor-page[data-mode='essentials'] .ap-creator-range input[type='range'] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 28px;
+  background: transparent;
+  cursor: pointer;
+  touch-action: pan-y;
+  --fill-from: 50%;
+  --fill-to: 50%;
+}
+.ap-editor-page[data-mode='essentials']
+  .ap-creator-range
+  input[type='range']::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 4px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.14) 0 var(--fill-from),
+    #53d9d4 var(--fill-from) var(--fill-to),
+    rgba(255, 255, 255, 0.14) var(--fill-to) 100%
+  );
+}
+.ap-editor-page[data-mode='essentials'] .ap-creator-range input[type='range']::-moz-range-track {
+  height: 4px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.14);
+}
+.ap-editor-page[data-mode='essentials'] .ap-creator-range input[type='range']::-moz-range-progress {
+  height: 4px;
+  border-radius: 4px;
+  background: var(--ab-accent);
+}
+.ap-editor-page[data-mode='essentials']
+  .ap-creator-range
+  input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  margin-top: -9px;
+  border-radius: 50%;
+  background: #fff;
+  border: 0;
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.45),
+    0 0 0 4px rgba(83, 217, 212, 0);
+  transition:
+    box-shadow 0.15s var(--ab-ease),
+    transform 0.12s var(--ab-ease);
+}
+.ap-editor-page[data-mode='essentials']
+  .ap-creator-range
+  input[type='range']:active::-webkit-slider-thumb {
+  transform: scale(1.12);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.45),
+    0 0 0 6px rgba(83, 217, 212, 0.25);
+}
+.ap-editor-page[data-mode='essentials'] .ap-creator-range input[type='range']::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  border: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+}
+.ap-editor-page[data-mode='essentials'] .ap-creator-range input[type='range']:focus-visible {
+  outline: 2px solid var(--ab-accent);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Looks */
+.ap-editor-page[data-mode='essentials'] .ap-look {
+  gap: 6px;
+  padding: 3px;
+  border: 0;
+  border-radius: 16px;
+  color: var(--ab-muted);
+  font: 600 11px/1.2 var(--ab-font);
+  transition:
+    color 0.15s,
+    transform 0.12s var(--ab-ease);
+}
+.ap-editor-page[data-mode='essentials'] .ap-look canvas {
+  width: 76px;
+  height: 76px;
+  border-radius: 13px;
+  box-shadow: 0 0 0 1px var(--ab-line-strong);
+  transition: box-shadow 0.15s var(--ab-ease);
+}
+.ap-editor-page[data-mode='essentials'] .ap-look:active {
+  transform: scale(0.96);
+}
+.ap-editor-page[data-mode='essentials'] .ap-look:hover canvas {
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.3);
+}
+.ap-editor-page[data-mode='essentials'] .ap-look[aria-pressed='true'] {
+  color: #fff;
+}
+.ap-editor-page[data-mode='essentials'] .ap-look[aria-pressed='true'] canvas {
+  box-shadow:
+    0 0 0 2px #06080c,
+    0 0 0 4px var(--ab-accent),
+    0 10px 24px -12px rgba(83, 217, 212, 0.8);
+}
+
+/* Layers sheet rows */
+.ap-editor-page[data-mode='essentials'] .ap-basic-layer-name {
+  border-radius: 12px;
+  background: var(--ab-surface-2);
+  font: 600 13px/1.2 var(--ab-font);
+}
+.ap-editor-page[data-mode='essentials'] .ap-basic-layer[aria-current='true'] .ap-basic-layer-name {
+  box-shadow: inset 0 0 0 1.5px var(--ab-accent);
+  border-color: transparent;
+}
+
+/* Toasts sit above the tray on phones and never cover the bar. */
+@media (max-width: 760px) {
+  .ap-editor-page[data-phone] .ap-toasts {
+    left: 12px;
+    right: 12px;
+    bottom: calc(96px + env(safe-area-inset-bottom));
+    justify-items: center;
+    z-index: 80;
+  }
+  .ap-editor-page[data-phone] .ap-toast {
+    max-width: 100%;
+    font: 600 13px/1.35 var(--ab-font);
+  }
+  .ap-editor-page[data-phone][data-mode='essentials'] .ap-basic-bar {
+    background: rgba(8, 10, 15, 0.86);
+    backdrop-filter: blur(18px) saturate(1.2);
+    -webkit-backdrop-filter: blur(18px) saturate(1.2);
+    border-bottom-color: var(--ab-line);
+    padding: 6px 10px;
+    gap: 4px;
+  }
+  .ap-editor-page[data-phone][data-mode='essentials'] .ap-canvas-viewport {
+    background: radial-gradient(120% 80% at 50% 40%, #10141c 0%, #06080c 70%);
+  }
+}
+.ap-toast-error {
+  border-color: rgba(255, 120, 120, 0.35) !important;
+  box-shadow:
+    0 18px 44px -18px rgba(0, 0, 0, 0.9),
+    inset 3px 0 0 #ff7a7a !important;
+}
+.ap-toast-error svg {
+  color: #ff8d8d !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ap-editor-page[data-mode='essentials'] .ap-creator-sheet {
+    animation: none;
+  }
+  .ap-editor-page .ap-basic-button,
+  .ap-editor-page .ap-creator-button,
+  .ap-editor-page .ap-creator-chip,
+  .ap-editor-page .ap-look {
+    transition: none;
+  }
+}
+/* The shell's generic `.aa-app button` box must not leak into Basic controls. */
+.ap-editor-page .ap-app .ap-basic-button {
+  border: 0;
+  background: transparent;
+  color: var(--ab-text);
+  padding: 0 10px;
+}
+.ap-editor-page .ap-app .ap-basic-button:not(.ap-basic-export):not(.ap-basic-pro):hover {
+  background: rgba(255, 255, 255, 0.07);
+}
+.ap-editor-page .ap-app .ap-basic-export {
+  background: var(--ab-grad);
+  color: #051318;
+  padding: 0 18px;
+  border-radius: 999px;
+}
+.ap-editor-page .ap-app .ap-basic-export:hover {
+  filter: brightness(1.06);
+}
+.ap-editor-page .ap-app .ap-basic-pro {
+  border: 1px solid var(--ab-line-strong);
+  border-radius: 999px;
+  color: var(--ab-muted);
+  padding: 0 14px;
+}
+.ap-editor-page .ap-app .ap-creator-button {
+  border: 0;
+  background: transparent;
+}
+.ap-editor-page[data-mode='essentials'] .ap-app .ap-creator-button[aria-current='true'] {
+  background: rgba(83, 217, 212, 0.1);
+}
+.ap-editor-page .ap-app .ap-look {
+  border: 0;
+  background: transparent;
+}
+.ap-editor-page .ap-app .ap-creator-sheet-close {
+  border: 0;
+  border-radius: 50%;
+}
+.ap-editor-page .ap-app .ap-basic-export {
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+.ap-editor-page .ap-app .ap-basic-pro {
+  font-weight: 600;
+}
+
+/* Layer panel: what makes this layer what it is (text, font, color, fill) comes first. */
+#ap-layer-form [data-text-field],
+#ap-layer-form [data-shape-field] {
+  order: -1;
+}
+
+/* ================================================================ fit the desktop studio to the window
+   The product bar plus the app are exactly one window tall: the app takes what the bar (--apx-h, set by
+   alcor-product-header.css) leaves, the canvas takes what is left of that, and the tool rail and side panels
+   scroll inside themselves. The site footer follows below the fold; the page scrolls to reach it. */
+@media (min-width: 901px) and (min-height: 600px) {
+  body.alcor-photo-editor:has(> .ap-editor-page[data-studio]:not([data-phone])) {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: 100dvh;
+    margin: 0;
+  }
+  body.alcor-photo-editor:has(> .ap-editor-page[data-studio]:not([data-phone])) > * {
+    flex: none;
+  }
+  body.alcor-photo-editor > .ap-editor-page[data-studio]:not([data-phone]) {
+    flex: none;
+    height: calc(100vh - var(--apx-h, 56px));
+    height: calc(100dvh - var(--apx-h, 56px));
+  }
+  .ap-editor-page[data-studio]:not([data-phone]) {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .ap-editor-page[data-studio]:not([data-phone]) > * {
+    flex: none;
+  }
+  .ap-editor-page[data-studio]:not([data-phone]) > .ap-app {
+    flex: 1 1 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    padding: 6px 10px 8px;
+  }
+  .ap-editor-page[data-studio]:not([data-phone]) > .ap-app > * {
+    flex: none;
+  }
+  .ap-editor-page[data-studio]:not([data-phone]) > .ap-app > .ap-creator {
+    margin: 0 0 6px;
+  }
+  .ap-editor-page[data-studio]:not([data-phone]) > .ap-app > .ap-grid {
+    flex: 1 1 0;
+    min-height: 0;
+    grid-template-rows: minmax(0, 1fr);
+    align-items: stretch;
+  }
+  .ap-editor-page[data-studio]:not([data-phone]) .ap-toolbar {
+    position: static;
+    max-height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scrollbar-width: thin;
+  }
+  .ap-editor-page[data-studio]:not([data-phone]) .ap-canvas-panel {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .ap-editor-page[data-studio]:not([data-phone]) .ap-canvas-panel > * {
+    flex: none;
+  }
+  /* One row always: a tool whose options wrapped moved the canvas under the pointer. */
+  .ap-editor-page[data-studio]:not([data-phone]) .ap-options-bar {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: none;
+  }
+  .ap-editor-page[data-studio]:not([data-phone]) .ap-canvas-panel > .ap-canvas-viewport {
+    flex: 1 1 0;
+    height: auto;
+    min-height: 240px;
+  }
+  /* max-content rows: a height-limited grid otherwise squeezes the overflow-hidden panels to nothing instead of scrolling. */
+  .ap-editor-page[data-studio]:not([data-phone]) .ap-sidebar {
+    position: static;
+    max-height: 100%;
+    grid-auto-rows: max-content;
+  }
+}

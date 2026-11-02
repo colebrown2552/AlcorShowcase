@@ -1,0 +1,11 @@
+{
+  "schema": "alcor.plugin.v1",
+  "name": "AlcorComputer",
+  "transport": "mcp",
+  "server": "alcor_computer.mcp_server",
+  "tools": ["computer_status", "computer_validate", "computer_stage"],
+  "resource": "alcor-computer://status",
+  "owner_gated": false,
+  "owner_gated_input_reachable": false,
+  "actuation_backend_present": false
+}

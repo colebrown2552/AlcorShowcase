@@ -1,0 +1,24 @@
+# Packaging for the continuity-core component: `pip install -e AlcorLedger` installs the package and
+# the `continuity` command. Lint and format settings live in the repository root pyproject.toml.
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "continuity-core"
+version = "0.1.0"
+description = "Hash-chained, append-only JSONL ledger with a privacy gate that redacts or refuses secrets before they are written."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+continuity = "continuity_core.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+# `pythonpath` lets `pytest AlcorLedger` run from a fresh checkout without installing the package.
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

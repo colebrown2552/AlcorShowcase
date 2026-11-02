@@ -1,0 +1,36 @@
+<!doctype html>
+<!-- Demo page for AlcorFields. Elements with annotations are the parts an editor may change. -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title data-af="page.title">Harbor Bakery</title>
+    <meta
+      name="description"
+      content="Bread baked before sunrise on the quay."
+      data-af-attr-content="page.description"
+    />
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="/" data-af-attr-href="header.home_href" data-af="header.brand"
+        >Harbor Bakery</a
+      >
+    </header>
+    <main>
+      <section id="hero" data-af-section="hero" data-af-required>
+        <h1 data-af="hero.title">Bread baked <em>before</em> sunrise</h1>
+        <p data-af="hero.lead">Visit us on the quay.</p>
+        <a class="cta" href="/menu/" data-af-attr-href="hero.cta_href" data-af="hero.cta_label"
+          >See the menu</a
+        >
+      </section>
+      <section id="menu" data-af-section="menu">
+        <h2 data-af="menu.title">Today's bread</h2>
+        <ul data-af-list="menu.items" data-af-min="1" data-af-max="6">
+          <li><strong data-af="name">Sourdough loaf</strong> <span data-af="price">4.50</span></li>
+          <li><strong data-af="name">Rye batard</strong> <span data-af="price">5.00</span></li>
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>

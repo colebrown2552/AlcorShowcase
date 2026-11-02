@@ -1,0 +1,280 @@
+PROGRAM AlcorCli WITH profile=default
+
+READ $schema
+READ $program_id
+READ $effect_authority
+READ $requested_route
+READ $complexity
+READ $fast_state
+READ $flash_state
+READ $deep_state
+READ $memory_state
+READ $owner_confirmed
+READ $lesson_state
+READ $tool_kind
+
+BRANCH NE $schema "alcor.cli.request.v1" refuse_schema
+BRANCH NE $effect_authority "false" refuse_authority
+BRANCH EQ $program_id "cli-self-test" selftest
+BRANCH EQ $program_id "cli-recall" recall_op
+BRANCH EQ $program_id "cli-learn" learn_op
+BRANCH EQ $program_id "cli-propose" propose_op
+BRANCH EQ $program_id "cli-admit" admit_op
+BRANCH EQ $program_id "cli-tool" tool_op
+BRANCH EQ $program_id "cli-ask" ask_op
+EMIT "schema=alcor.cli.decision.v1"
+EMIT "accepted=false"
+EMIT "reason=unknown-program-id"
+EMIT "route=none"
+EMIT "operation=none"
+EMIT "memory=skip"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL refuse_schema
+EMIT "schema=alcor.cli.decision.v1"
+EMIT "accepted=false"
+EMIT "reason=request-schema-mismatch"
+EMIT "route=none"
+EMIT "operation=none"
+EMIT "memory=skip"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL refuse_authority
+EMIT "schema=alcor.cli.decision.v1"
+EMIT "accepted=false"
+EMIT "reason=effect-authority-must-be-false"
+EMIT "route=none"
+EMIT "operation=none"
+EMIT "memory=skip"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL selftest
+EMIT "schema=alcor.cli.decision.v1"
+EMIT "accepted=true"
+EMIT "operation=self-test"
+EMIT "route=none"
+EMIT "reason=self-test"
+EMIT "memory=skip"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL recall_op
+EMIT "schema=alcor.cli.decision.v1"
+EMIT "operation=recall"
+EMIT "route=none"
+EMIT "effect_authority=false"
+BRANCH NE $memory_state "ready" refuse_memory
+EMIT "accepted=true"
+EMIT "memory=use"
+EMIT "reason=recall-admitted"
+JUMP done
+
+LABEL learn_op
+EMIT "schema=alcor.cli.decision.v1"
+EMIT "operation=learn"
+EMIT "route=none"
+EMIT "effect_authority=false"
+BRANCH NE $memory_state "ready" refuse_memory
+EMIT "accepted=true"
+EMIT "memory=write"
+EMIT "reason=lesson-admitted"
+JUMP done
+
+LABEL propose_op
+EMIT "schema=alcor.cli.decision.v1"
+EMIT "operation=propose"
+EMIT "effect_authority=false"
+BRANCH NE $memory_state "ready" refuse_memory
+BRANCH NE $lesson_state "typed" refuse_untyped
+EMIT "accepted=true"
+EMIT "route=none"
+EMIT "memory=stage"
+EMIT "promotion_required=true"
+EMIT "owner_action=review-pending-lesson"
+EMIT "reason=lesson-staged-not-admitted"
+JUMP done
+
+LABEL admit_op
+EMIT "schema=alcor.cli.decision.v1"
+EMIT "operation=admit"
+EMIT "effect_authority=false"
+EMIT "route=none"
+BRANCH NE $memory_state "ready" refuse_memory
+BRANCH NE $owner_confirmed "true" refuse_unconfirmed
+EMIT "accepted=true"
+EMIT "memory=write"
+EMIT "promotion_required=false"
+EMIT "owner_action=none"
+EMIT "reason=owner-admitted-lesson"
+JUMP done
+
+LABEL tool_op
+EMIT "schema=alcor.cli.decision.v1"
+EMIT "operation=tool"
+EMIT "effect_authority=false"
+EMIT "route=none"
+EMIT "memory=skip"
+BRANCH EQ $tool_kind "read" tool_admitted
+BRANCH EQ $tool_kind "search" tool_admitted
+BRANCH EQ $tool_kind "write" tool_gated
+BRANCH EQ $tool_kind "execute" tool_gated
+JUMP refuse_tool_kind
+
+LABEL refuse_memory
+EMIT "accepted=false"
+EMIT "memory=skip"
+EMIT "reason=memory-unavailable"
+JUMP done
+
+LABEL refuse_untyped
+EMIT "accepted=false"
+EMIT "route=none"
+EMIT "memory=skip"
+EMIT "promotion_required=false"
+EMIT "owner_action=none"
+EMIT "reason=lesson-not-typed"
+JUMP done
+
+LABEL refuse_unconfirmed
+EMIT "accepted=false"
+EMIT "memory=skip"
+EMIT "promotion_required=true"
+EMIT "owner_action=confirm-admission"
+EMIT "reason=admission-requires-owner"
+JUMP done
+
+LABEL tool_admitted
+EMIT "accepted=true"
+EMIT "tool=run"
+EMIT "promotion_required=false"
+EMIT "owner_action=none"
+EMIT "reason=read-only-tool-admitted"
+JUMP done
+
+LABEL tool_gated
+BRANCH NE $owner_confirmed "true" refuse_tool_owner
+EMIT "accepted=true"
+EMIT "tool=run"
+EMIT "promotion_required=false"
+EMIT "owner_action=none"
+EMIT "reason=owner-confirmed-effect-tool"
+JUMP done
+
+LABEL refuse_tool_owner
+EMIT "accepted=false"
+EMIT "tool=refuse"
+EMIT "promotion_required=true"
+EMIT "owner_action=confirm-tool"
+EMIT "reason=effect-tool-requires-owner"
+JUMP done
+
+LABEL refuse_tool_kind
+EMIT "accepted=false"
+EMIT "tool=refuse"
+EMIT "promotion_required=false"
+EMIT "owner_action=none"
+EMIT "reason=unknown-tool-kind"
+JUMP done
+
+LABEL ask_op
+EMIT "schema=alcor.cli.decision.v1"
+EMIT "operation=ask"
+EMIT "effect_authority=false"
+BRANCH NE $memory_state "ready" ask_without_memory
+EMIT "memory=use"
+JUMP ask_route
+LABEL ask_without_memory
+EMIT "memory=skip"
+
+LABEL ask_route
+BRANCH EQ $requested_route "flash" force_flash
+BRANCH EQ $requested_route "fast" force_fast
+BRANCH EQ $requested_route "deep" force_deep
+BRANCH EQ $complexity "hard" prefer_deep
+JUMP prefer_flash
+
+LABEL force_flash
+BRANCH NE $flash_state "up" refuse_forced
+EMIT "accepted=true"
+EMIT "route=flash"
+EMIT "reason=requested-flash-lane"
+JUMP done
+
+LABEL force_fast
+BRANCH NE $fast_state "up" refuse_forced
+EMIT "accepted=true"
+EMIT "route=fast"
+EMIT "reason=requested-fast-lane"
+JUMP done
+
+LABEL force_deep
+BRANCH NE $deep_state "up" refuse_forced
+EMIT "accepted=true"
+EMIT "route=deep"
+EMIT "reason=requested-deep-lane"
+JUMP done
+
+LABEL refuse_forced
+EMIT "accepted=false"
+EMIT "route=none"
+EMIT "reason=selected-lane-unreachable"
+JUMP done
+
+LABEL prefer_deep
+BRANCH EQ $deep_state "up" deep_chosen
+BRANCH EQ $fast_state "up" fast_degraded
+BRANCH EQ $flash_state "up" flash_degraded
+JUMP refuse_none
+
+LABEL prefer_flash
+BRANCH EQ $flash_state "up" flash_chosen
+BRANCH EQ $fast_state "up" fast_chosen
+BRANCH EQ $deep_state "up" deep_degraded
+JUMP refuse_none
+
+LABEL deep_chosen
+EMIT "accepted=true"
+EMIT "route=deep"
+EMIT "reason=hard-task-to-deep-lane"
+JUMP done
+
+LABEL fast_chosen
+EMIT "accepted=true"
+EMIT "route=fast"
+EMIT "reason=simple-task-to-fast-lane"
+JUMP done
+
+LABEL flash_chosen
+EMIT "accepted=true"
+EMIT "route=flash"
+EMIT "reason=simple-task-to-flash-lane"
+JUMP done
+
+LABEL fast_degraded
+EMIT "accepted=true"
+EMIT "route=fast"
+EMIT "reason=deep-lane-down-degraded-to-fast"
+JUMP done
+
+LABEL flash_degraded
+EMIT "accepted=true"
+EMIT "route=flash"
+EMIT "reason=only-flash-lane-reachable"
+JUMP done
+
+LABEL deep_degraded
+EMIT "accepted=true"
+EMIT "route=deep"
+EMIT "reason=fast-lane-down-escalated-to-deep"
+JUMP done
+
+LABEL refuse_none
+EMIT "accepted=false"
+EMIT "route=none"
+EMIT "reason=no-reachable-lane"
+
+LABEL done
+END PROGRAM

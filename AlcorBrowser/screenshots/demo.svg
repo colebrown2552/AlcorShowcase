@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="1039" viewBox="0 0 960 1039" role="img" aria-label="AlcorBrowser: MCP broker + extension protocol, offline demo">
+  <rect width="960" height="1039" rx="10" fill="#0d1117"/>
+  <rect width="960" height="34" rx="10" fill="#161b22"/>
+  <rect y="24" width="960" height="10" fill="#161b22"/>
+  <circle cx="20" cy="17" r="6" fill="#ff5f57"/><circle cx="40" cy="17" r="6" fill="#febc2e"/>
+  <circle cx="60" cy="17" r="6" fill="#28c840"/>
+  <text x="480.0" y="22" fill="#8b949e" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13">AlcorBrowser: MCP broker + extension protocol, offline demo</text>
+  <g font-family="Cascadia Mono, Consolas, Menlo, DejaVu Sans Mono, monospace" font-size="14">
+        <text x="18" y="66" fill="#7ee787" xml:space="preserve">$ python AlcorBrowser/demo/run_demo.py</text>
+    <text x="18" y="85" fill="#e6edf3" xml:space="preserve">AlcorBrowser demo: real broker, real native host, pretend browser</text>
+    <text x="18" y="104" fill="#e6edf3" xml:space="preserve"></text>
+    <text x="18" y="123" fill="#e6edf3" xml:space="preserve">== 1. Install into a temporary home, configure two agents and an upload folder</text>
+    <text x="18" y="142" fill="#e6edf3" xml:space="preserve">  installed extension build b893f0342911 into extension-agents-demo</text>
+    <text x="18" y="161" fill="#e6edf3" xml:space="preserve">  broker listening on a free loopback port</text>
+    <text x="18" y="180" fill="#e6edf3" xml:space="preserve"></text>
+    <text x="18" y="199" fill="#e6edf3" xml:space="preserve">== 2. The pretend browser attaches through the real native host</text>
+    <text x="18" y="218" fill="#e6edf3" xml:space="preserve">  PASS  native host relayed hello -&gt; welcome</text>
+    <text x="18" y="237" fill="#e6edf3" xml:space="preserve">  PASS  installed build matches the running one (no reload asked)</text>
+    <text x="18" y="256" fill="#e6edf3" xml:space="preserve">  PASS  broker lists one attached profile</text>
+    <text x="18" y="275" fill="#e6edf3" xml:space="preserve"></text>
+    <text x="18" y="294" fill="#e6edf3" xml:space="preserve">== 3. Authentication and the browser-origin guard</text>
+    <text x="18" y="313" fill="#e6edf3" xml:space="preserve">  PASS  no token -&gt; 401</text>
+    <text x="18" y="332" fill="#e6edf3" xml:space="preserve">  PASS  wrong token -&gt; 401</text>
+    <text x="18" y="351" fill="#e6edf3" xml:space="preserve">  PASS  non-ASCII token -&gt; a clean 401, not a crashed handler</text>
+    <text x="18" y="370" fill="#e6edf3" xml:space="preserve">  PASS  a web page&#x27;s request (it carries an Origin) -&gt; 403</text>
+    <text x="18" y="389" fill="#e6edf3" xml:space="preserve">  PASS  valid agent token -&gt; 200</text>
+    <text x="18" y="408" fill="#e6edf3" xml:space="preserve">  PASS  the native relay&#x27;s token is not an agent token</text>
+    <text x="18" y="427" fill="#e6edf3" xml:space="preserve"></text>
+    <text x="18" y="446" fill="#e6edf3" xml:space="preserve">== 4. An agent drives the browser over MCP</text>
+    <text x="18" y="465" fill="#e6edf3" xml:space="preserve">  server: alcor-browser 2.2.1</text>
+    <text x="18" y="484" fill="#e6edf3" xml:space="preserve">  tools/list: 18 tools, e.g. browser_status, browser_restart, browser_tabs, browser_open, browser_focus, brows</text>
+    <text x="18" y="503" fill="#e6edf3" xml:space="preserve">  er_navigate, ...</text>
+    <text x="18" y="522" fill="#e6edf3" xml:space="preserve">  PASS  tools/list exposes the browser tools</text>
+    <text x="18" y="541" fill="#e6edf3" xml:space="preserve">  browser_open -&gt; tab t1 (Sign in)</text>
+    <text x="18" y="560" fill="#e6edf3" xml:space="preserve">  PASS  browser_open names the tab with a short handle</text>
+    <text x="18" y="579" fill="#e6edf3" xml:space="preserve">    e1 link &quot;Home&quot; -&gt; /</text>
+    <text x="18" y="598" fill="#e6edf3" xml:space="preserve">    e2 textbox &quot;Email&quot; editable</text>
+    <text x="18" y="617" fill="#e6edf3" xml:space="preserve">    e3 textbox &quot;Password&quot; password editable</text>
+    <text x="18" y="636" fill="#e6edf3" xml:space="preserve">    e4 button &quot;Sign in&quot;</text>
+    <text x="18" y="655" fill="#e6edf3" xml:space="preserve">    f1 file-input accept=&quot;*&quot;</text>
+    <text x="18" y="674" fill="#e6edf3" xml:space="preserve">  PASS  the snapshot flags the password field</text>
+    <text x="18" y="693" fill="#e6edf3" xml:space="preserve">  (the password rule lives in extension/page.js; the fake page re-implements it)</text>
+    <text x="18" y="712" fill="#e6edf3" xml:space="preserve">... (73 lines omitted) ...</text>
+    <text x="18" y="731" fill="#e6edf3" xml:space="preserve">  PASS  refused: a manifest that drops the extension&#x27;s own manifest.json</text>
+    <text x="18" y="750" fill="#e6edf3" xml:space="preserve"></text>
+    <text x="18" y="769" fill="#e6edf3" xml:space="preserve">== 11. A failure while replacing files rolls everything back</text>
+    <text x="18" y="788" fill="#e6edf3" xml:space="preserve">  check -&gt; {&#x27;ok&#x27;: False, &#x27;failed&#x27;: &#x27;apply&#x27;}</text>
+    <text x="18" y="807" fill="#e6edf3" xml:space="preserve">  PASS  the apply step failed</text>
+    <text x="18" y="826" fill="#e6edf3" xml:space="preserve">  PASS  the backup was restored</text>
+    <text x="18" y="845" fill="#e6edf3" xml:space="preserve">  PASS  the tree is byte-identical to before the attempt</text>
+    <text x="18" y="864" fill="#e6edf3" xml:space="preserve">  PASS  the exit hook was not called for a failed update</text>
+    <text x="18" y="883" fill="#e6edf3" xml:space="preserve"></text>
+    <text x="18" y="902" fill="#e6edf3" xml:space="preserve">47/47 checks passed</text>
+    <text x="18" y="921" fill="#e6edf3" xml:space="preserve">What this proved: agents authenticate per name; a browser page cannot reach the broker;</text>
+    <text x="18" y="940" fill="#e6edf3" xml:space="preserve">tools cross the real native-messaging path; the password floor&#x27;s refusal travels back;</text>
+    <text x="18" y="959" fill="#e6edf3" xml:space="preserve">receipts hold hashes and origins, never text; uploads obey an allowlist and one-time</text>
+    <text x="18" y="978" fill="#e6edf3" xml:space="preserve">tickets; a timeout is &#x27;uncertain&#x27; and never replayed; updates are verified, staged,</text>
+    <text x="18" y="997" fill="#e6edf3" xml:space="preserve">backed up and rolled back on failure. What it did not prove: the extension&#x27;s JavaScript</text>
+    <text x="18" y="1016" fill="#e6edf3" xml:space="preserve">in a real Chrome (see README, Scope and limits).</text>
+  </g>
+</svg>

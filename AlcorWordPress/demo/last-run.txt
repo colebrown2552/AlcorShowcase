@@ -1,0 +1,56 @@
+Alcor WordPress demo
+[playground] starting Playground CLI 3.1.50 (WordPress 7.1, PHP 8.4) on http://127.0.0.1:<port>
+[playground] the first start downloads the CLI, WordPress and PHP; later starts reuse the cache
+
+Site
+  [ok]   every mu-plugin is loaded, in a fresh WordPress -> 10 mu-plugins, WordPress 7.1.4, PHP 8.5.8
+  [ok]   sign in as the administrator and as the client editor -> cookie + REST nonce for both
+
+AlcorFields REST: permission callbacks and the document life cycle
+  [ok]   anonymous GET /documents is refused -> 401
+  [ok]   anonymous POST draft is refused, for a real and for an unknown document alike -> 401 for both, so document keys cannot be probed
+  [ok]   a client editor lists only the document assigned to them -> demo-landing
+  [ok]   the client is refused a document that is not theirs, and told 404 for an unknown one -> 403 and 404
+  [ok]   an administrator lists and opens every document -> demo-landing, demo-private
+  [ok]   the client reads the document: schema, version 0, nothing published -> 10 top-level fields
+  [ok]   saving a draft bumps the version and leaves the live page alone -> version 1, live page unchanged
+  [ok]   a stale base_version is a conflict (409), not a silent overwrite -> 409
+  [ok]   hostile content is refused with every problem (422) and nothing is saved -> 2 problems listed; version still 1
+  [ok]   the draft preview link works for the editor only -> editor sees the draft, a visitor sees the live page, preview is noindex
+  [ok]   publishing makes it live, escaped, with no annotations left behind -> published version 2
+  [ok]   export produces a hash-bound hand-off file -> b272447198da
+  [ok]   importing an edited file is refused: the content hash no longer matches -> 422
+  [ok]   importing the genuine file lands as a draft, and a version can be restored -> import -> draft, restore v2 -> draft
+
+Service-to-service HMAC (alcor-s2s-auth): signature, clock skew, replay, fail closed
+  [ok]   a correctly signed request is accepted -> 200
+  [ok]   replaying the same request is refused (nonce already used) -> 200 then 401
+  [ok]   a stale timestamp is refused even with a valid signature -> 10 minutes old -> 401
+  [ok]   a future timestamp is refused too (the window is symmetric) -> 10 minutes ahead -> 401
+  [ok]   a timestamp inside the 300 s window is accepted -> 100 s old -> 200
+  [ok]   changing the body after signing is refused -> 401
+  [ok]   a signature made with another key is refused -> 401
+  [ok]   a request without the headers is refused -> 401
+  [ok]   the query string is part of the signature -> region=eu accepted, region=us with the same signature refused
+  [ok]   ?rest_route= and /wp-json/ forms verify the same way -> 200
+  [ok]   a route whose key is not configured answers 404, like an absent route -> 404
+  [ok]   the request built by examples/sign_request.py is accepted -> 200
+
+Hardening: user enumeration, CORS, security.txt, preview hosts
+  [ok]   anonymous REST user lookups are refused; a signed-in user still gets them -> 403, 403, then 200 when signed in
+  [ok]   ?author=1 redirects to the homepage instead of /author/<login>/ -> 301 -> /
+  [ok]   CORS: a foreign Origin gets no Allow-Origin or Allow-Credentials, the site itself does -> evil.example: none; own origin: allowed
+  [ok]   security.txt is served (RFC 9116) and /security.txt redirects to it -> Contact + Expires present
+  [ok]   a loopback host is a preview host: noindex header and robots meta -> X-Robots-Tag and <meta name="robots">
+  [ok]   a production-looking host gets neither -> Host: demo.example -> no X-Robots-Tag
+
+SEO and structured data: robots.txt, agent catalog, OpenAPI, sitemap, FAQ, IndexNow
+  [ok]   robots.txt names the AI crawlers and keeps wp-admin closed to them -> GPTBot, ClaudeBot, ... groups present
+  [ok]   /agents.json is a catalog with a placeholder contact -> 5 services
+  [ok]   /openapi.json is an OpenAPI 3.1 document, also at /.well-known/ -> /wp-json/alcor-agents/v1/quote, /agents.json
+  [ok]   the sitemap lists the code-served route and no longer lists users -> /alcor-demo/ listed
+  [ok]   an unknown or removed sitemap is a 404 -> 404
+  [ok]   FAQPage JSON-LD describes exactly the questions the page shows -> 4 questions in both
+  [ok]   IndexNow serves its key only on a production host, from configuration -> key file: production 200, preview and other names not served
+
+Result: 41 passed, 0 skipped, 0 failed (WordPress 7.1.4, PHP 8.5.8, Playground CLI 3.1.50)

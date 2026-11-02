@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    <title>AlcorTranslate App | Alcor Industries</title>
+    <meta
+      name="description"
+      content="Open the AlcorTranslate conversation translator. Pick two languages and take turns typing or speaking. Works in current Chrome, Edge, Firefox and Safari."
+    />
+    <meta name="robots" content="noindex,follow" />
+    <meta name="theme-color" content="#07090d" />
+    <meta name="referrer" content="no-referrer" />
+    <link rel="canonical" href="https://alcor-industries.com/translate/" />
+    <link rel="manifest" href="../assets/site/site.webmanifest" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Alcor Industries" />
+    <meta property="og:title" content="AlcorTranslate App | Alcor Industries" />
+    <meta
+      property="og:description"
+      content="Open the AlcorTranslate conversation translator. Pick two languages and take turns typing or speaking. Works in current Chrome, Edge, Firefox and Safari."
+    />
+    <meta property="og:url" content="https://alcor-industries.com/translate/" />
+    <meta property="og:image" content="../assets/site/products/alcor-translate-shot.png" />
+    <meta property="og:image:width" content="1600" />
+    <meta property="og:image:height" content="1000" />
+    <meta property="og:image:alt" content="The AlcorTranslate conversation screen" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="AlcorTranslate App | Alcor Industries" />
+    <link rel="icon" type="image/svg+xml" href="../assets/site/logos/alcor-star-small.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/site/icons/favicon-32.png" />
+    <link rel="icon" sizes="16x16 32x32 48x48" href="../assets/site/icons/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="../assets/site/icons/apple-touch-icon.png" />
+    <link rel="stylesheet" href="../assets/css/alcor-translate-app.css" />
+    <link rel="stylesheet" href="../assets/css/alcor-app-ui.css" />
+    <link rel="stylesheet" href="../assets/css/design-system.css" />
+    <link rel="stylesheet" href="../assets/css/arcana.css" />
+    <link rel="stylesheet" href="../assets/css/alcor-arcana.css" />
+    <link
+      rel="preload"
+      href="../assets/fonts/brands/inter-normal-400-700.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+  </head>
+  <body class="alcor-translate alcor-translate-app">
+    <a class="at-skip" href="#at-main">Skip to the translator</a>
+    <div class="at-page at-app-page">
+      <link
+        rel="stylesheet"
+        id="alcor-product-header-css"
+        href="../assets/css/alcor-product-header.css"
+      />
+      <header
+        class="apx-bar"
+        data-alcor-product-header
+        data-mode="app"
+        data-product="AlcorTranslate"
+      >
+        <div class="apx-bar__inner">
+          <a class="apx-wordmark" href="https://alcor-industries.com/alcor-translate/"
+            ><img
+              class="apx-wordmark__mark"
+              src="../assets/site/logos/alcor-star-small.svg"
+              width="22"
+              height="22"
+              alt=""
+              decoding="async"
+            /><span><b>Alcor</b>Translate</span></a
+          >
+          <nav class="apx-nav" aria-label="AlcorTranslate">
+            <a href="https://alcor-industries.com/alcor-translate/">About</a
+            ><a href="https://alcor-industries.com/platform/#platform-products">All apps</a>
+          </nav>
+        </div>
+      </header>
+      <main id="at-main" class="at-app" data-alcor-translate-app data-state="loading">
+        <div class="at-appbar">
+          <div>
+            <h1>Conversation</h1>
+            <p class="at-pair-status" id="at-pair-status" role="status">Checking this browser…</p>
+          </div>
+          <div class="at-appbar-actions">
+            <button class="at-button" type="button" data-action="swap">Swap sides</button>
+            <button class="at-button" type="button" data-action="clear" data-needs-entries disabled>
+              Clear
+            </button>
+          </div>
+        </div>
+        <div class="at-banner" id="at-support" hidden>
+          <strong>This browser can't translate.</strong>
+          <p>
+            AlcorTranslate needs a current browser that can run WebAssembly and Web Workers on a
+            secure (https) page. You can look around, but nothing will be translated here.
+          </p>
+          <p class="at-banner-open">
+            <strong>Open it in another browser:</strong> copy this page's link and paste it into a
+            current version of Chrome, Edge, Firefox or Safari.
+          </p>
+          <div class="at-banner-actions">
+            <button class="at-button" type="button" data-action="copy-link" hidden>
+              Copy link
+            </button>
+            <input
+              class="at-link-field"
+              type="text"
+              readonly
+              hidden
+              data-role="page-link"
+              aria-label="Page link"
+            />
+            <span class="at-link-status" data-role="link-status" role="status"></span>
+          </div>
+        </div>
+        <noscript
+          ><div class="at-banner">
+            <strong>AlcorTranslate needs JavaScript.</strong>
+            <p>Turn it on for this page to use the translator.</p>
+          </div></noscript
+        >
+        <div class="at-progress" id="at-progress" hidden>
+          <span id="at-progress-label"></span>
+          <progress id="at-progress-bar" max="1" value="0"></progress>
+        </div>
+        <div class="at-panes">
+          <section
+            class="at-pane"
+            data-alcor-contract="legacy-adapter"
+            data-alcor-section="content"
+            data-theme="ink"
+            data-variant="compact"
+            data-side="a"
+            aria-labelledby="at-pane-a-title"
+          >
+            <div class="at-pane-head">
+              <h2 id="at-pane-a-title">Person A</h2>
+              <label class="at-lang"
+                ><span class="at-hidden">Person A's language</span
+                ><select id="at-lang-a" data-role="lang"></select
+              ></label>
+            </div>
+            <div class="at-incoming" data-role="incoming" aria-live="polite"></div>
+            <form class="at-composer" data-role="composer">
+              <label class="at-hidden" for="at-input-a">Person A types here</label>
+              <textarea
+                id="at-input-a"
+                data-role="input"
+                rows="3"
+                maxlength="2000"
+                spellcheck="false"
+              ></textarea>
+              <div class="at-composer-row">
+                <button
+                  class="at-button at-mic"
+                  type="button"
+                  data-action="mic"
+                  aria-pressed="false"
+                  aria-describedby="at-speech-privacy-a"
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    width="16"
+                    height="16"
+                    aria-hidden="true"
+                    focusable="false"
+                  >
+                    <path
+                      d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.93V21h2v-2.07A7 7 0 0 0 19 12h-2Z"
+                      fill="currentColor"
+                    /></svg
+                  ><span>Speak</span>
+                </button>
+                <label class="at-check"
+                  ><input
+                    type="checkbox"
+                    data-role="speak"
+                    aria-describedby="at-speech-privacy-a"
+                  />
+                  Read aloud</label
+                >
+                <button class="at-button at-button-primary at-send" type="submit" data-role="send">
+                  Translate
+                </button>
+              </div>
+              <p class="at-speech-privacy" id="at-speech-privacy-a">
+                Speak may send audio to your browser's speech service. Read aloud may send
+                translated text to an online voice provider.
+              </p>
+              <p class="at-note" data-role="note" aria-live="polite"></p>
+            </form>
+          </section>
+          <section
+            class="at-pane"
+            data-alcor-contract="legacy-adapter"
+            data-alcor-section="content"
+            data-theme="ink"
+            data-variant="compact"
+            data-side="b"
+            aria-labelledby="at-pane-b-title"
+          >
+            <div class="at-pane-head">
+              <h2 id="at-pane-b-title">Person B</h2>
+              <label class="at-lang"
+                ><span class="at-hidden">Person B's language</span
+                ><select id="at-lang-b" data-role="lang"></select
+              ></label>
+            </div>
+            <div class="at-incoming" data-role="incoming" aria-live="polite"></div>
+            <form class="at-composer" data-role="composer">
+              <label class="at-hidden" for="at-input-b">Person B types here</label>
+              <textarea
+                id="at-input-b"
+                data-role="input"
+                rows="3"
+                maxlength="2000"
+                spellcheck="false"
+              ></textarea>
+              <div class="at-composer-row">
+                <button
+                  class="at-button at-mic"
+                  type="button"
+                  data-action="mic"
+                  aria-pressed="false"
+                  aria-describedby="at-speech-privacy-b"
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    width="16"
+                    height="16"
+                    aria-hidden="true"
+                    focusable="false"
+                  >
+                    <path
+                      d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.93V21h2v-2.07A7 7 0 0 0 19 12h-2Z"
+                      fill="currentColor"
+                    /></svg
+                  ><span>Speak</span>
+                </button>
+                <label class="at-check"
+                  ><input
+                    type="checkbox"
+                    data-role="speak"
+                    aria-describedby="at-speech-privacy-b"
+                  />
+                  Read aloud</label
+                >
+                <button class="at-button at-button-primary at-send" type="submit" data-role="send">
+                  Translate
+                </button>
+              </div>
+              <p class="at-speech-privacy" id="at-speech-privacy-b">
+                Speak may send audio to your browser's speech service. Read aloud may send
+                translated text to an online voice provider.
+              </p>
+              <p class="at-note" data-role="note" aria-live="polite"></p>
+            </form>
+          </section>
+        </div>
+        <p class="at-mic-note" id="at-mic-note" hidden>
+          <strong>About the mic:</strong> your browser turns speech into text, and it may send the
+          audio to its maker to do it (Google for Chrome, Microsoft for Edge, Apple for Safari).
+          AlcorTranslate asks for on-device recognition when the browser offers it for your
+          language. Typed text is translated on this device.
+        </p>
+        <section
+          class="at-transcript"
+          data-alcor-contract="legacy-adapter"
+          data-alcor-section="content"
+          data-theme="ink"
+          data-variant="compact"
+          aria-labelledby="at-transcript-title"
+        >
+          <div class="at-transcript-head">
+            <h2 id="at-transcript-title">Transcript</h2>
+            <div class="at-transcript-actions">
+              <span class="at-transcript-status" id="at-transcript-status" role="status"></span>
+              <button
+                class="at-button"
+                type="button"
+                data-action="copy"
+                data-needs-entries
+                disabled
+              >
+                Copy
+              </button>
+              <button
+                class="at-button"
+                type="button"
+                data-action="download"
+                data-needs-entries
+                disabled
+              >
+                Download .txt
+              </button>
+            </div>
+          </div>
+          <ol class="at-transcript-list" id="at-transcript-list"></ol>
+          <p class="at-transcript-empty" id="at-transcript-empty">
+            Every message shows up here in both languages. Nothing is saved: clear it or close the
+            tab and it's gone.
+          </p>
+        </section>
+      </main>
+    </div>
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <a class="footer-wordmark" href="https://alcor-industries.com/"
+            ><img
+              class="brand-star"
+              src="../assets/site/logos/alcor-star.svg"
+              width="48"
+              height="48"
+              alt=""
+              loading="lazy"
+              decoding="async"
+            />Alcor Industries</a
+          >
+          <p class="footer-line">
+            Ask Alcor is free for individuals. Businesses get a written quote.
+          </p>
+        </div>
+        <nav class="footer-links" aria-label="Footer">
+          <div class="footer-group">
+            <p class="footer-group__title">Products</p>
+            <ul role="list">
+              <li><a href="https://alcor-industries.com/platform/">All apps</a></li>
+              <li><a href="https://alcor-industries.com/archetypes/">Archetypes</a></li>
+              <li><a href="https://alcor-industries.com/arcana/">Arcana</a></li>
+            </ul>
+          </div>
+          <div class="footer-group">
+            <p class="footer-group__title">Company</p>
+            <ul role="list">
+              <li><a href="https://alcor-industries.com/agi/">AGI research</a></li>
+              <li><a href="https://alcor-industries.com/agents/">For AI agents</a></li>
+              <li><a href="https://alcor-industries.com/blog/">Blog</a></li>
+              <li><a href="https://alcor-industries.com/privacy/">Privacy</a></li>
+              <li><a href="https://alcor-industries.com/archetype-terms/">Archetype terms</a></li>
+            </ul>
+          </div>
+          <div class="footer-group footer-group--contact">
+            <p class="footer-group__title">Contact</p>
+            <ul role="list">
+              <li><a href="https://alcor-industries.com/#contact">Get a written quote</a></li>
+            </ul>
+          </div>
+        </nav>
+        <p class="footer-legal">
+          &copy; 2026 Alcor Systems LLC. Alcor Industries is a product of Alcor Systems LLC &middot;
+          Austin, Texas
+        </p>
+      </div>
+    </footer>
+    <script src="../assets/js/alcor-translate-app.js"></script>
+    <script src="../assets/js/alcor-product-names.js" defer></script>
+  </body>
+</html>

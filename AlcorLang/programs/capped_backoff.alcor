@@ -1,0 +1,56 @@
+PROGRAM CappedBackoffDemo
+CALL CappedBackoff WITH $attempt=0 $base=5 $cap=60 INTO $d0
+EMIT $d0
+CALL CappedBackoff WITH $attempt=1 $base=5 $cap=60 INTO $d1
+EMIT $d1
+CALL CappedBackoff WITH $attempt=2 $base=5 $cap=60 INTO $d2
+EMIT $d2
+CALL CappedBackoff WITH $attempt=3 $base=5 $cap=60 INTO $d3
+EMIT $d3
+CALL CappedBackoff WITH $attempt=4 $base=5 $cap=60 INTO $d4
+EMIT $d4
+CALL CappedBackoff WITH $attempt=9 $base=5 $cap=60 INTO $d9
+EMIT $d9
+END PROGRAM
+
+PROGRAM CappedBackoff
+BRANCH LE $attempt 0 attempt0 ELSE check1
+LABEL check1
+BRANCH EQ $attempt 1 attempt1 ELSE check2
+LABEL check2
+BRANCH EQ $attempt 2 attempt2 ELSE check3
+LABEL check3
+BRANCH EQ $attempt 3 attempt3 ELSE check4
+LABEL check4
+BRANCH EQ $attempt 4 attempt4 ELSE capped
+LABEL attempt0
+LET $raw $base
+CALL Min WITH $left=$raw $right=$cap INTO $bounded
+RETURN $bounded
+LABEL attempt1
+LET $raw MUL $base 2
+CALL Min WITH $left=$raw $right=$cap INTO $bounded
+RETURN $bounded
+LABEL attempt2
+LET $raw MUL $base 4
+CALL Min WITH $left=$raw $right=$cap INTO $bounded
+RETURN $bounded
+LABEL attempt3
+LET $raw MUL $base 8
+CALL Min WITH $left=$raw $right=$cap INTO $bounded
+RETURN $bounded
+LABEL attempt4
+LET $raw MUL $base 16
+CALL Min WITH $left=$raw $right=$cap INTO $bounded
+RETURN $bounded
+LABEL capped
+RETURN $cap
+END PROGRAM
+
+PROGRAM Min
+BRANCH LE $left $right take_left ELSE take_right
+LABEL take_left
+RETURN $left
+LABEL take_right
+RETURN $right
+END PROGRAM

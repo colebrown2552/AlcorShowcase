@@ -1,0 +1,10 @@
+ALCOR 3
+INPUT $line
+$tries = int($line)
+$delay = 5
+FOR $i FROM 1 TO 4
+  IF $i <= $tries THEN
+    $delay = $delay * 2
+  END IF
+END FOR
+PRINT "attempt " ++ $line ++ ": wait " ++ str($delay) ++ "s"

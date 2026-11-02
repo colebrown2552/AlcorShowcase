@@ -1,0 +1,216 @@
+{
+  "schema": "alcorlang.program-corpus.v1",
+  "programs": [
+    {
+      "file": "runaway.alcor",
+      "kind": "adversarial",
+      "purpose": "Prove a complete-profile runaway is stopped by fuel.",
+      "mode": "metered",
+      "expected": {
+        "profile": "complete",
+        "fuel": 1200,
+        "steps": 1201,
+        "trap": "fuel_exhausted",
+        "exhausted": true
+      }
+    },
+    {
+      "file": "quorum_gate.alcor",
+      "kind": "policy",
+      "purpose": "Resolve allow, hold, and refuse outcomes with veto precedence.",
+      "mode": "run",
+      "expected_output": ["ALLOW", "REFUSE", "HOLD", "REFUSE"]
+    },
+    {
+      "file": "capped_backoff.alcor",
+      "kind": "policy",
+      "purpose": "Compute deterministic retry delays with a hard cap.",
+      "mode": "run",
+      "expected_output": ["5", "10", "20", "40", "60", "60"]
+    },
+    {
+      "file": "publication_policy.alcor",
+      "kind": "policy",
+      "purpose": "Keep failed publications visible and retryable before baseline advancement.",
+      "mode": "run",
+      "expected_output": ["COMMIT_BASELINE", "RETRY_VISIBLE", "REPAIR_PENDING", "ESCALATE"]
+    },
+    {
+      "file": "binding_lifecycle.alcor",
+      "kind": "policy",
+      "purpose": "Validate binding transitions and refuse stale prepared turns.",
+      "mode": "run",
+      "expected_output": ["ALLOW", "ALLOW", "ALLOW", "REFUSE", "STALE_PREPARED", "NOOP"]
+    },
+    {
+      "file": "backoff_v3.alcor",
+      "name": "backoff_v3: no attempts yet",
+      "kind": "policy",
+      "purpose": "A 10-line v3 policy: the delay doubles once per attempt, for at most four steps.",
+      "mode": "run",
+      "input": ["0"],
+      "expected_output": ["attempt 0: wait 5s"]
+    },
+    {
+      "file": "backoff_v3.alcor",
+      "name": "backoff_v3: three attempts",
+      "kind": "policy",
+      "purpose": "Three doublings: 5 -> 10 -> 20 -> 40.",
+      "mode": "run",
+      "input": ["3"],
+      "expected_output": ["attempt 3: wait 40s"]
+    },
+    {
+      "file": "backoff_v3.alcor",
+      "name": "backoff_v3: more attempts than steps",
+      "kind": "policy",
+      "purpose": "The unrolled loop has four steps, so the delay stops growing at 80.",
+      "mode": "run",
+      "input": ["9"],
+      "expected_output": ["attempt 9: wait 80s"]
+    },
+    {
+      "file": "translate_request.alcor",
+      "kind": "directive-request",
+      "purpose": "A v3 program: structured control flow plus .alcor.* directives that only describe work.",
+      "mode": "run",
+      "expected_output": [
+        "translate_request pass 1",
+        "translate_request pass 2",
+        "translate_request pass 3"
+      ]
+    },
+    {
+      "file": "kernel.alcor",
+      "name": "kernel: nothing wrong, keep going",
+      "kind": "policy",
+      "purpose": "An agent-loop round policy: continue when no stop condition holds.",
+      "mode": "run",
+      "input": [
+        "alcor.kernel.round.request.v1", "false", "selected", "no", "yes", "no", "no", "no", "no",
+        "no", "no", "no", "green", "2", "no", "unavailable", "no", "no", "no", "no", "no", "no"
+      ],
+      "expected_output": [
+        "schema=alcor.kernel.round.decision.v1",
+        "action=continue",
+        "reason=none",
+        "note=none",
+        "effect_authority=false"
+      ]
+    },
+    {
+      "file": "kernel.alcor",
+      "name": "kernel: claim with a red check is pushed back",
+      "kind": "policy",
+      "purpose": "A finished claim is not accepted while the check is red and verifications remain.",
+      "mode": "run",
+      "input": [
+        "alcor.kernel.round.request.v1", "false", "selected", "no", "yes", "no", "no", "no", "no",
+        "no", "no", "yes", "red", "1", "no", "unavailable", "no", "no", "no", "no", "no", "no"
+      ],
+      "expected_output": [
+        "schema=alcor.kernel.round.decision.v1",
+        "action=pushback",
+        "reason=check_red",
+        "effect_authority=false"
+      ]
+    },
+    {
+      "file": "kernel.alcor",
+      "name": "kernel: wrong request schema is refused",
+      "kind": "policy",
+      "purpose": "A request that does not carry the expected schema is refused, not guessed at.",
+      "mode": "run",
+      "input": [
+        "wrong", "false", "selected", "no", "yes", "no", "no", "no", "no",
+        "no", "no", "no", "green", "2", "no", "unavailable", "no", "no", "no", "no", "no", "no"
+      ],
+      "expected_output": [
+        "schema=alcor.kernel.round.decision.v1",
+        "action=refuse",
+        "reason=request-schema-mismatch",
+        "effect_authority=false"
+      ]
+    },
+    {
+      "file": "restraint.alcor",
+      "name": "restraint: wait for the pending answer",
+      "kind": "policy",
+      "purpose": "While an answer is pending and none has arrived, wait: do not repeat or invent.",
+      "mode": "run",
+      "input": ["alcor.restraint.request.v1", "true", "false", "false"],
+      "expected_output": [
+        "schema=alcor.restraint.decision.v1",
+        "accepted=true",
+        "operation=wait",
+        "repeat_question=false",
+        "invent_answer=false",
+        "replacement_activity=false",
+        "effect_authority=false"
+      ]
+    },
+    {
+      "file": "restraint.alcor",
+      "name": "restraint: continue once the answer arrives",
+      "kind": "policy",
+      "purpose": "A new answer releases the wait.",
+      "mode": "run",
+      "input": ["alcor.restraint.request.v1", "true", "true", "false"],
+      "expected_output": [
+        "schema=alcor.restraint.decision.v1",
+        "accepted=true",
+        "operation=continue",
+        "repeat_question=false",
+        "invent_answer=false",
+        "replacement_activity=false",
+        "effect_authority=false"
+      ]
+    },
+    {
+      "file": "restraint.alcor",
+      "name": "restraint: a request that claims effect authority is rejected",
+      "kind": "policy",
+      "purpose": "A policy input may never carry effect authority.",
+      "mode": "run",
+      "input": ["alcor.restraint.request.v1", "true", "false", "true"],
+      "expected_output": [
+        "schema=alcor.restraint.decision.v1",
+        "accepted=false",
+        "reason=effect-authority",
+        "operation=reject",
+        "repeat_question=false",
+        "invent_answer=false",
+        "replacement_activity=false",
+        "effect_authority=false"
+      ]
+    },
+    {
+      "file": "count.alcor",
+      "name": "count: a count over long context is listed",
+      "kind": "policy",
+      "purpose": "Route a counting question over long context to list-then-count.",
+      "mode": "run",
+      "input": ["alcor.count.request.v1", "count", "long"],
+      "expected_output": [
+        "schema=alcor.count.decision.v1",
+        "strategy=list",
+        "reason=a-count-over-long-context-is-listed-by-the-model-and-counted-by-the-host",
+        "effect_authority=false"
+      ]
+    },
+    {
+      "file": "count.alcor",
+      "name": "count: any other question is answered directly",
+      "kind": "policy",
+      "purpose": "Everything that is not a count over long context takes the bare strategy.",
+      "mode": "run",
+      "input": ["alcor.count.request.v1", "summarize", "long"],
+      "expected_output": [
+        "schema=alcor.count.decision.v1",
+        "strategy=bare",
+        "reason=not-a-count-question-over-long-context",
+        "effect_authority=false"
+      ]
+    }
+  ]
+}

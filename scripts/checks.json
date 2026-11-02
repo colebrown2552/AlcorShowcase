@@ -1,0 +1,39 @@
+{
+  "AlcorCLI": [
+    {"name": "tests", "run": ["{python}", "-m", "pytest", "AlcorCLI/tests", "-q", "-p", "no:cacheprovider"]},
+    {"name": "demo", "run": ["{python}", "AlcorCLI/demo/run_demo.py"]}
+  ],
+  "AlcorLang": [
+    {"name": "tests", "run": ["{python}", "-m", "pytest", "AlcorLang/tests", "-q", "-p", "no:cacheprovider"]},
+    {"name": "conformance", "run": ["{python}", "-m", "alcorlang", "conformance"], "cwd": "AlcorLang"},
+    {"name": "demo", "run": ["{python}", "demo/run_demo.py"], "cwd": "AlcorLang"}
+  ],
+  "AlcorBrowser": [
+    {"name": "demo", "run": ["{python}", "AlcorBrowser/demo/run_demo.py"]}
+  ],
+  "AlcorComputer": [
+    {"name": "tests", "run": ["{python}", "-m", "pytest", "AlcorComputer", "-q", "-p", "no:cacheprovider"]},
+    {"name": "demo", "run": ["{python}", "AlcorComputer/demo/run_demo.py"]}
+  ],
+  "AlcorLedger": [
+    {"name": "tests", "run": ["{python}", "-m", "pytest", "AlcorLedger", "-q", "-p", "no:cacheprovider"]},
+    {"name": "demo", "run": ["{python}", "AlcorLedger/demo/run_demo.py"]}
+  ],
+  "AlcorSiteKit": [
+    {"name": "demo", "run": ["{python}", "demo/run_demo.py"], "cwd": "AlcorSiteKit"}
+  ],
+  "AlcorWordPress": [
+    {"name": "signer", "run": ["{python}", "AlcorWordPress/examples/sign_request.py", "--help"]},
+    {"name": "playground-demo", "run": ["node", "AlcorWordPress/demo/run-demo.mjs"], "optional": true}
+  ],
+  "AlcorDesign": [
+    {"name": "fmt", "run": ["cargo", "fmt", "--check"], "cwd": "AlcorDesign", "optional": true},
+    {"name": "tests", "run": ["cargo", "test", "--locked"], "cwd": "AlcorDesign", "optional": true}
+  ],
+  "AlcorApps": [
+    {"name": "assets", "run": ["{python}", "AlcorApps/tools/check_assets.py"]}
+  ],
+  "MentalHealthAustin": [
+    {"name": "backend-tests", "run": ["{python}", "unit_tests.py"], "cwd": "MentalHealthAustin/backend/API", "optional": true}
+  ]
+}

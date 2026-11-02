@@ -1,0 +1,7 @@
+{
+  "agents": ["agent-a", "agent-b"],
+  "extension_id": "",
+  "upload_dirs": ["D:/agent-uploads"],
+  "update_channel": "",
+  "update_interval_s": 600
+}

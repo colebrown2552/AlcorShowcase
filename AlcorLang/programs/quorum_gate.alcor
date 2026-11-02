@@ -1,0 +1,24 @@
+PROGRAM QuorumGateDemo
+CALL QuorumGate WITH $yes=3 $no=0 $allow_at=3 $refuse_at=2 $veto=0 INTO $first
+EMIT $first
+CALL QuorumGate WITH $yes=4 $no=0 $allow_at=3 $refuse_at=2 $veto=1 INTO $second
+EMIT $second
+CALL QuorumGate WITH $yes=2 $no=1 $allow_at=3 $refuse_at=2 $veto=0 INTO $third
+EMIT $third
+CALL QuorumGate WITH $yes=3 $no=2 $allow_at=3 $refuse_at=2 $veto=0 INTO $fourth
+EMIT $fourth
+END PROGRAM
+
+PROGRAM QuorumGate
+BRANCH EQ $veto 1 refuse ELSE no_veto
+LABEL no_veto
+BRANCH GE $no $refuse_at refuse ELSE check_allow
+LABEL check_allow
+BRANCH GE $yes $allow_at allow ELSE hold
+LABEL refuse
+RETURN "REFUSE"
+LABEL allow
+RETURN "ALLOW"
+LABEL hold
+RETURN "HOLD"
+END PROGRAM

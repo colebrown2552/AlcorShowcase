@@ -1,0 +1,48 @@
+PROGRAM BindingLifecycleDemo
+CALL BindingTransition WITH $from="CANDIDATE" $to="VERIFIED" $prepared_version=7 $active_version=7 INTO $first
+EMIT $first
+CALL BindingTransition WITH $from="VERIFIED" $to="ACTIVE" $prepared_version=7 $active_version=7 INTO $second
+EMIT $second
+CALL BindingTransition WITH $from="ACTIVE" $to="STALE" $prepared_version=7 $active_version=7 INTO $third
+EMIT $third
+CALL BindingTransition WITH $from="CANDIDATE" $to="ACTIVE" $prepared_version=7 $active_version=7 INTO $fourth
+EMIT $fourth
+CALL BindingTransition WITH $from="ACTIVE" $to="STALE" $prepared_version=7 $active_version=8 INTO $fifth
+EMIT $fifth
+CALL BindingTransition WITH $from="ACTIVE" $to="ACTIVE" $prepared_version=8 $active_version=8 INTO $sixth
+EMIT $sixth
+END PROGRAM
+
+PROGRAM BindingTransition
+BRANCH NE $prepared_version $active_version stale_prepared ELSE version_ok
+LABEL version_ok
+BRANCH EQ $from $to noop ELSE changed
+LABEL changed
+BRANCH EQ $from "UNBOUND" from_unbound ELSE check_candidate
+LABEL check_candidate
+BRANCH EQ $from "CANDIDATE" from_candidate ELSE check_verified
+LABEL check_verified
+BRANCH EQ $from "VERIFIED" from_verified ELSE check_active
+LABEL check_active
+BRANCH EQ $from "ACTIVE" from_active ELSE check_stale
+LABEL check_stale
+BRANCH EQ $from "STALE" from_stale ELSE refuse
+LABEL from_unbound
+BRANCH EQ $to "CANDIDATE" allow ELSE refuse
+LABEL from_candidate
+BRANCH EQ $to "VERIFIED" allow ELSE refuse
+LABEL from_verified
+BRANCH EQ $to "ACTIVE" allow ELSE refuse
+LABEL from_active
+BRANCH EQ $to "STALE" allow ELSE refuse
+LABEL from_stale
+BRANCH EQ $to "CANDIDATE" allow ELSE refuse
+LABEL stale_prepared
+RETURN "STALE_PREPARED"
+LABEL noop
+RETURN "NOOP"
+LABEL allow
+RETURN "ALLOW"
+LABEL refuse
+RETURN "REFUSE"
+END PROGRAM

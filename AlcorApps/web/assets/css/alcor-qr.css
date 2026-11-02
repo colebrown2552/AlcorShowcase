@@ -1,0 +1,764 @@
+/**
+ * alcor-qr.css: AlcorQR styles.
+ *
+ * Layout and controls for the AlcorQR designer.
+ */
+html {
+  background: #07090d;
+}
+body.alcor-qr {
+  margin: 0;
+  background: #07090d;
+  color: #eef2f7;
+}
+.aq-skip {
+  position: fixed;
+  left: 12px;
+  top: -80px;
+  z-index: 100;
+  background: #fff;
+  color: #080b10;
+  padding: 10px 13px;
+  border-radius: 7px;
+  text-decoration: none;
+  font: 700 13px system-ui;
+}
+.aq-skip:focus {
+  top: 12px;
+}
+body.alcor-qr {
+  background: #07090d;
+  color: #eef2f7;
+}
+.aq-page {
+  min-height: 100vh;
+  background: radial-gradient(circle at 78% 12%, rgba(99, 102, 241, 0.15), transparent 30%),
+    linear-gradient(180deg, #080b11, #05070a 70%);
+  color: #eef2f7;
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+}
+.aq-page * {
+  box-sizing: border-box;
+}
+.aq-header {
+  height: 68px;
+  padding: 0 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  background: rgba(7, 9, 13, 0.88);
+  backdrop-filter: blur(16px);
+  position: relative;
+  z-index: 5;
+}
+.aq-brand {
+  color: #fff;
+  text-decoration: none;
+  font-size: 20px;
+  font-weight: 850;
+  letter-spacing: -0.045em;
+}
+.aq-brand span {
+  color: #9ca6b6;
+}
+.aq-nav {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.aq-nav a {
+  color: #aeb7c5;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 700;
+}
+.aq-nav a:hover {
+  color: #fff;
+}
+.aq-nav a.aq-button-primary,
+.aq-nav a.aq-button-primary:hover {
+  color: #080b10;
+}
+.aq-button,
+.aq-file-button {
+  appearance: none;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: #141923;
+  color: #f4f6fa;
+  border-radius: 8px;
+  padding: 10px 13px;
+  font: 750 12px/1 system-ui;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  transition:
+    background 0.18s,
+    border-color 0.18s,
+    transform 0.18s;
+}
+.aq-button:hover,
+.aq-file-button:hover {
+  background: #202735;
+  border-color: rgba(255, 255, 255, 0.24);
+}
+.aq-button:active,
+.aq-file-button:active {
+  transform: translateY(1px);
+}
+.aq-button:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+.aq-button-primary {
+  background: #f4f6f9;
+  color: #080b10;
+  border-color: #f4f6f9;
+}
+.aq-button-primary:hover {
+  background: #fff;
+}
+.aq-button-accent {
+  background: #6d5dfc;
+  border-color: #8074ff;
+  color: #fff;
+}
+.aq-file-button input {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.aq-hero {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 92px 28px 78px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(360px, 0.92fr);
+  gap: 62px;
+  align-items: center;
+}
+.aq-hero h1 {
+  font-size: clamp(54px, 7.5vw, 96px);
+  line-height: 0.94;
+  letter-spacing: -0.04em;
+  margin: 16px 0 24px;
+  max-width: 780px;
+}
+.aq-hero p {
+  font-size: 18px;
+  line-height: 1.6;
+  color: #aeb7c5;
+  max-width: 58ch;
+}
+.aq-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 28px;
+}
+.aq-hero-card {
+  margin: 0;
+  min-height: 450px;
+  display: grid;
+  align-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 24px;
+  padding: 30px;
+  background: linear-gradient(145deg, rgba(22, 28, 40, 0.94), rgba(8, 11, 17, 0.98));
+  box-shadow: 0 35px 90px rgba(0, 0, 0, 0.42);
+  position: relative;
+  overflow: hidden;
+}
+.aq-hero-card:before {
+  content: '';
+  position: absolute;
+  width: 330px;
+  height: 330px;
+  border: 1px solid rgba(128, 116, 255, 0.22);
+  border-radius: 50%;
+  right: -120px;
+  top: -140px;
+}
+.aq-demo-qr {
+  display: block;
+  width: min(100%, 330px);
+  height: auto;
+  aspect-ratio: 1;
+  margin: 8px auto 0;
+  border-radius: 14px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+  position: relative;
+}
+.aq-demo-caption {
+  max-width: 330px;
+  margin: 20px auto 0;
+  color: #aeb7c5;
+  font-size: 13px;
+  line-height: 1.6;
+  text-align: center;
+  position: relative;
+}
+.aq-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 76px 28px;
+}
+.aq-section h2 {
+  font-size: clamp(36px, 4.5vw, 58px);
+  line-height: 1.08;
+  letter-spacing: -0.045em;
+  margin: 14px 0 18px;
+}
+.aq-section-lede {
+  color: #a9b3c1;
+  line-height: 1.6;
+  max-width: 60ch;
+}
+.aq-section-lede + .aq-section-lede {
+  margin-top: 14px;
+}
+.aq-section-lede a {
+  color: #fff;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.aq-feature-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-top: 34px;
+}
+.aq-feature-grid article {
+  padding: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: #0e131c;
+  border-radius: 12px;
+}
+.aq-feature-grid strong {
+  display: block;
+  font-size: 17px;
+  margin-bottom: 9px;
+}
+.aq-feature-grid p {
+  max-width: 60ch;
+  color: var(--muted);
+  line-height: 1.62;
+  font-size: 1rem;
+  margin: 0;
+}
+.aq-editor {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 18px;
+  display: grid;
+  grid-template-columns: minmax(280px, 340px) minmax(420px, 1fr) minmax(270px, 320px);
+  gap: 12px;
+  min-height: calc(100vh - 68px);
+}
+.aq-panel,
+.aq-preview-panel {
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: #0d1118;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.aq-panel {
+  padding: 17px;
+  overflow: auto;
+}
+.aq-panel-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: start;
+  margin-bottom: 17px;
+}
+.aq-panel-heading h2 {
+  font-size: 16px;
+  margin: 4px 0 0;
+}
+.aq-panel-heading span {
+  font-size: 10px;
+  letter-spacing: 0.13em;
+  color: #818d9e;
+}
+.aq-fields {
+  display: grid;
+  gap: 14px;
+}
+.aq-field {
+  display: grid;
+  gap: 7px;
+}
+.aq-field > span,
+.aq-group-title {
+  font-size: 11px;
+  font-weight: 750;
+  color: #aeb8c7;
+}
+.aq-field textarea,
+.aq-field input[type='text'],
+.aq-field select {
+  width: 100%;
+  border: 1px solid #2a313d;
+  background: #121822;
+  color: #edf1f6;
+  border-radius: 7px;
+  padding: 10px 11px;
+  font: 13px/1.5 system-ui;
+  outline: none;
+}
+.aq-field textarea:focus,
+.aq-field input[type='text']:focus,
+.aq-field select:focus {
+  border-color: #8175ff;
+  box-shadow: 0 0 0 2px rgba(129, 117, 255, 0.14);
+}
+.aq-field textarea {
+  resize: vertical;
+  min-height: 96px;
+}
+.aq-field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+}
+.aq-color {
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  align-items: center;
+  gap: 9px;
+  border: 1px solid #2a313d;
+  background: #121822;
+  border-radius: 7px;
+  padding: 6px 9px;
+}
+.aq-color input {
+  width: 32px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.aq-color code {
+  font:
+    11px ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  color: #aeb8c7;
+}
+.aq-range {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 9px;
+  align-items: center;
+}
+.aq-range input {
+  width: 100%;
+}
+.aq-range output {
+  min-width: 42px;
+  text-align: right;
+  font:
+    11px ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  color: #aab4c3;
+}
+.aq-check {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #aeb8c7;
+  font-size: 12px;
+}
+.aq-logo-zone {
+  border: 1px dashed #323b49;
+  border-radius: 9px;
+  padding: 13px;
+  display: grid;
+  gap: 9px;
+}
+.aq-logo-zone small {
+  color: #8490a1;
+  line-height: 1.55;
+}
+.aq-logo-actions {
+  display: flex;
+  gap: 7px;
+}
+.aq-logo-name {
+  font-size: 11px;
+  color: #aeb8c7;
+  overflow-wrap: anywhere;
+}
+.aq-inline-actions {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+.aq-inline-actions .aq-button {
+  padding: 8px 10px;
+}
+.aq-preview-panel {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: #161c26;
+}
+.aq-preview-head {
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  background: #0f141c;
+}
+.aq-preview-head strong {
+  font-size: 13px;
+}
+.aq-preview-head span {
+  font-size: 11px;
+  color: #8c98a9;
+}
+.aq-canvas-stage {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 36px;
+  min-height: 620px;
+  background-color: #202733;
+  background-image: linear-gradient(45deg, #242d3a 25%, transparent 25%),
+    linear-gradient(-45deg, #242d3a 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #242d3a 75%),
+    linear-gradient(-45deg, transparent 75%, #242d3a 75%);
+  background-size: 28px 28px;
+  background-position:
+    0 0,
+    0 14px,
+    14px -14px,
+    -14px 0;
+}
+.aq-canvas-stage canvas {
+  width: min(100%, 720px);
+  height: auto;
+  aspect-ratio: 1;
+  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.45);
+  background: #fff;
+}
+.aq-statusbar {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  display: grid;
+  gap: 5px;
+  background: #0f141c;
+}
+.aq-statusbar span {
+  font-size: 11px;
+  color: #8c98a9;
+}
+.aq-statusbar [data-level='success'] {
+  color: #9fe0b2;
+}
+.aq-statusbar [data-level='warning'] {
+  color: #f2d18a;
+}
+.aq-statusbar [data-level='error'] {
+  color: #ff9fa6;
+}
+.aq-export-panel {
+  display: flex;
+  flex-direction: column;
+}
+.aq-export-stack {
+  display: grid;
+  gap: 9px;
+}
+.aq-export-stack .aq-button {
+  min-height: 44px;
+}
+.aq-meter-note {
+  margin-top: 17px;
+  padding: 14px;
+  border: 1px solid rgba(129, 117, 255, 0.25);
+  border-radius: 9px;
+  background: rgba(100, 88, 240, 0.08);
+}
+.aq-meter-note strong {
+  font-size: 12px;
+}
+.aq-meter-note p {
+  font-size: 11px;
+  line-height: 1.6;
+  color: #9ea9b8;
+  margin: 7px 0 0;
+}
+.aq-readouts {
+  display: grid;
+  gap: 8px;
+  margin-top: 17px;
+}
+.aq-readout {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  font-size: 11px;
+  color: #8e9aaa;
+}
+.aq-readout b {
+  color: #cad1db;
+  font-weight: 700;
+  text-align: right;
+}
+.aq-readout [data-level='good'] {
+  color: #9fe0b2;
+}
+.aq-readout [data-level='warn'] {
+  color: #f2d18a;
+}
+.aq-readout [data-level='bad'] {
+  color: #ff9fa6;
+}
+.aq-safety {
+  margin-top: auto;
+  padding-top: 22px;
+  color: #818d9d;
+  font-size: 11px;
+  line-height: 1.65;
+}
+@media (max-width: 1120px) {
+  .aq-editor {
+    grid-template-columns: 300px minmax(420px, 1fr);
+  }
+  .aq-export-panel {
+    grid-column: 1/-1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  .aq-safety {
+    margin: 0;
+  }
+  .aq-feature-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 840px) {
+  .aq-hero {
+    grid-template-columns: 1fr;
+    padding-top: 62px;
+  }
+  .aq-hero-card {
+    min-height: 390px;
+  }
+  .aq-editor {
+    grid-template-columns: 1fr;
+    padding: 10px;
+  }
+  .aq-preview-panel {
+    order: -1;
+  }
+  .aq-canvas-stage {
+    min-height: 420px;
+    padding: 18px;
+  }
+  .aq-export-panel {
+    display: block;
+  }
+  .aq-feature-grid {
+    grid-template-columns: 1fr;
+  }
+  .aq-nav a:not(.aq-button) {
+    display: none;
+  }
+}
+@media (max-width: 520px) {
+  .aq-header {
+    padding: 0 14px;
+  }
+  .aq-hero,
+  .aq-section {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+  .aq-hero h1 {
+    font-size: 52px;
+  }
+  .aq-field-row {
+    grid-template-columns: 1fr;
+  }
+  .aq-canvas-stage {
+    min-height: 340px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .aq-button,
+  .aq-file-button {
+    transition: none;
+  }
+}
+.aq-field small {
+  color: #7f8b9c;
+  font-size: 10px;
+  line-height: 1.45;
+}
+.aq-field small[data-level='warning'] {
+  color: #f2d18a;
+}
+.aq-field small[data-level='error'] {
+  color: #ff9fa6;
+}
+.aq-logo-zone[data-drag='true'] {
+  border-color: #8b80ff;
+  background: rgba(109, 93, 252, 0.12);
+}
+.aq-page[data-export-busy='true'] .aq-export-stack {
+  opacity: 0.65;
+  pointer-events: none;
+}
+.aq-statusbar [data-level='neutral'] {
+  color: #8c98a9;
+}
+.aq-meter-note #aq-export-policy {
+  margin: 7px 0 0;
+}
+.aq-inline-actions [data-action='reset-design'] {
+  margin-left: auto;
+}
+
+/* Product page (landing only), launch standard. The hero card takes the 16px card radius (alcor-app-ui.css
+   squares it). The feature cards are static, so no lift or glow on hover (this undoes the spotlight
+   site.js + polish.css add to every [data-flair-card]). The standard layer lays out the Good to know dl
+   (two columns, term 600 paper, description muted). */
+.aq-landing .aq-hero-card {
+  border-radius: var(--radius-card);
+}
+.aq-landing .aq-feature-grid article:hover {
+  transform: none;
+  box-shadow: none;
+}
+.aq-landing .aq-feature-grid article::before,
+.aq-landing .aq-feature-grid article::after {
+  content: none;
+}
+/* The "Good to know" h2 takes the site's h2 space below (arcana.css), like every other section heading. */
+
+/* Phones: colour swatches and small actions get a full finger-sized target. */
+@media (max-width: 840px) {
+  .aq-color {
+    padding: 8px 10px;
+  }
+  .aq-color input {
+    width: 40px;
+    height: 40px;
+  }
+  .aq-inline-actions .aq-button,
+  .aq-logo-actions .aq-button {
+    min-height: 44px;
+  }
+  .aq-check {
+    min-height: 44px;
+  }
+}
+
+/* Reset design confirm: inline beside the buttons, same shape as the AlcorTranslate Clear confirm. */
+.aq-confirm {
+  flex: 1 1 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid rgba(242, 200, 131, 0.45);
+  border-radius: 10px;
+  background: rgba(242, 200, 131, 0.08);
+}
+.aq-confirm[hidden] {
+  display: none;
+}
+.aq-confirm p {
+  margin: 0;
+  flex: 1 1 220px;
+  color: #ffe2b0;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.aq-inline-actions .aq-confirm .aq-button {
+  padding: 8px 14px;
+}
+
+/* Touch: every control in the editor gets a 44 px hit area on phones and coarse pointers. */
+@media (max-width: 640px), (pointer: coarse) {
+  .aq-editor .aq-button,
+  .aq-editor .aq-file-button,
+  .aq-inline-actions .aq-button,
+  .aq-logo-actions .aq-button,
+  .aq-confirm .aq-button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  .aq-editor select,
+  .aq-field input[type='text'] {
+    min-height: 44px;
+  }
+  .aq-color {
+    min-height: 44px;
+    padding: 2px 10px;
+  }
+  .aq-color input {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+  }
+  .aq-range {
+    min-height: 44px;
+  }
+  .aq-range input {
+    height: 44px;
+    margin: 0;
+    min-width: 44px;
+  }
+  .aq-check {
+    min-height: 44px;
+    gap: 12px;
+    cursor: pointer;
+  }
+  .aq-check input {
+    width: 22px;
+    height: 22px;
+    flex: none;
+    margin: 0;
+  }
+  .aq-confirm p {
+    flex-basis: 100%;
+  }
+  .aq-confirm .aq-button {
+    flex: 1 1 0;
+  }
+}
+/* fb-sorasite: hero copy starts at the page-hero gap, not centred against the card. */
+.aq-hero > :first-child {
+  align-self: start;
+}

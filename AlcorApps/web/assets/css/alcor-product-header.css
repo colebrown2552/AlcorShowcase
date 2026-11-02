@@ -1,0 +1,916 @@
+/*
+ * Alcor product header: one header for every product landing (/alcor-photo/, /alcor-qr/, /map/, ...) and every
+ * product app page (/photo/, /qr/, /translate/, ...). Markup: alcor_product_header() in mu-plugins/alcor-app-ui.php;
+ * the global bar markup is alcor_app_parent_bar() in mu-plugins/alcor-app-parent-bar.php.
+ *
+ * Printed as a <link> by the PHP (not inline) so it also applies on app documents whose CSP is style-src 'self'.
+ * Every metric is set here with a strong selector, so each app's own sheet cannot change the header:
+ *   site header  landings only: the marketing site header (inc/site-header.php, .site-header--product), in flow,
+ *                72px, brand left and "Get a quote" right on the site column; the Menu button from site.js below 921px
+ *   product bar  56px, sticky, rgba(5,6,8,.82) + 12px blur, 1px --line bottom border, same column edges as the header
+ *   wordmark     Inter 18px, "Alcor" 700 + name 400, 22px Alcor star mark (alcor-star-small.svg)
+ *   links        Inter 500 15px, --muted, hover --paper
+ *   button       primary cyan, 40px (44px on phones), Inter 600 14px, sentence case, 999px radius
+ *   focus        2px --paper outline, 3px offset
+ *   column       1180px, 72/40/20px edges (the site column)
+ */
+
+@font-face {
+  font-family: 'Inter';
+  src: url('../fonts/brands/inter-normal-400-700.woff2') format('woff2');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* --apx-global-h is the height above the product bar on landings: the site header (72px) since fb-footer. */
+:root {
+  --apx-h: 56px;
+  --apx-global-h: 72px;
+  --apx-edge: 72px;
+  --apx-font: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+}
+@media (max-width: 1023px) {
+  :root {
+    --apx-edge: 40px;
+  }
+}
+@media (max-width: 639px) {
+  :root {
+    --apx-edge: 20px;
+  }
+}
+
+/* In-page anchors land below the sticky bar. */
+html:has(.apx-bar) {
+  scroll-padding-top: calc(var(--apx-h) + 12px);
+}
+
+/* ---------- Site header on product landings (fb-footer, 2026-10-29) ----------
+ * The marketing site header (inc/site-header.php), with the class site-header--product. On the homepage it is the
+ * fixed 72px bar laid out by site.css, polish.css and section 12 of alcor-arcana.css; product landings may not load
+ * site.css (AlcorReconcile's document does not), so every metric those sheets give it is restated here, at the
+ * same values, and the bar is in flow (it scrolls away; the product bar below it is the sticky one). fb-footer.mjs
+ * compares it with the homepage header box by box. */
+html body .site-header.site-header--product {
+  position: relative;
+  inset: auto;
+  top: auto;
+  z-index: 47;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  column-gap: 22px;
+  row-gap: 0;
+  align-items: center;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 72px;
+  margin: 0;
+  padding: 12px max(var(--apx-edge), calc((100% - 1180px) / 2));
+  border: 0;
+  border-bottom: 1px solid transparent;
+  border-radius: 0;
+  background: rgba(5, 6, 8, 0.82);
+  box-shadow: none;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  color: #f6f0e4;
+  font-family: var(--apx-font);
+  text-transform: none;
+  transform: none;
+}
+html body .site-header.site-header--product::after {
+  content: none;
+}
+html body .site-header--product .brand-lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  min-height: 44px;
+  color: #f6f0e4;
+  text-decoration: none;
+}
+html body .site-header--product .brand-lockup .brand-star {
+  display: block;
+  flex: none;
+  width: 28px;
+  height: 28px;
+}
+html body .site-header--product .brand-text {
+  color: #f6f0e4;
+  font: 700 17px/1 var(--apx-font);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+html body .site-header--product .nav-links {
+  justify-self: center;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  margin: 0;
+  padding: 0;
+  color: #b8bec8;
+  font: 500 15px/1.4 var(--apx-font);
+}
+html body .site-header--product .nav-links a {
+  border: 0;
+  color: #b8bec8;
+  text-decoration: none;
+  transition: color 150ms ease;
+}
+html body .site-header--product .nav-links a:hover {
+  color: #f6f0e4;
+}
+html body .site-header--product .nav-links a[aria-current='page'] {
+  color: #f6f0e4;
+  text-decoration: underline;
+  text-decoration-color: #53d9d4;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 6px;
+}
+html body .site-header--product .header-cta {
+  justify-self: end;
+  display: inline-grid;
+  place-items: center;
+  box-sizing: border-box;
+  height: 40px;
+  min-height: 40px;
+  margin: 0;
+  padding: 0 16px;
+  border: 1px solid rgba(246, 240, 228, 0.22);
+  border-radius: 999px;
+  background: transparent;
+  color: #f6f0e4;
+  font: 600 14px/1 var(--apx-font);
+  letter-spacing: -0.005em;
+  text-transform: none;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease;
+}
+html body .site-header--product .header-cta:hover {
+  border-color: rgba(246, 240, 228, 0.42);
+  background: rgba(246, 240, 228, 0.06);
+  color: #f6f0e4;
+}
+html body .site-header--product .nav-toggle {
+  display: none;
+  align-items: center;
+  gap: 9px;
+  box-sizing: border-box;
+  min-width: 44px;
+  min-height: 44px;
+  margin: 0;
+  padding: 0 12px;
+  border: 1px solid rgba(246, 240, 228, 0.22);
+  border-radius: 999px;
+  background: transparent;
+  color: #f6f0e4;
+  font: 600 14px/1 var(--apx-font);
+  letter-spacing: normal;
+  text-transform: none;
+  cursor: pointer;
+}
+html body .site-header--product .nav-toggle:hover {
+  border-color: rgba(246, 240, 228, 0.42);
+}
+html body .site-header--product .nav-toggle-bars,
+html body .site-header--product .nav-toggle-bars::before,
+html body .site-header--product .nav-toggle-bars::after {
+  display: block;
+  width: 14px;
+  height: 2px;
+  border-radius: 1px;
+  background: currentColor;
+}
+html body .site-header--product .nav-toggle-bars {
+  position: relative;
+}
+html body .site-header--product .nav-toggle-bars::before,
+html body .site-header--product .nav-toggle-bars::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  transition:
+    transform 0.18s ease,
+    top 0.18s ease;
+}
+html body .site-header--product .nav-toggle-bars::before {
+  top: -5px;
+}
+html body .site-header--product .nav-toggle-bars::after {
+  top: 5px;
+}
+html body .site-header--product.nav-open .nav-toggle-bars {
+  background: transparent;
+}
+html body .site-header--product.nav-open .nav-toggle-bars::before {
+  top: 0;
+  transform: rotate(45deg);
+}
+html body .site-header--product.nav-open .nav-toggle-bars::after {
+  top: 0;
+  transform: rotate(-45deg);
+}
+html body .site-header--product :is(a, button):focus {
+  outline: none;
+}
+html body .site-header--product :is(a, button):focus-visible {
+  outline: 2px solid #f6f0e4;
+  outline-offset: 3px;
+}
+@media (max-width: 920px) {
+  html body .site-header.site-header--product {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    column-gap: 10px;
+  }
+  html body .site-header--product .nav-toggle {
+    display: inline-flex;
+  }
+  html body .site-header--product.nav-ready:not(.nav-open) .nav-links {
+    display: none;
+  }
+  html body .site-header--product.nav-open {
+    border-bottom-color: rgba(246, 240, 228, 0.1);
+  }
+  html body .site-header--product.nav-open .nav-links {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    display: grid;
+    gap: 0;
+    padding: 6px max(var(--apx-edge), calc((100% - 1180px) / 2)) 14px;
+    border-bottom: 1px solid rgba(246, 240, 228, 0.12);
+    background: #050608;
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.5);
+    font-size: 16px;
+  }
+  html body .site-header--product.nav-open .nav-links a {
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+    border-bottom: 1px solid rgba(246, 240, 228, 0.08);
+    color: #f6f0e4;
+  }
+  html body .site-header--product.nav-open .nav-links a:last-child {
+    border-bottom: 0;
+  }
+  /* Without scripting the links stay reachable, wrapped under the brand. */
+  html body .site-header--product:not(.nav-ready) .nav-links {
+    grid-column: 1 / -1;
+    justify-self: start;
+    flex-wrap: wrap;
+    gap: 10px 20px;
+  }
+}
+@media (scripting: enabled) and (max-width: 920px) {
+  html body .site-header--product:not(.nav-ready) .nav-links {
+    display: none;
+  }
+}
+@media (max-width: 760px) {
+  html body .site-header.site-header--product {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: rgba(5, 6, 8, 0.94);
+  }
+}
+@media (max-width: 640px) {
+  html body .site-header--product .brand-lockup {
+    gap: 8px;
+  }
+  html body .site-header--product .brand-text {
+    font-size: 15px;
+  }
+  html body .site-header--product .brand-lockup .brand-star {
+    width: 24px;
+    height: 24px;
+  }
+}
+@media (max-width: 480px) {
+  html body .site-header.site-header--product {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  html body .site-header--product .header-cta {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html body .site-header--product :is(a, button),
+  html body .site-header--product .nav-toggle-bars::before,
+  html body .site-header--product .nav-toggle-bars::after {
+    transition: none;
+  }
+}
+html:has(.site-header--product) .site-skip-link {
+  position: fixed;
+  left: max(12px, env(safe-area-inset-left));
+  top: 8px;
+  z-index: 1000;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  box-sizing: border-box;
+  padding: 0 14px;
+  border: 1px solid rgba(246, 240, 228, 0.32);
+  border-radius: 999px;
+  background: #050608;
+  color: #f6f0e4;
+  font: 600 13px/1.2 var(--apx-font);
+  text-decoration: none;
+  transform: translateY(calc(-100% - 16px));
+}
+html:has(.site-header--product) .site-skip-link:is(:focus, :focus-visible) {
+  transform: translateY(0);
+  outline: 2px solid #f6f0e4;
+  outline-offset: 3px;
+}
+
+/* ---------- Global Alcor Industries bar (no longer printed on product landings; kept for other callers) ---------- */
+.alcor-skip-link,
+html body .apx-skip {
+  position: fixed;
+  left: max(12px, env(safe-area-inset-left));
+  top: 8px;
+  z-index: 1000;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  max-width: calc(100vw - 24px);
+  box-sizing: border-box;
+  padding: 0 14px;
+  border: 1px solid rgba(246, 240, 228, 0.32);
+  border-radius: 999px;
+  background: #050608;
+  color: #f6f0e4;
+  font: 600 13px/1.2 var(--apx-font);
+  text-decoration: none;
+  transform: translateY(calc(-100% - 16px));
+}
+.alcor-skip-link:focus,
+.alcor-skip-link:focus-visible,
+html body .apx-skip:focus,
+html body .apx-skip:focus-visible {
+  transform: translateY(0);
+  outline: 2px solid #f6f0e4;
+  outline-offset: 3px;
+}
+html body .alcor-parent-bar {
+  position: relative;
+  z-index: 46;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  box-sizing: border-box;
+  min-height: 40px;
+  margin: 0;
+  padding: 0 max(clamp(12px, 1.7vw, 24px), env(safe-area-inset-left));
+  background: #050608;
+  border-bottom: 1px solid rgba(246, 240, 228, 0.08);
+  color: #f6f0e4;
+  font: 600 12px/1.2 var(--apx-font);
+  letter-spacing: 0;
+  text-transform: none;
+}
+html body .alcor-parent-bar a {
+  color: rgba(246, 240, 228, 0.76);
+  text-decoration: none;
+}
+html body .alcor-parent-bar a:hover {
+  color: #f6f0e4;
+}
+html body .alcor-parent-bar a:focus-visible {
+  outline: 2px solid #f6f0e4;
+  outline-offset: 3px;
+}
+html body .alcor-parent-bar .alcor-parent-bar__home,
+html body .alcor-parent-bar .alcor-parent-bar__apps,
+html body .alcor-parent-bar .alcor-parent-bar__product {
+  display: inline-flex;
+  align-items: center;
+}
+html body .alcor-parent-bar .alcor-parent-bar__home {
+  gap: 8px;
+  min-height: 40px;
+  white-space: nowrap;
+}
+html body .alcor-parent-bar .alcor-parent-bar__home-mark {
+  display: block;
+  flex: none;
+  width: 18px;
+  height: 18px;
+}
+html body .alcor-parent-bar .alcor-parent-bar__switcher {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+html body .alcor-parent-bar .alcor-parent-bar__label {
+  margin-right: 2px;
+  color: rgba(246, 240, 228, 0.62);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+html body .alcor-parent-bar .alcor-parent-bar__product {
+  min-height: 32px;
+  padding: 0 10px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+html body .alcor-parent-bar .alcor-parent-bar__product:hover {
+  border-color: rgba(246, 240, 228, 0.14);
+  background: rgba(246, 240, 228, 0.04);
+}
+html body .alcor-parent-bar .alcor-parent-bar__product[aria-current='page'] {
+  color: #f6f0e4;
+  border-color: rgba(179, 140, 255, 0.42);
+  background: rgba(179, 140, 255, 0.13);
+}
+html body .alcor-parent-bar .alcor-parent-bar__apps {
+  justify-self: end;
+  min-height: 40px;
+  color: rgba(246, 240, 228, 0.62);
+  white-space: nowrap;
+}
+@media (max-width: 760px) {
+  html body .alcor-parent-bar {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 8px;
+    min-height: 44px;
+    padding-left: max(6px, env(safe-area-inset-left));
+    padding-right: 0;
+  }
+  html body .alcor-parent-bar .alcor-parent-bar__home {
+    min-width: 44px;
+    min-height: 44px;
+    justify-content: center;
+  }
+  html body .alcor-parent-bar .alcor-parent-bar__home-label,
+  html body .alcor-parent-bar .alcor-parent-bar__label,
+  html body .alcor-parent-bar .alcor-parent-bar__apps {
+    display: none;
+  }
+  html body .alcor-parent-bar .alcor-parent-bar__switcher {
+    justify-content: flex-start;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: none;
+    padding-right: max(10px, env(safe-area-inset-right));
+  }
+  html body .alcor-parent-bar .alcor-parent-bar__switcher::-webkit-scrollbar {
+    display: none;
+  }
+  html body .alcor-parent-bar .alcor-parent-bar__product {
+    min-height: 44px;
+    flex: 0 0 auto;
+    padding: 0 12px;
+  }
+}
+
+/* ---------- Compact site menu (phones) and the switcher's scroll cue ---------- */
+html body .alcor-parent-bar .alcor-parent-bar__menu {
+  display: none;
+}
+@media (max-width: 760px) {
+  html body .alcor-parent-bar {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+  /* The strip scrolls sideways; a fade on the trailing edge says there is more. site.js drops it at the end. */
+  html body .alcor-parent-bar .alcor-parent-bar__switcher {
+    -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 36px), transparent);
+    mask-image: linear-gradient(90deg, #000 calc(100% - 36px), transparent);
+  }
+  html body .alcor-parent-bar .alcor-parent-bar__switcher[data-scroll-end] {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  html body .alcor-parent-bar .alcor-parent-bar__menu {
+    position: relative;
+    display: block;
+    padding-right: max(6px, env(safe-area-inset-right));
+  }
+  html body .alcor-parent-bar .alcor-parent-bar__menu-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 0 12px;
+    border-radius: 999px;
+    color: #f6f0e4;
+    cursor: pointer;
+    list-style: none;
+    white-space: nowrap;
+  }
+  html body .alcor-parent-bar .alcor-parent-bar__menu-toggle::-webkit-details-marker {
+    display: none;
+  }
+  html body .alcor-parent-bar .alcor-parent-bar__menu-toggle:focus-visible {
+    outline: 2px solid #f6f0e4;
+    outline-offset: -2px;
+  }
+  html body .alcor-parent-bar .alcor-parent-bar__menu-bars {
+    position: relative;
+    display: block;
+    width: 16px;
+    height: 2px;
+    border-radius: 1px;
+    background: currentColor;
+    box-shadow:
+      0 -5px 0 currentColor,
+      0 5px 0 currentColor;
+  }
+  html body .alcor-parent-bar .alcor-parent-bar__menu[open] .alcor-parent-bar__menu-toggle {
+    background: rgba(246, 240, 228, 0.08);
+  }
+  html body .alcor-parent-bar .alcor-parent-bar__menu-panel {
+    position: absolute;
+    top: calc(100% + 1px);
+    right: max(6px, env(safe-area-inset-right));
+    z-index: 60;
+    display: grid;
+    width: min(280px, calc(100vw - 24px));
+    box-sizing: border-box;
+    padding: 8px;
+    border: 1px solid rgba(246, 240, 228, 0.14);
+    border-radius: 12px;
+    background: #050608;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+  }
+  html body .alcor-parent-bar .alcor-parent-bar__menu-panel a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 12px;
+    border-radius: 8px;
+    color: #f6f0e4;
+    font-size: 15px;
+    font-weight: 500;
+  }
+  html body .alcor-parent-bar .alcor-parent-bar__menu-panel a:hover {
+    background: rgba(246, 240, 228, 0.06);
+  }
+  html body .alcor-parent-bar .alcor-parent-bar__menu-panel a:focus-visible {
+    outline-offset: -2px;
+  }
+  html body .alcor-parent-bar .alcor-parent-bar__menu-panel .alcor-parent-bar__menu-quote {
+    justify-content: center;
+    margin-top: 6px;
+    border-radius: 999px;
+    background: #53d9d4;
+    color: #050608;
+    font-weight: 600;
+  }
+}
+
+/* ---------- Product states (?alcor-state=empty|error|loading), moved with the global bar ---------- */
+.alcor-product-state {
+  width: min(1120px, calc(100% - 32px));
+  margin: 18px auto 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 18px;
+  padding: 16px 18px;
+  box-sizing: border-box;
+  border: 1px solid rgba(142, 216, 255, 0.22);
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(14, 20, 31, 0.96), rgba(7, 9, 14, 0.98));
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.22);
+  color: #f6f0e4;
+  font: 13px/1.5 var(--apx-font);
+}
+.alcor-product-state[data-state-kind='error'] {
+  border-color: rgba(255, 184, 184, 0.36);
+}
+.alcor-product-state[data-state-kind='loading'] {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  border-color: rgba(179, 140, 255, 0.34);
+}
+.alcor-product-state__indicator {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(246, 240, 228, 0.2);
+  border-top-color: #b38cff;
+  border-radius: 50%;
+  animation: alcor-product-state-spin 0.8s linear infinite;
+}
+@keyframes alcor-product-state-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.alcor-product-state__copy {
+  min-width: 0;
+}
+.alcor-product-state__eyebrow {
+  display: block;
+  margin-bottom: 4px;
+  color: #8ed8ff;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.alcor-product-state[data-state-kind='error'] .alcor-product-state__eyebrow {
+  color: #ffb8b8;
+}
+.alcor-product-state strong {
+  display: block;
+  margin-bottom: 2px;
+  font-size: 15px;
+}
+.alcor-product-state p {
+  margin: 0;
+  color: rgba(246, 240, 228, 0.66);
+}
+.alcor-product-state__action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid rgba(246, 240, 228, 0.2);
+  border-radius: 8px;
+  background: rgba(246, 240, 228, 0.06);
+  color: #f6f0e4 !important;
+  text-decoration: none;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.alcor-product-state__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.alcor-product-state__action:hover {
+  background: rgba(246, 240, 228, 0.1);
+}
+.alcor-product-state__action:focus,
+.alcor-product-state__action:focus-visible {
+  outline: 2px solid #f6f0e4;
+  outline-offset: 3px;
+}
+.alcor-product-state__recovery {
+  background: transparent;
+}
+@media (max-width: 640px) {
+  .alcor-product-state {
+    width: min(100% - 20px, 1120px);
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-top: 12px;
+  }
+  .alcor-product-state__actions {
+    justify-self: start;
+    justify-content: flex-start;
+  }
+  .alcor-product-state__action {
+    white-space: normal;
+  }
+}
+
+/* ---------- Product bar ---------- */
+html body .apx-bar.apx-bar {
+  position: sticky;
+  top: 0;
+  z-index: 45;
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  height: var(--apx-h);
+  min-height: 0;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-bottom: 1px solid rgba(246, 240, 228, 0.1);
+  border-radius: 0;
+  background: rgba(5, 6, 8, 0.82);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  box-shadow: none;
+  color: #f6f0e4;
+  font: 400 15px/1.2 var(--apx-font);
+  letter-spacing: 0;
+  text-transform: none;
+  text-align: left;
+  transform: none;
+  opacity: 1;
+  visibility: visible;
+}
+html body .apx-bar.apx-bar .apx-bar__inner {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  box-sizing: border-box;
+  width: min(1180px, calc(100% - 2 * var(--apx-edge)));
+  max-width: none;
+  height: 100%;
+  margin: 0 auto;
+  padding: 0;
+}
+html body .apx-bar.apx-bar .apx-wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex: 0 0 auto;
+  min-height: 44px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #f6f0e4;
+  font: 400 18px/1 var(--apx-font);
+  letter-spacing: -0.01em;
+  text-transform: none;
+  text-decoration: none;
+  white-space: nowrap;
+}
+html body .apx-bar.apx-bar .apx-wordmark b {
+  font-weight: 700;
+}
+html body .apx-bar.apx-bar .apx-wordmark__mark {
+  display: block;
+  flex: none;
+  width: 22px;
+  height: 22px;
+}
+html body .apx-bar.apx-bar .apx-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  margin: 0 0 0 auto;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+html body .apx-bar.apx-bar .apx-nav a {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  min-height: 40px;
+  margin: 0;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #b8bec8;
+  font: 500 15px/1 var(--apx-font);
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+  white-space: nowrap;
+  box-shadow: none;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease;
+}
+html body .apx-bar.apx-bar .apx-nav a:hover {
+  color: #f6f0e4;
+  background: rgba(246, 240, 228, 0.06);
+}
+html body .apx-bar.apx-bar .apx-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  box-sizing: border-box;
+  height: 40px;
+  min-height: 40px;
+  margin: 0 0 0 4px;
+  padding: 0 18px;
+  border: 1px solid #53d9d4;
+  border-radius: 999px;
+  background: #53d9d4;
+  color: #06110f;
+  font: 600 14px/1 var(--apx-font);
+  letter-spacing: -0.005em;
+  text-transform: none;
+  text-decoration: none;
+  white-space: nowrap;
+  box-shadow: none;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.15s ease;
+}
+html body .apx-bar.apx-bar .apx-wordmark + .apx-btn {
+  margin-left: auto;
+}
+html body .apx-bar.apx-bar .apx-btn:hover {
+  border-color: #7de3df;
+  background: #7de3df;
+  color: #06110f;
+  transform: translateY(-1px);
+}
+html body .apx-bar.apx-bar .apx-btn__short {
+  display: none;
+}
+html body .apx-bar.apx-bar :is(.apx-wordmark, .apx-nav a, .apx-btn):focus {
+  outline: none;
+}
+html body .apx-bar.apx-bar :is(.apx-wordmark, .apx-nav a, .apx-btn):focus-visible {
+  outline: 2px solid #f6f0e4;
+  outline-offset: 3px;
+}
+
+@media (max-width: 760px) {
+  html body .apx-bar.apx-bar .apx-bar__inner {
+    gap: 12px;
+  }
+  html body .apx-bar.apx-bar[data-mode='landing'] .apx-nav {
+    display: none;
+  }
+  html body .apx-bar.apx-bar .apx-btn {
+    height: 44px;
+    min-height: 44px;
+    margin-left: auto;
+    padding: 0 18px;
+  }
+  html body .apx-bar.apx-bar .apx-btn__long {
+    display: none;
+  }
+  html body .apx-bar.apx-bar .apx-btn__short {
+    display: inline;
+  }
+  html body .apx-bar.apx-bar .apx-nav {
+    gap: 0;
+  }
+  html body .apx-bar.apx-bar .apx-nav a {
+    min-height: 44px;
+    padding: 0 10px;
+  }
+  html body .apx-bar.apx-bar .apx-nav a:last-child {
+    margin-right: -10px;
+  }
+}
+
+/* Phones running AlcorFrame (heavy editors) get AlcorFrame's own top bar instead, as with the global bar. */
+html.af-on body :is(.apx-bar, .apx-skip) {
+  display: none !important;
+}
+
+/* Sticky needs ancestors that are not scroll containers. Some product pages clip sideways overflow with
+ * overflow-x: hidden on body (AlcorVideo, AlcorMap) or .page (AlcorFinance); clip looks the same and keeps the
+ * bar sticky. */
+html:has(.apx-bar) body:has(.apx-bar),
+html:has(.apx-bar) body .page:has(> .apx-bar) {
+  overflow-x: clip;
+}
+
+/* Layout that measured the old header heights. */
+html body .am-map-stage.has-entered {
+  --am-bar-h: calc(var(--apx-global-h) + var(--apx-h));
+}
+html body .ap-editor-page[data-studio] .ap-toolbar {
+  top: calc(var(--apx-h) + 8px);
+}
+/* AlcorFinance left 132px (96px on phones) under the fixed site header it used to have; the bars are in flow now. */
+html body.alcor-finance-page .af-main {
+  padding-top: clamp(48px, 6vw, 88px);
+}
+@media (max-width: 760px) {
+  html body.alcor-finance-page .af-main {
+    padding-top: 40px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html body .apx-bar.apx-bar :is(.apx-nav a, .apx-btn) {
+    transition: none;
+  }
+  html body .apx-bar.apx-bar .apx-btn:hover {
+    transform: none;
+  }
+  .alcor-product-state__indicator {
+    animation: none !important;
+  }
+  .ap-page,
+  .ap-page *,
+  .ap-page *::before,
+  .ap-page *::after,
+  .av-landing,
+  .av-landing *,
+  .av-landing *::before,
+  .av-landing *::after,
+  .aerp-page,
+  .aerp-page *,
+  .aerp-page *::before,
+  .aerp-page *::after {
+    scroll-behavior: auto !important;
+    animation: none !important;
+    transition: none !important;
+  }
+}

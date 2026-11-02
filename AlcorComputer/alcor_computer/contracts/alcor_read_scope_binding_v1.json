@@ -1,0 +1,6 @@
+{
+  "schema": "alcor.computer.read-scope-binding.v1",
+  "contract_sha256_prefix": "bf174e33c7ab",
+  "frozen": true,
+  "independently_green": true
+}

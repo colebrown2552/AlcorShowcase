@@ -1,0 +1,197 @@
+/*
+ * AlcorFields editor styles.
+ *
+ * Uses wp-admin's own colors and controls; adds layout only, so the editor looks like the rest of the dashboard.
+ */
+.af-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 24px;
+  align-items: start;
+}
+@media (max-width: 1100px) {
+  .af-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.af-status {
+  font-size: 14px;
+}
+.af-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin: 12px 0;
+  padding: 12px;
+  background: #fff;
+  border: 1px solid #c3c4c7;
+}
+.af-form > .af-toolbar:first-of-type {
+  position: sticky;
+  top: 32px;
+  z-index: 5;
+}
+@media (max-width: 782px) {
+  .af-form > .af-toolbar:first-of-type {
+    top: 46px;
+  }
+}
+.af-filter {
+  margin: 0 0 16px;
+}
+.af-group {
+  background: #fff;
+  border: 1px solid #c3c4c7;
+  margin: 0 0 16px;
+  padding: 0 16px 16px;
+  min-width: 0;
+}
+.af-group > legend {
+  font-size: 15px;
+  font-weight: 600;
+  padding: 4px 8px;
+  margin-left: -8px;
+  background: #fff;
+}
+.af-group.is-hidden .af-group-body {
+  opacity: 0.55;
+}
+.af-show {
+  display: inline-block;
+  margin: 4px 0 12px;
+  font-weight: 600;
+}
+.af-field {
+  margin: 0 0 14px;
+}
+.af-field > label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.af-key {
+  font-weight: 400;
+  color: #646970;
+  font-size: 11px;
+  background: none;
+  padding: 0 0 0 4px;
+}
+.af-field input[type='text'],
+.af-field textarea {
+  width: 100%;
+  max-width: 48rem;
+}
+.af-field.has-error input,
+.af-field.has-error textarea,
+.af-field.has-error .af-rich-editor {
+  border-color: #d63638;
+  box-shadow: 0 0 0 1px #d63638;
+}
+.af-error {
+  color: #b32d2e;
+  margin: 4px 0 0;
+  font-weight: 600;
+}
+.af-error-list {
+  list-style: disc;
+  margin-left: 20px;
+}
+.af-image {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.af-image-preview {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  background: #f0f0f1;
+  border: 1px solid #dcdcde;
+}
+.af-image-preview[src=''] {
+  visibility: hidden;
+}
+.af-rich {
+  max-width: 48rem;
+}
+.af-rich-bar {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+.af-rich-bar [aria-pressed='true'] {
+  background: #f0f0f1;
+}
+.af-rich-editor {
+  min-height: 2.6em;
+  padding: 6px 8px;
+  border: 1px solid #8c8f94;
+  border-radius: 4px;
+  background: #fff;
+  line-height: 1.5;
+}
+.af-rich-editor:focus {
+  border-color: #2271b1;
+  box-shadow: 0 0 0 1px #2271b1;
+  outline: 2px solid transparent;
+}
+.af-list {
+  border-left: 3px solid #dcdcde;
+  padding-left: 12px;
+  margin: 0 0 16px;
+}
+.af-list.has-error {
+  border-left-color: #d63638;
+}
+.af-list-title {
+  margin: 0 0 8px;
+}
+.af-rows {
+  list-style: none;
+  margin: 0 0 8px;
+  padding: 0;
+}
+.af-row {
+  background: #f6f7f7;
+  border: 1px solid #dcdcde;
+  padding: 8px 12px;
+  margin: 0 0 8px;
+}
+.af-row-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.af-row-number {
+  font-weight: 600;
+  min-width: 1.5em;
+}
+.af-danger {
+  color: #b32d2e;
+}
+.af-side .af-box {
+  background: #fff;
+  border: 1px solid #c3c4c7;
+  padding: 0 16px 12px;
+  margin: 0 0 16px;
+}
+.af-side h2 {
+  font-size: 14px;
+}
+.af-history {
+  margin-left: 18px;
+}
+.af-history li {
+  margin-bottom: 10px;
+}
+.af-history form {
+  display: inline;
+}
+.af-docs .af-group-row th {
+  background: #f0f0f1;
+  font-weight: 600;
+}

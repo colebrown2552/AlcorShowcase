@@ -1,0 +1,22 @@
+{
+  "schema": "alcor.plugin.v1",
+  "name": "AlcorClick",
+  "transport": "mcp",
+  "server": "alcor_click.mcp_server",
+  "tools": [
+    "get_window",
+    "focus",
+    "key",
+    "type_text",
+    "browser_point",
+    "click_browser",
+    "click",
+    "image_point",
+    "click_image"
+  ],
+  "resource": "alcor-click://status",
+  "owner_gated": false,
+  "observation_gated": true,
+  "actuation_backend_present": true,
+  "effect_scope": "fresh_foreground_window_bounded_input"
+}

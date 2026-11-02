@@ -1,0 +1,2329 @@
+/* alcor-arcana.css: the Alcor Industries sub-theme of Arcana (2026-10-28). Source: STYLE_STANDARD.md.
+ *
+ * Arcana is the style standard. arcana.css is its brand-neutral base (canonical components, tokens in
+ * :where(:root)); this file is the Alcor layer on top of it. It holds the Inter @font-face, the base type
+ * scoped to body.alcor-std, every legacy-class mapping, the header, the footer, the page patterns, the
+ * reveal neutraliser and the archetype-card straightening. functions.php enqueues arcana.css and then this
+ * file, both at wp_enqueue_scripts priority 999 (this one depends on the base), so they follow every route
+ * sheet. Tokens live in design-system.css. arcana-archetypes.css is a different file: the [data-arcana]
+ * Archetype layer.
+ *
+ * Canonical class names (.btn, .card, .eyebrow ...) are repeated in the grouped selectors below on
+ * purpose: the base styles them at single-class weight, and the old Alcor sheets out-rank that.
+ *
+ * SCOPE. Everything is under body.alcor-std (functions.php alcor_standard_page(): marketing pages
+ * and the 22 Archetype pages) except the font, the header, the footer, the parent bar and the
+ * reduced-motion rules at the end. App screens (/photo/, /video/, /music/, /alcorqr/editor/,
+ * /alcortranslate/app/, /reconcile/, /erp/, /alcormap/, /alcorfinance/) never get the class, so they
+ * take only those.
+ *
+ * SPECIFICITY. Legacy sheets reach (0,4,1) in a button state, and the AlcorOS and Products sheets
+ * use IDs (#apps, #products). The standard wins by source order plus three anchored weights:
+ *   W1  body.alcor-std                            (0,1,1)  canonical classes, plain additions
+ *   W2  html body.alcor-std.alcor-std             (0,2,2)  type, cards, sections, forms
+ *   W3  html body.alcor-std.alcor-std.alcor-std   (0,3,2)  buttons and links that legacy rules pin
+ * The repeated class is deliberate: it adds weight without an ID, so a page rule can still beat the
+ * standard on purpose. :where() adds none. Legacy ID rules are met with :is(#apps, #products).
+ *
+ * !important is used only for: font-family on the scoped text elements; text-transform and
+ * letter-spacing on mapped buttons and links; the reveal neutraliser; the archetype-card rotation reset.
+ * (The scroll-reveal hiding is also deleted at the source, in motion.css; the neutraliser only covers a
+ * stale cached copy of that file.)
+ *
+ * SUB-BRAND TYPE. The brand name, tile names, card label, swatches and tagline on the Archetype pages
+ * (.abr-title, .abr-tile__word, .abr-card, .abr-swatches, .abr-tagline), the AlcorOS monitor and the
+ * sample-site frame keep their own fonts: they are excluded with :not(:where(...)) on the scoped
+ * selector. Brand pages also keep their own ink and paper (see --std-ink below).
+ */
+
+/* Inter, self-hosted (latin subset, weights 400 to 700). functions.php preloads this file in <head>. */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('../fonts/brands/inter-normal-400-700.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304,
+    U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* Metric-matched fallback for the swap period: Arial scaled to Inter's width and vertical metrics, so the text
+ * reflows as little as possible when Inter arrives. It sits right after "Inter" in --font-body (design-system.css). */
+@font-face {
+  font-family: 'Inter Fallback';
+  src: local('Arial');
+  size-adjust: 107.12%;
+  ascent-override: 90.49%;
+  descent-override: 22.56%;
+  line-gap-override: 0%;
+}
+
+/* ===== 1. Base and type ===== */
+
+body.alcor-std {
+  /* Ink for headings, body text and control lines. Light brand pages swap them (below). */
+  --std-ink: var(--paper);
+  --std-body: var(--muted);
+  --std-quiet: var(--quiet);
+  --std-line-control: var(--line-control);
+  --std-line-hover: var(--line-hover);
+  color: var(--std-body);
+  font-family: var(--font-body);
+  font-size: var(--type-body);
+  font-weight: 400;
+  line-height: var(--leading-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+/* A brand page (and any paper section) is light: the standard's ink follows the page's own ink. */
+body.alcor-std main[data-brand],
+body.alcor-std [data-theme='paper'] {
+  --std-ink: var(--arc-ink, #090a0f);
+  --std-body: var(--arc-muted, #4b5160);
+  --std-quiet: var(--arc-muted, #5b6270);
+  --std-line-control: color-mix(in srgb, var(--arc-ink, #090a0f) 30%, transparent);
+  --std-line-hover: color-mix(in srgb, var(--arc-ink, #090a0f) 48%, transparent);
+}
+
+/* One typeface. Code, pre, kbd and samp are not in the list and their children are skipped. */
+body.alcor-std
+  :is(
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    p,
+    a,
+    li,
+    button,
+    input,
+    select,
+    textarea,
+    label,
+    summary,
+    dt,
+    dd,
+    span,
+    strong,
+    em,
+    small,
+    blockquote,
+    figcaption
+  ):not(
+    :where(
+        .abr-title,
+        .abr-title *,
+        .abr-tile__word,
+        .abr-tile__word *,
+        .abr-card,
+        .abr-card *,
+        .abr-swatches,
+        .abr-swatches *,
+        .abr-tagline,
+        .abr-tagline *,
+        .amd-monitor *,
+        .amd-screen *,
+        .amd-brand-device *,
+        iframe,
+        code *,
+        pre *,
+        kbd *,
+        samp *
+      )
+  ) {
+  font-family: var(--font-body) !important;
+}
+
+html
+  body.alcor-std.alcor-std
+  :is(h1, h2, h3):not(
+    :where(
+        .abr-title,
+        .abr-title *,
+        .abr-tile__word,
+        .abr-tile__word *,
+        .abr-card,
+        .abr-card *,
+        .abr-swatches,
+        .abr-swatches *,
+        .abr-tagline,
+        .abr-tagline *,
+        .amd-monitor *,
+        .amd-screen *,
+        .amd-brand-device *,
+        iframe
+      )
+  ) {
+  color: var(--std-ink);
+  text-wrap: balance;
+}
+html
+  body.alcor-std.alcor-std
+  h1:not(
+    :where(
+        .abr-title,
+        .abr-title *,
+        .abr-tile__word,
+        .abr-tile__word *,
+        .abr-card,
+        .abr-card *,
+        .abr-swatches,
+        .abr-swatches *,
+        .abr-tagline,
+        .abr-tagline *,
+        .amd-monitor *,
+        .amd-screen *,
+        .amd-brand-device *,
+        iframe
+      )
+  ) {
+  max-width: 16ch;
+  font-size: var(--type-h1);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+}
+/* The homepage hero is the one place the display size is used. Its copy is untouched. At this size the
+   h1 1.02 leading lets "Ask Alcor!" touch the descenders above (owner 10-29), so it gets 1.1. */
+html body.alcor-std.alcor-std.home .hero h1 {
+  font-size: var(--type-display);
+  line-height: 1.1;
+}
+html
+  body.alcor-std.alcor-std
+  h2:not(
+    :where(
+        .abr-title,
+        .abr-title *,
+        .abr-tile__word,
+        .abr-tile__word *,
+        .abr-card,
+        .abr-card *,
+        .abr-swatches,
+        .abr-swatches *,
+        .abr-tagline,
+        .abr-tagline *,
+        .amd-monitor *,
+        .amd-screen *,
+        .amd-brand-device *,
+        iframe
+      )
+  ) {
+  max-width: 20ch;
+  font-size: var(--type-h2);
+  font-weight: 700;
+  line-height: 1.06;
+  letter-spacing: -0.03em;
+}
+html
+  body.alcor-std.alcor-std
+  h3:not(
+    :where(
+        .abr-title,
+        .abr-title *,
+        .abr-tile__word,
+        .abr-tile__word *,
+        .abr-card,
+        .abr-card *,
+        .abr-swatches,
+        .abr-swatches *,
+        .abr-tagline,
+        .abr-tagline *,
+        .amd-monitor *,
+        .amd-screen *,
+        .amd-brand-device *,
+        iframe
+      )
+  ) {
+  font-size: var(--type-h3);
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+/* Lede: .lede, the section lede, and the first paragraph after a page h1 or a section h2.
+ * The homepage hero subhead is approved copy and keeps its own size (tokens only). */
+html
+  body.alcor-std.alcor-std
+  :is(.lede, .section-lede, h1 + p:not(.hero-subhead), h2 + p, .section-head > p:not(.eyebrow)),
+html body.alcor-std.alcor-std:not(.home) .hero-subhead,
+html body.alcor-std.alcor-std :is(#apps, #products) .section-lede {
+  max-width: 60ch;
+  color: var(--std-body);
+  font-size: var(--type-lede);
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+/* Small and meta lines. */
+html body.alcor-std.alcor-std :is(small, .small, .meta, .ac-note, .ac-status) {
+  color: var(--std-quiet);
+  font-size: var(--type-small);
+}
+
+/* Inline links in running text. Classed links (buttons, cards, nav) keep their own look. */
+html
+  body.alcor-std.alcor-std
+  :is(p, dd, blockquote, .blog-prose li)
+  a:not([class]):not(:where(nav a, footer a, header a)) {
+  color: var(--std-ink);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-color: var(--std-line-hover);
+  text-underline-offset: 3px;
+  transition: text-decoration-color 150ms ease;
+}
+html
+  body.alcor-std.alcor-std
+  :is(p, dd, blockquote, .blog-prose li)
+  a:not([class]):not(:where(nav a, footer a, header a)):hover {
+  text-decoration-color: var(--cyan);
+}
+
+/* Focus, every button and link: a paper ring, keyboard focus only. Form controls get a cyan edge below. */
+html body.alcor-std.alcor-std :is(a, button, summary, [role='button']):focus-visible {
+  outline: 2px solid var(--std-ink);
+  outline-offset: 3px;
+}
+
+/* Good to know: a compact two-column definition list (term 600 ink, description body). */
+html body.alcor-std.alcor-std main dl:not([class*='abr-']) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 4px 32px;
+  margin: 0;
+}
+html body.alcor-std.alcor-std main dl:not([class*='abr-']) dt {
+  color: var(--std-ink);
+  font-weight: 600;
+}
+html body.alcor-std.alcor-std main dl:not([class*='abr-']) dd {
+  margin: 0 0 14px;
+  color: var(--std-body);
+}
+@media (min-width: 640px) {
+  html body.alcor-std.alcor-std main dl:not([class*='abr-']) {
+    grid-template-columns: minmax(160px, 1fr) minmax(0, 3fr);
+    gap: 14px 32px;
+  }
+  html body.alcor-std.alcor-std main dl:not([class*='abr-']) dd {
+    margin: 0;
+  }
+}
+
+/* ===== 2. Eyebrow: a category, never a product name or a price ===== */
+
+body.alcor-std
+  :is(
+    .eyebrow,
+    .section-kicker,
+    .aui-kicker,
+    .aa-kicker,
+    .av-eyebrow,
+    .aq-eyebrow,
+    .ar-eyebrow,
+    .at-eyebrow,
+    .am-kicker,
+    .aerp-kicker,
+    .agx-eyebrow,
+    .agx-kicker,
+    .abr-eyebrow,
+    .platform-eyebrow,
+    .blog-eyebrow,
+    .creative-arcana__eyebrow
+  ) {
+  display: block;
+  margin: 0 0 14px;
+  padding: 0;
+  color: var(--eyebrow-color, var(--violet));
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+/* Archetype and Arcana pages use gold. Brand pages keep their own ink (design-system.css sets
+ * --eyebrow-color on main[data-brand]). */
+body.alcor-std:is(.arcana, .home)
+  :is(.home-arcana-rail, [data-arcana='hub'])
+  :is(.eyebrow, .abr-eyebrow),
+body.alcor-std .creative-arcana :is(.creative-arcana__eyebrow, .section-kicker) {
+  --eyebrow-color: var(--gold);
+}
+
+/* ===== 3. Buttons: .btn plus a modifier ===== */
+
+/* Base. Product-owned classes map onto it; see the Absorbs lines in the standard. */
+html
+  body.alcor-std.alcor-std.alcor-std
+  :is(
+    .btn,
+    :where(
+        .primary-link,
+        .secondary-link,
+        .aui-button,
+        .av-button,
+        .aq-button,
+        .at-button,
+        .at-button-large,
+        .av-button-large,
+        .ap-lp-cta,
+        .ap-secondary,
+        .am-primary,
+        .am-secondary,
+        .aa-header-action,
+        .av-header-action,
+        .abr-button,
+        .package-cta:not(.product-cta),
+        .alcor-contact button[type='submit']
+      )
+  ) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-sizing: border-box;
+  height: var(--button-height);
+  min-height: var(--button-height);
+  padding: var(--button-padding);
+  border: 1px solid transparent;
+  border-radius: var(--radius-control);
+  box-shadow: none;
+  font: var(--button-font);
+  letter-spacing: -0.005em !important;
+  text-transform: none !important;
+  text-decoration: none;
+  text-align: center;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease,
+    transform 150ms ease;
+}
+/* Primary: cyan. */
+html
+  body.alcor-std.alcor-std.alcor-std
+  :is(
+    .btn--primary,
+    :where(
+        .primary-link,
+        .aui-button--primary,
+        .av-button-primary,
+        .aq-button-primary,
+        .ar-button-primary,
+        .at-button-primary,
+        .ap-lp-cta,
+        .am-primary,
+        .abr-button:not([data-kind='ghost']),
+        .alcor-contact button[type='submit']
+      )
+  ) {
+  border-color: var(--cyan);
+  background: var(--cyan);
+  color: #06110f;
+}
+html
+  body.alcor-std.alcor-std.alcor-std
+  :is(
+    .btn--primary,
+    :where(
+        .primary-link,
+        .aui-button--primary,
+        .av-button-primary,
+        .aq-button-primary,
+        .ar-button-primary,
+        .at-button-primary,
+        .ap-lp-cta,
+        .am-primary,
+        .abr-button:not([data-kind='ghost']),
+        .alcor-contact button[type='submit']
+      )
+  ):hover:not(:disabled):not([aria-disabled='true']) {
+  border-color: #7de3df;
+  background: #7de3df;
+  color: #06110f;
+  transform: translateY(-1px);
+}
+/* Secondary: outline. */
+html
+  body.alcor-std.alcor-std.alcor-std
+  :is(
+    .btn--secondary,
+    :where(
+        .secondary-link,
+        .aui-button:not(.aui-button--primary),
+        .av-button-secondary,
+        .aq-button:not(.aq-button-primary),
+        .at-button:not(.at-button-primary),
+        .ap-secondary,
+        .am-secondary,
+        .aa-header-action,
+        .av-header-action,
+        .abr-button[data-kind='ghost'],
+        .package-cta:not(.product-cta)
+      )
+  ) {
+  border-color: var(--std-line-control);
+  background: transparent;
+  color: var(--std-ink);
+}
+html
+  body.alcor-std.alcor-std.alcor-std
+  :is(
+    .btn--secondary,
+    :where(
+        .secondary-link,
+        .aui-button:not(.aui-button--primary),
+        .av-button-secondary,
+        .aq-button:not(.aq-button-primary),
+        .at-button:not(.at-button-primary),
+        .ap-secondary,
+        .am-secondary,
+        .aa-header-action,
+        .av-header-action,
+        .abr-button[data-kind='ghost'],
+        .package-cta:not(.product-cta)
+      )
+  ):hover:not(:disabled):not([aria-disabled='true']) {
+  border-color: var(--std-line-hover);
+  background: rgba(246, 240, 228, 0.06);
+  color: var(--std-ink);
+  transform: none;
+}
+/* Compact: the header and cards. Phones keep a 44px target. */
+html body.alcor-std.alcor-std.alcor-std .btn--compact {
+  height: var(--button-height-compact);
+  min-height: var(--button-height-compact);
+  padding: 0 16px;
+  font-size: 0.875rem;
+}
+@media (max-width: 639px), (pointer: coarse) {
+  html body.alcor-std.alcor-std.alcor-std .btn--compact {
+    height: auto;
+    min-height: 44px;
+  }
+}
+/* Floating and in-demo calls to action take the paint only; their layout stays theirs. */
+html body.alcor-std.alcor-std.alcor-std :is(.mobile-cta, .amd-start, .dmo-play) {
+  border: 1px solid var(--cyan);
+  border-radius: var(--radius-control);
+  background: var(--cyan);
+  box-shadow: none;
+  color: #06110f;
+  font: var(--button-font);
+  letter-spacing: -0.005em !important;
+  text-transform: none !important;
+}
+html
+  body.alcor-std.alcor-std.alcor-std
+  :is(.mobile-cta, .amd-start, .dmo-play):hover:not(:disabled) {
+  border-color: #7de3df;
+  background: #7de3df;
+  color: #06110f;
+}
+/* Disabled (after the hover rules so it wins). */
+html
+  body.alcor-std.alcor-std.alcor-std
+  :is(
+    .btn,
+    .mobile-cta,
+    .amd-start,
+    .dmo-play,
+    :where(
+        .primary-link,
+        .secondary-link,
+        .aui-button,
+        .av-button,
+        .aq-button,
+        .at-button,
+        .ap-lp-cta,
+        .ap-secondary,
+        .abr-button,
+        .alcor-contact button[type='submit']
+      )
+  ):is(:disabled, [aria-disabled='true']) {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+/* Forms: the submit is full width on phones. */
+@media (max-width: 639px) {
+  html body.alcor-std.alcor-std.alcor-std .alcor-contact button[type='submit'] {
+    width: 100%;
+  }
+}
+/* Hero and closing action rows. */
+html
+  body.alcor-std.alcor-std
+  :is(.hero-actions, .abr-actions, .ap-lp-ctas, .aq-actions, .at-actions, .am-actions) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+/* ===== 4. Text link with an arrow: .link-arrow ===== */
+
+html
+  body.alcor-std.alcor-std.alcor-std
+  :is(
+    .link-arrow,
+    :where(
+        .platform-card-primary,
+        .platform-primary-link,
+        .platform-secondary-link,
+        .package-cta.product-cta,
+        .product-cta,
+        :is(.card, .platform-card, .package, .b2b-card, .audience-card, .abr-tier) a.primary-link
+      )
+  ) {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  height: auto;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--cyan);
+  font: 600 0.9375rem/1.4 var(--font-body);
+  letter-spacing: normal !important;
+  text-transform: none !important;
+  text-decoration: none;
+  text-align: left;
+  white-space: normal;
+  transition: color 150ms ease;
+}
+html
+  body.alcor-std.alcor-std.alcor-std
+  :is(
+    .link-arrow,
+    :where(
+        .platform-card-primary,
+        .platform-primary-link,
+        .platform-secondary-link,
+        .package-cta.product-cta,
+        .product-cta,
+        :is(.card, .platform-card, .package, .b2b-card, .audience-card, .abr-tier) a.primary-link
+      )
+  ):hover {
+  background: transparent;
+  color: var(--paper);
+  transform: none;
+}
+/* The arrow keeps a visible space even where the link is inline-flex (flex drops the space text node). */
+html
+  body.alcor-std.alcor-std
+  :is(.link-arrow, .platform-card-primary, .platform-card-about)
+  > span[aria-hidden='true'] {
+  display: inline-block;
+  margin-left: 6px;
+  transition: transform 150ms ease;
+}
+/* Secondary arrow links ("Details ->", "Browse the Archetypes ->", "View all ->"; owner 10-29 "Fix the underline
+ * here"): one underline under the words only. As inline-flex the link made "Details" and the arrow two flex items,
+ * each with its own underline, broken at the space and at a different offset. As an inline-block the arrow span is
+ * an atomic inline, which an ancestor's underline never reaches. Underline tokens: arcana.css --link-underline-*. */
+html
+  body.alcor-std.alcor-std.alcor-std
+  :is(.link-arrow, .platform-card-about, .blog-shelf-heading > a) {
+  display: inline-block;
+  box-sizing: border-box;
+  line-height: 1.4;
+  text-decoration-line: underline;
+  text-decoration-style: solid;
+  text-decoration-thickness: var(--link-underline-thickness);
+  text-decoration-color: var(--link-underline-color);
+  text-underline-offset: var(--link-underline-offset);
+  text-decoration-skip-ink: auto;
+}
+html
+  body.alcor-std.alcor-std.alcor-std
+  :is(.link-arrow, .platform-card-about, .blog-shelf-heading > a):is(:hover, :focus-visible) {
+  color: var(--cyan);
+  text-decoration-color: var(--cyan);
+}
+html
+  body.alcor-std.alcor-std
+  :is(.link-arrow, .platform-card-about, .blog-shelf-heading > a)
+  > span[aria-hidden='true'] {
+  display: inline-block;
+  margin-left: 6px;
+  text-decoration: none;
+  transition: transform 150ms ease;
+}
+html body.alcor-std.alcor-std .link-arrow:hover > span[aria-hidden='true'] {
+  transform: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  html
+    body.alcor-std.alcor-std.alcor-std
+    :is(.link-arrow, .platform-card-about, .blog-shelf-heading > a):is(:hover, :focus-visible)
+    > span[aria-hidden='true'] {
+    transform: translateX(2px);
+  }
+}
+/* The /platform/ card's Details link sits beside a 44px button: the same height, its line centred by padding. */
+html body.alcor-std.alcor-std.alcor-std .platform-card-about {
+  min-height: 44px;
+  padding-block: calc((44px - 1.4em) / 2);
+}
+@media (max-width: 639px), (pointer: coarse) {
+  html body.alcor-std.alcor-std.alcor-std .link-arrow {
+    min-height: 44px;
+    padding-block: calc((44px - 1.4em) / 2);
+  }
+}
+
+/* ===== 5. Card: .card > .card__media + .card__body > (.eyebrow, h3, p, .card__actions) ===== */
+
+/* The grid. The Products pages still carry #apps and #products rules from the old sheets. */
+html body.alcor-std.alcor-std .card-grid,
+html body.alcor-std.alcor-std :is(#apps, #products) .card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
+  gap: 20px;
+  background: transparent;
+}
+/* Space between a section head and its grid (the old Products rules set this with an ID). */
+html body.alcor-std.alcor-std .section-inner > .card-grid,
+html body.alcor-std.alcor-std :is(#apps, #products) .section-inner > .card-grid {
+  margin-top: 48px;
+}
+@media (max-width: 639px) {
+  html body.alcor-std.alcor-std .section-inner > .card-grid,
+  html body.alcor-std.alcor-std :is(#apps, #products) .section-inner > .card-grid {
+    margin-top: 32px;
+  }
+}
+
+/* The surface, shared by .card and the legacy cards it absorbs. */
+html
+  body.alcor-std.alcor-std
+  :is(.card, .package, .upgrade, .audience-card, .platform-card, .b2b-card, .how-steps li),
+html body.alcor-std.alcor-std :is(#apps, #products) .card {
+  min-width: 0;
+  min-height: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: linear-gradient(180deg, rgba(246, 240, 228, 0.035), rgba(246, 240, 228, 0.012)),
+    var(--surface);
+  box-shadow: none;
+  transform: none;
+  overflow: hidden;
+  transition:
+    border-color 150ms ease,
+    transform 150ms ease;
+}
+/* The canonical card: no padding of its own, a flex column. */
+html body.alcor-std.alcor-std .card,
+html body.alcor-std.alcor-std :is(#apps, #products) .card {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+}
+/* Legacy cards have no .card__body, so they carry the padding themselves. The homepage audience cards also carry
+   .card but still have no body, so they keep the padding too. */
+html
+  body.alcor-std.alcor-std
+  :is(.package, .upgrade, .audience-card, .platform-card, .b2b-card, .how-steps li):not(.card),
+html body.alcor-std.alcor-std .audience-card.card {
+  padding: 24px;
+}
+@media (max-width: 639px) {
+  html
+    body.alcor-std.alcor-std
+    :is(.package, .upgrade, .audience-card, .platform-card, .b2b-card, .how-steps li):not(.card),
+  html body.alcor-std.alcor-std .audience-card.card {
+    padding: 20px;
+  }
+}
+/* Static cards do not move, glow or orbit (motion.css gave them a 6px lift, a halo and a gold orbit). */
+html
+  body.alcor-std.alcor-std
+  :is(.card, .package, .upgrade, .audience-card, .platform-card, .b2b-card, .how-steps li):hover,
+html
+  body.alcor-std.alcor-std
+  :is(.card, .package, .upgrade, .audience-card, .platform-card, .b2b-card, .how-steps li):active {
+  box-shadow: none;
+  transform: none;
+}
+html body.alcor-std.alcor-std :is(.package, .upgrade, .product, .how-steps li, .b2b-card)::after,
+html body.alcor-std.alcor-std .package.is-featured::before {
+  content: none;
+}
+html body.alcor-std.alcor-std .package.is-featured {
+  animation: none;
+  box-shadow: none;
+}
+/* Clickable cards (the whole card is the link) lift 2px and brighten the edge. */
+html body.alcor-std.alcor-std :is(a.card, .card--link, a.audience-card, a.abr-tile):hover {
+  border-color: var(--line-hover);
+  box-shadow: none;
+  transform: translateY(-2px);
+}
+
+/* Media: full bleed, 16:10, top-aligned, a hairline below. */
+html body.alcor-std.alcor-std :is(.card__media, .card > img:first-child),
+html body.alcor-std.alcor-std :is(#apps, #products) .card__media {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: var(--surface-raised);
+}
+html body.alcor-std.alcor-std :is(.card__media a, .card__media picture),
+html
+  body.alcor-std.alcor-std
+  :is(
+    .card__media > img,
+    .card__media a > img,
+    .card__media picture > img,
+    .card > img:first-child
+  ),
+html body.alcor-std.alcor-std :is(#apps, #products) .card__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+
+/* Body and actions. */
+html body.alcor-std.alcor-std .card__body,
+html body.alcor-std.alcor-std :is(#apps, #products) .card__body {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 0;
+  min-width: 0;
+  padding: 24px;
+}
+@media (max-width: 639px) {
+  html body.alcor-std.alcor-std .card__body,
+  html body.alcor-std.alcor-std :is(#apps, #products) .card__body {
+    padding: 20px;
+  }
+}
+html body.alcor-std.alcor-std .card__body > h3 {
+  margin: 0 0 8px;
+}
+html body.alcor-std.alcor-std .card__body > h3 a {
+  color: inherit;
+  text-decoration: none;
+}
+html body.alcor-std.alcor-std .card__body > p:not(.eyebrow),
+html body.alcor-std.alcor-std :is(#apps, #products) .card__body > p:not(.eyebrow) {
+  max-width: none;
+  margin: 0;
+  color: var(--std-body);
+  font-size: var(--type-body);
+  line-height: var(--leading-body);
+}
+/* Card copy is never clamped: each app card carries one complete sentence (inc/public-apps.php). */
+html body.alcor-std.alcor-std .card__actions,
+html body.alcor-std.alcor-std :is(#apps, #products) .card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  margin-top: auto;
+  padding-top: 20px;
+}
+
+/* App monogram tile colors, from the AlcorOS dock. The tile itself is in arcana.css; set data-app to the
+ * two-letter code (or use .app-tile--vi). */
+html body.alcor-std.alcor-std .app-tile:is([data-app='Vi' i], .app-tile--vi) {
+  --app-color: #8b5cf6;
+}
+html body.alcor-std.alcor-std .app-tile:is([data-app='Ph' i], .app-tile--ph) {
+  --app-color: #3b82f6;
+}
+html body.alcor-std.alcor-std .app-tile:is([data-app='QR' i], .app-tile--qr) {
+  --app-color: #14b8a6;
+}
+html body.alcor-std.alcor-std .app-tile:is([data-app='Re' i], .app-tile--re) {
+  --app-color: #22c55e;
+}
+html body.alcor-std.alcor-std .app-tile:is([data-app='Fi' i], .app-tile--fi) {
+  --app-color: #d4a24c;
+}
+html body.alcor-std.alcor-std .app-tile:is([data-app='Tr' i], .app-tile--tr) {
+  --app-color: #f97316;
+}
+html body.alcor-std.alcor-std .app-tile:is([data-app='Mu' i], .app-tile--mu) {
+  --app-color: #ec4899;
+}
+html body.alcor-std.alcor-std .app-tile:is([data-app='Er' i], .app-tile--er) {
+  --app-color: #64748b;
+}
+html body.alcor-std.alcor-std .app-tile:is([data-app='Ma' i], .app-tile--ma) {
+  --app-color: #0ea5e9;
+}
+
+/* Legacy app grid: the old .product-grid drew its cells with a 1px gap and a background. */
+html body.alcor-std.alcor-std :is(#apps, #products) .product-grid {
+  background: transparent;
+}
+html body.alcor-std.alcor-std :is(.package-grid, .audience-grid, .b2b-card-grid) {
+  gap: 20px;
+}
+
+/* Screenshots keep a media radius (the old token turned them into pills). */
+html body.alcor-std.alcor-std :is(.av-hero-shot img, .av-shot-grid img),
+html
+  body.alcor-std.alcor-std
+  main
+  > :is(
+    .product-insert,
+    .ap-products-insert,
+    .av-products-insert,
+    .aq-products-insert,
+    .ar-products-insert,
+    .am-products-insert
+  )
+  img {
+  border-radius: var(--radius-media);
+}
+
+/* ===== 6. Chip: filters and one status badge per card ===== */
+
+html body.alcor-std.alcor-std :is(.chip, .ahub-filter button, .platform-chips a) {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  height: 32px;
+  min-height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--std-line-control);
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--std-body);
+  font: 500 0.8125rem/1 var(--font-body);
+  letter-spacing: normal;
+  text-transform: none;
+  white-space: nowrap;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease;
+}
+html body.alcor-std.alcor-std :is(.chip, .ahub-filter button, .platform-chips a):hover {
+  border-color: var(--std-line-hover);
+  background: transparent;
+  color: var(--std-body);
+}
+html
+  body.alcor-std.alcor-std
+  :is(
+    .chip.is-active,
+    .chip.is-selected,
+    .chip[aria-pressed='true'],
+    .chip[aria-selected='true'],
+    .chip[aria-current],
+    .ahub-filter button[aria-pressed='true'],
+    .platform-chips a[aria-current],
+    .platform-chips a.is-active
+  ),
+html
+  body.alcor-std.alcor-std
+  :is(
+    .chip.is-active,
+    .chip.is-selected,
+    .chip[aria-pressed='true'],
+    .chip[aria-selected='true'],
+    .chip[aria-current],
+    .ahub-filter button[aria-pressed='true'],
+    .platform-chips a[aria-current],
+    .platform-chips a.is-active
+  ):hover {
+  border-color: var(--paper);
+  background: var(--paper);
+  color: var(--void);
+}
+/* Buttons and links among them stay 44px to hit on phones without growing the chip. */
+@media (max-width: 639px), (pointer: coarse) {
+  html
+    body.alcor-std.alcor-std
+    :is(button.chip, a.chip, .ahub-filter button, .platform-chips a)::after {
+    content: '';
+    position: absolute;
+    inset: -6px 0;
+  }
+}
+/* 6b. Stand-alone text links keep a 44px hit area on phones without moving anything. The ::after is
+   centred on the link and 44px tall, so a link already taller than that (a wrapped title) gains nothing
+   and never reaches into a neighbour. Links in running text are exempt (WCAG inline exception) except the
+   quote-form note, which is a stand-alone line. Chips above use the same idea (alcor-arcana.css section 6). */
+@media (max-width: 639px), (pointer: coarse) {
+  html
+    body.alcor-std.alcor-std
+    :is(
+      .blog-breadcrumb a,
+      .blog-back a,
+      .blog-shelf-heading > a,
+      .blog-pagination a,
+      .blog-related__link,
+      .platform-card-primary,
+      .alcor-contact .ac-note a,
+      .card__body > h3 > a,
+      .agx-row a
+    ) {
+    position: relative;
+  }
+  html
+    body.alcor-std.alcor-std
+    :is(
+      .blog-breadcrumb a,
+      .blog-back a,
+      .blog-shelf-heading > a,
+      .blog-pagination a,
+      .blog-related__link,
+      .platform-card-primary,
+      .alcor-contact .ac-note a,
+      .card__body > h3 > a,
+      .agx-row a
+    )::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    top: 50%;
+    height: 44px;
+    transform: translateY(-50%);
+  }
+  /* The first "learn more" link has the title above it and a 12px gap to the next link, so it grows upward only
+     (a second short link below would otherwise take the lower half of its area). */
+  html body.alcor-std.alcor-std .blog-related__list > li:first-child > .blog-related__link::after {
+    top: auto;
+    bottom: 0;
+    transform: none;
+  }
+  /* The seek slider: 8px of padding above (4px of its margin plus 4px over the label text), nothing below
+     where the next panel starts, so the track stays where it was. */
+  html body.alcor-std.alcor-std .arcade__timeline input {
+    margin-top: -4px;
+    padding: 8px 0 0;
+    box-sizing: content-box;
+  }
+}
+/* Decorative chip rows are gone. */
+html body.alcor-std.alcor-std :is(.hero-facts, .home-showroom-proof) {
+  display: none;
+}
+
+/* ===== 7. Section and section head ===== */
+
+html body.alcor-std.alcor-std .section {
+  padding-block: var(--section-y);
+  padding-inline: var(--site-gutter);
+  border-top: 0;
+  background-image: none;
+}
+/* A band changes the background, never a gradient line. */
+html body.alcor-std.alcor-std .section:is(.wordpress-band, .audience-band, .about-band, .band) {
+  background-color: var(--surface);
+  background-image: none;
+}
+html body.alcor-std.alcor-std .section-inner {
+  width: min(var(--site-column), 100%);
+  margin-inline: auto;
+}
+html body.alcor-std.alcor-std .section-head {
+  margin: 0 0 48px;
+  text-align: left;
+}
+html body.alcor-std.alcor-std .section-head > :is(.lede, .section-lede, p:not(.eyebrow)) {
+  margin-top: 16px;
+}
+@media (max-width: 639px) {
+  html body.alcor-std.alcor-std .section-head {
+    margin-bottom: 32px;
+  }
+}
+/* The closing call to action and the quote form are centered, 720px wide. */
+html body.alcor-std.alcor-std .closing {
+  padding-block: var(--section-y);
+  padding-inline: var(--site-gutter);
+  background: var(--void);
+}
+html body.alcor-std.alcor-std .closing::before {
+  content: none;
+}
+html body.alcor-std.alcor-std .closing-inner {
+  width: min(720px, 100%);
+  padding: 0;
+  text-align: center;
+}
+html body.alcor-std.alcor-std .closing :is(h2, .lede, .section-lede) {
+  margin-inline: auto;
+}
+html body.alcor-std.alcor-std .closing-inner > p:not(.closing-email):not(.eyebrow) {
+  max-width: 60ch;
+  margin: 16px auto 0;
+  color: var(--std-body);
+  font-size: var(--type-lede);
+  line-height: 1.55;
+}
+html body.alcor-std.alcor-std :is(.section-head--center, .closing .section-head) {
+  max-width: 720px;
+  margin-inline: auto;
+  text-align: center;
+}
+html body.alcor-std.alcor-std .closing-form {
+  margin-top: 48px;
+  text-align: left;
+}
+@media (max-width: 639px) {
+  html body.alcor-std.alcor-std .closing-form {
+    margin-top: 32px;
+  }
+}
+/* Space after a section head, for the grids that follow it in the old markup. */
+html body.alcor-std.alcor-std .section-inner > .section-lede ~ :is(.package-grid, .audience-grid) {
+  margin-top: 48px;
+}
+@media (max-width: 639px) {
+  html
+    body.alcor-std.alcor-std
+    .section-inner
+    > .section-lede
+    ~ :is(.package-grid, .audience-grid) {
+    margin-top: 32px;
+  }
+}
+/* Page hero: padding-top is 96px on desktop. The header is fixed and 72px tall, so phones add it to their 56px
+ * (56px alone would sit under the bar). /agi/ and 404 are heroes too: the simulator and the 404 head. */
+html
+  body.alcor-std.alcor-std
+  :is(
+    .page-heading,
+    .platform-hero,
+    .agx-hero,
+    .creative-arcana__hero,
+    .ahub-hero,
+    .abr-head,
+    .agi-gameplay
+  ),
+html body.alcor-std.alcor-std main.error-404 > .section:first-child {
+  padding-top: 96px;
+}
+@media (max-width: 639px) {
+  html
+    body.alcor-std.alcor-std
+    :is(
+      .page-heading,
+      .platform-hero,
+      .agx-hero,
+      .creative-arcana__hero,
+      .ahub-hero,
+      .abr-head,
+      .agi-gameplay
+    ),
+  html body.alcor-std.alcor-std main.error-404 > .section:first-child {
+    padding-top: calc(72px + 56px);
+  }
+}
+/* No 1px rule between sections: space separates them. These sheets still draw one (the privacy notice, the /for/
+ * closing and switcher, the demo and app-page closings, /agents/ and the app landing sections). */
+html
+  body.alcor-std.alcor-std
+  :is(
+    .privacy-section,
+    .b2b-closing,
+    .b2b-audience-switcher,
+    .dmo-close,
+    .aui-close,
+    .agx-section,
+    .ap-section,
+    .av-section,
+    .aq-section,
+    .am-section,
+    .at-section
+  ) {
+  border-top: 0;
+}
+
+/* ===== 8. Forms: the quote form, everywhere ===== */
+
+html body.alcor-std.alcor-std .alcor-contact label {
+  gap: 8px;
+  color: var(--std-ink);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: normal;
+  text-transform: none;
+}
+html body.alcor-std.alcor-std .alcor-contact .ac-optional {
+  color: var(--std-quiet);
+  font-weight: 400;
+  letter-spacing: normal;
+  text-transform: none;
+}
+html body.alcor-std.alcor-std .alcor-contact :is(input, select, textarea) {
+  box-sizing: border-box;
+  width: 100%;
+  height: 48px;
+  padding: 0 14px;
+  border: 1px solid var(--std-line-control);
+  border-radius: var(--radius-input);
+  /* Solid, not a tint: a translucent field let the section's stars show through inside it (fb-quoteform). */
+  background-color: var(--surface);
+  color: var(--std-ink);
+  font: 400 1rem/1.4 var(--font-body);
+}
+/* Chrome draws a translucent select's option list on white, where the cream option text vanished. The options
+   carry the opaque raised surface instead. */
+html body.alcor-std.alcor-std .alcor-contact select :is(option, optgroup) {
+  background-color: var(--surface-raised);
+  color: var(--std-ink);
+}
+html body.alcor-std.alcor-std .alcor-contact textarea {
+  height: auto;
+  min-height: 140px;
+  padding: 12px 14px;
+  resize: vertical;
+}
+html body.alcor-std.alcor-std .alcor-contact :is(input, select, textarea):focus {
+  outline: 0;
+  border-color: var(--cyan);
+  box-shadow: 0 0 0 3px rgba(83, 217, 212, 0.25);
+}
+html body.alcor-std.alcor-std .alcor-contact [aria-invalid='true'] {
+  border-color: var(--red);
+}
+/* Two columns from 640px, one below. */
+html body.alcor-std.alcor-std .alcor-contact .ac-row {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+}
+@media (min-width: 640px) {
+  html body.alcor-std.alcor-std .alcor-contact .ac-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+html body.alcor-std.alcor-std .alcor-contact .ac-note {
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Quote form QA (fb-quoteform, owner 10-29 "QA this"). Shared by every quote form (home, /platform/, /for/*,
+ * /archetypes/); only the homepage section is centered (section 20 below). */
+/* The select draws its own chevron 16px in from the edge, with room so the value never runs under it. Gradients,
+ * not an image, so no page CSP has a say. */
+html body.alcor-std.alcor-std.alcor-std .alcor-contact select {
+  -webkit-appearance: none;
+  appearance: none;
+  padding-inline-end: 44px;
+  background-image: linear-gradient(45deg, transparent 50%, var(--std-body) 50%),
+    linear-gradient(135deg, var(--std-body) 50%, transparent 50%);
+  background-position:
+    calc(100% - 22px) 50%,
+    calc(100% - 17px) 50%;
+  background-size:
+    5px 5px,
+    5px 5px;
+  background-repeat: no-repeat;
+  cursor: pointer;
+}
+/* Chrome's autofill paints the field pale yellow/white; an inset shadow keeps it on the dark field. */
+html body.alcor-std.alcor-std .alcor-contact :is(input, textarea, select):-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px var(--surface) inset;
+  box-shadow: 0 0 0 1000px var(--surface) inset;
+  -webkit-text-fill-color: var(--std-ink);
+  caret-color: var(--std-ink);
+  transition: background-color 600000s 0s;
+}
+html body.alcor-std.alcor-std .alcor-contact :is(input, textarea, select):-webkit-autofill:focus {
+  -webkit-box-shadow:
+    0 0 0 1000px var(--surface) inset,
+    0 0 0 3px rgba(83, 217, 212, 0.25);
+  box-shadow:
+    0 0 0 1000px var(--surface) inset,
+    0 0 0 3px rgba(83, 217, 212, 0.25);
+}
+html
+  body.alcor-std.alcor-std
+  .alcor-contact
+  :is(input, select, textarea)[aria-invalid='true']:focus {
+  border-color: var(--red);
+  box-shadow: 0 0 0 3px rgba(255, 78, 106, 0.25);
+}
+html body.alcor-std.alcor-std .alcor-contact .ac-error {
+  color: #ffb8b8;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+/* The status line is body type (Inter everywhere), colored by its state. */
+html body.alcor-std.alcor-std .alcor-contact .ac-status {
+  font-family: var(--font-body);
+  color: var(--std-body);
+}
+html body.alcor-std.alcor-std .alcor-contact .ac-status[data-state='ok'] {
+  color: var(--cyan);
+}
+html body.alcor-std.alcor-std .alcor-contact .ac-status[data-state='error'] {
+  color: #ffb8b8;
+}
+html body.alcor-std.alcor-std .alcor-contact .ac-status:empty {
+  min-height: 0;
+}
+/* The Arcana-reading notice (the form script puts it just above the form): a full-width notice on the form's edges,
+ * 20px above the first label, with "Remove it" as a small outline button (44px tall on phones). */
+html
+  body.alcor-std.alcor-std.alcor-std.alcor-std.alcor-std.alcor-std
+  p.ac-note.ac-reading[data-arcana-reading] {
+  box-sizing: border-box;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 0 20px;
+  padding: 12px 16px;
+  border: 1px solid rgba(83, 217, 212, 0.32);
+  border-radius: var(--radius-input);
+  background: #0b1416;
+  color: var(--std-body);
+  text-align: left;
+}
+html body.alcor-std.alcor-std .ac-reading .ac-reading__remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  min-height: 36px;
+  padding: 0 16px;
+  border: 1px solid rgba(246, 240, 228, 0.26);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--std-ink);
+  font: 600 0.875rem/1 var(--font-body);
+  cursor: pointer;
+}
+html body.alcor-std.alcor-std .ac-reading .ac-reading__remove:hover {
+  border-color: rgba(246, 240, 228, 0.5);
+}
+html body.alcor-std.alcor-std .ac-reading .ac-reading__remove:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+}
+@media (max-width: 639px) {
+  html body.alcor-std.alcor-std .ac-reading .ac-reading__remove {
+    min-height: 44px;
+  }
+}
+
+/* ===== 9. Archetype cards: straight, 3:5, a two-line caption, aligned rows ===== */
+
+/* The rail (homepage) and any grid of the same cards: no tilt, no rotation, no deal. */
+html
+  body.alcor-std.alcor-std
+  :is(.arcana-rail, .arcana-rail > li, .arcana-card, .arcana-card__art) {
+  transform: none !important;
+  animation: none !important;
+}
+html
+  body.alcor-std.alcor-std
+  :is(.arcana-rail > li:nth-child(n), .arcana-rail > li:is(:hover, :focus-within))
+  .arcana-card {
+  transform: none !important;
+}
+html body.alcor-std.alcor-std .arcana-card {
+  aspect-ratio: 3 / 5;
+  inline-size: clamp(9rem, 14vw, 13rem);
+  border-radius: var(--radius-media);
+  transition: border-color 150ms ease;
+}
+html body.alcor-std.alcor-std .arcana-card:hover {
+  border-color: var(--line-hover);
+}
+html body.alcor-std.alcor-std .arcana-card__art {
+  block-size: 100%;
+}
+html body.alcor-std.alcor-std .arcana-card__art > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+/* Caption: the name (600, 1rem, ink) then one quiet line. The industry sits in the DOM first; order puts it second. */
+html body.alcor-std.alcor-std .arcana-rail > li {
+  align-content: start;
+  justify-items: center;
+}
+html body.alcor-std.alcor-std .arcana-card__caption {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  width: clamp(9rem, 14vw, 13rem);
+  min-height: calc(1rem * 1.3 + var(--type-small) * 1.4 + 2px);
+  color: var(--paper);
+  font: 600 1rem/1.3 var(--font-body);
+  letter-spacing: normal;
+  text-align: center;
+}
+html body.alcor-std.alcor-std .arcana-card__type {
+  order: 2;
+  max-width: 100%;
+  margin: 0;
+  overflow: hidden;
+  color: var(--quiet);
+  font: 400 var(--type-small) / 1.4 var(--font-body);
+  letter-spacing: normal;
+  text-overflow: ellipsis;
+  text-transform: none;
+  white-space: nowrap;
+}
+/* The rail: horizontal scroll, snap, a visible fade at both edges. Tab reaches it, arrow keys scroll it. */
+html body.alcor-std.alcor-std .arcana-rail-wrap {
+  scroll-snap-type: x mandatory;
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent 0,
+    #000 40px,
+    #000 calc(100% - 40px),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    90deg,
+    transparent 0,
+    #000 40px,
+    #000 calc(100% - 40px),
+    transparent 100%
+  );
+}
+html body.alcor-std.alcor-std .arcana-rail-wrap:focus-visible {
+  outline: 2px solid var(--paper);
+  outline-offset: -2px;
+}
+html body.alcor-std.alcor-std .arcana-rail > li {
+  scroll-snap-align: start;
+}
+/* Rail header: the eyebrow on the left, the Browse link on the right. No instructions. */
+html body.alcor-std.alcor-std .home-arcana-rail {
+  border-block: 0;
+  background: none;
+}
+html body.alcor-std.alcor-std .home-arcana-rail__intro {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 24px;
+}
+html body.alcor-std.alcor-std .home-arcana-rail__intro > span:first-child {
+  margin: 0;
+  color: var(--gold);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+html body.alcor-std.alcor-std .home-arcana-rail__intro > p {
+  display: none;
+}
+
+/* ===== 10. Brand pages: Alcor chrome around the sub-brand's own type ===== */
+
+html body.alcor-std.alcor-std .abr-tier h3 {
+  margin: 0;
+  font-size: var(--type-h3);
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+/* Prices are not shown anywhere; a leftover price element stays out of sight. */
+html body.alcor-std.alcor-std .abr-tier__price {
+  display: none;
+}
+html body.alcor-std.alcor-std .abr-tier__label {
+  margin-bottom: 0;
+}
+
+/* ===== 11. Motion: hover and focus only ===== */
+
+/* Reveal neutraliser. motion.css no longer hides anything, but motion.js still tags targets: if a stale
+ * cached copy of the old rules is served, an untagged-yet element still renders visible. Scoped to the
+ * not-yet-revealed state, so hover transforms on revealed cards are untouched. */
+html.ai-reveal body.alcor-std [data-ai-reveal]:not(.is-in) {
+  opacity: 1 !important;
+  transform: none !important;
+}
+/* Text arrival, header progress bar and the button sheen are gone; the constellation draw-in stays. */
+html body.alcor-std.alcor-std .hero .hero-content > * {
+  animation: none;
+}
+html body.alcor-std.alcor-std:is(.home) .hero .hero-content > * {
+  animation-name: ai-hero-rise;
+}
+html body.alcor-std.alcor-std :is(.primary-link, .btn--primary)::after {
+  content: none;
+}
+
+/* ===== 12. Header (every page) ===== */
+
+html body .site-header {
+  min-height: 72px;
+  padding-block: 12px;
+  border-bottom: 1px solid transparent;
+  /* Always dark, so the nav stays readable over the cream Archetype pages too. */
+  background: rgba(5, 6, 8, 0.82);
+  box-shadow: none;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease;
+}
+html body .site-header::after {
+  content: none;
+}
+html body .site-header:is(.is-scrolled, .nav-open) {
+  border-bottom-color: var(--line);
+  background: rgba(5, 6, 8, 0.82);
+  box-shadow: none;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+html body .site-header .brand-text {
+  color: var(--paper);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+html body .site-header .nav-links {
+  gap: 28px;
+  color: var(--muted);
+  font: 500 0.9375rem/1.4 var(--font-body);
+}
+html body .site-header .nav-links a {
+  border-bottom: 0;
+  color: var(--muted);
+  transition: color 150ms ease;
+}
+html body .site-header .nav-links a:hover {
+  color: var(--paper);
+  border-color: transparent;
+}
+html body .site-header .nav-links a[aria-current='page'] {
+  color: var(--paper);
+  text-decoration: underline;
+  text-decoration-color: var(--cyan);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 6px;
+}
+/* "Get a quote" is the secondary, compact button. */
+html body .site-header .header-cta {
+  box-sizing: border-box;
+  height: var(--button-height-compact);
+  min-height: var(--button-height-compact);
+  padding: 0 16px;
+  border: 1px solid var(--line-control);
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--paper);
+  font: 600 0.875rem/1 var(--font-body);
+  letter-spacing: -0.005em !important;
+  text-transform: none !important;
+  white-space: nowrap;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease;
+}
+html body .site-header .header-cta:hover {
+  border-color: var(--line-hover);
+  background: rgba(246, 240, 228, 0.06);
+  color: var(--paper);
+}
+/* Mobile menu button: a 44px target. */
+html body .site-header .nav-toggle {
+  min-width: 44px;
+  min-height: 44px;
+  border-color: var(--line-control);
+  background: transparent;
+  font: 600 0.875rem/1 var(--font-body);
+  letter-spacing: normal !important;
+  text-transform: none !important;
+}
+html body .site-header .nav-toggle:hover {
+  border-color: var(--line-hover);
+}
+@media (max-width: 639px), (pointer: coarse) {
+  html body .site-header .header-cta {
+    min-height: 44px;
+    height: auto;
+  }
+}
+html body .site-header :is(a, button):focus-visible,
+html body .site-footer a:focus-visible {
+  outline: 2px solid var(--paper);
+  outline-offset: 3px;
+}
+
+/* The parent bar above app pages takes the type and the focus ring; its layout stays. */
+html body .alcor-parent-bar {
+  font-family: var(--font-body);
+}
+html body .alcor-parent-bar a:focus-visible {
+  outline: 2px solid var(--paper);
+  outline-offset: 3px;
+}
+/* Labels are violet; gold belongs to Archetypes and Arcana. The bar's inline sheet paints its star mark, the
+ * current-app pill and the loading state gold, so they are re-pointed here (the weight beats the inline rules). */
+html body .alcor-parent-bar .alcor-parent-bar__home-mark {
+  color: var(--violet, #b38cff);
+}
+html body .alcor-parent-bar .alcor-parent-bar__product[aria-current='page'] {
+  border-color: rgba(179, 140, 255, 0.42);
+  background: rgba(179, 140, 255, 0.13);
+  color: var(--paper, #f6f0e4);
+}
+html body .alcor-product-state[data-state-kind='loading'] {
+  border-color: rgba(179, 140, 255, 0.34);
+}
+html body .alcor-product-state .alcor-product-state__indicator {
+  border-top-color: var(--violet, #b38cff);
+}
+
+/* ===== 13. Footer (every page, app screens included) ===== */
+
+html body .site-footer {
+  padding-block: 56px;
+  border-top: 1px solid var(--line);
+}
+html body .site-footer .footer-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 40px 64px;
+  width: min(var(--site-column), calc(100% - 2 * var(--site-gutter)));
+  margin-inline: auto;
+  padding: 0;
+  color: var(--quiet);
+  font-size: var(--type-small);
+}
+html body .site-footer .footer-wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  min-height: 44px;
+  color: var(--paper);
+  font: 700 1.125rem/1.2 var(--font-body);
+  letter-spacing: -0.01em;
+  text-decoration: none;
+}
+html body .site-footer .footer-wordmark > span {
+  display: inline-flex;
+  align-items: center;
+}
+html body .site-footer .footer-line {
+  max-width: 36ch;
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: var(--type-small);
+  line-height: 1.5;
+}
+html body .site-footer .footer-links {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 32px 24px;
+}
+html body .site-footer .footer-group__title {
+  margin: 0 0 12px;
+  color: var(--quiet);
+  font: 600 0.8125rem/1.4 var(--font-body);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+html body .site-footer .footer-group ul {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+html body .site-footer .footer-group a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--muted);
+  font: 500 0.9375rem/1.4 var(--font-body);
+  text-decoration: none;
+  transition: color 150ms ease;
+}
+html body .site-footer .footer-group a:hover {
+  color: var(--paper);
+}
+/* The address stays on one line: it never breaks at its hyphen or anywhere else. */
+html body .site-footer .footer-group a[href^='mailto:'] {
+  overflow-wrap: normal;
+  word-break: normal;
+  white-space: nowrap;
+}
+/* Phones: Contact gets the full row, so the address has the width it needs. */
+@media (max-width: 639px) {
+  html body .site-footer .footer-group--contact {
+    grid-column: 1 / -1;
+  }
+}
+html body .site-footer .footer-legal {
+  margin: 40px 0 0;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+  color: var(--quiet);
+  font-size: var(--type-small);
+  line-height: 1.5;
+}
+@media (min-width: 640px) {
+  /* Columns never narrow below their widest link, so the address is not squeezed at 640 to 760px. */
+  html body .site-footer .footer-links {
+    grid-template-columns: repeat(3, minmax(max-content, 1fr));
+  }
+}
+@media (min-width: 1024px) {
+  html body .site-footer .footer-inner {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+  }
+  html body .site-footer .footer-links {
+    grid-template-columns: repeat(3, minmax(140px, auto));
+    gap: 24px 56px;
+  }
+  html body .site-footer .footer-legal {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ===== 14. Reduced motion: no transforms or animations ===== */
+
+@media (prefers-reduced-motion: reduce) {
+  html
+    body.alcor-std.alcor-std.alcor-std
+    :is(
+      .btn,
+      .link-arrow,
+      .card,
+      .chip,
+      .arcana-card,
+      :where(.primary-link, .secondary-link, .package, .audience-card, a.abr-tile)
+    ),
+  html body.alcor-std.alcor-std.alcor-std :is(#apps, #products) .card {
+    transition: none;
+  }
+  /* The state negations match the hover rules above, so the lift is cancelled at equal weight. */
+  html
+    body.alcor-std.alcor-std.alcor-std
+    :is(
+      .btn,
+      .card,
+      .mobile-cta,
+      :where(.primary-link, .secondary-link, .audience-card, a.abr-tile)
+    ):is(:hover, :active):not(:disabled):not([aria-disabled='true']),
+  html body.alcor-std.alcor-std.alcor-std .link-arrow:hover > span[aria-hidden='true'] {
+    transform: none;
+  }
+  html body .site-header,
+  html body .site-header :is(a, button),
+  html body .site-footer a {
+    transition: none;
+  }
+}
+
+/* ===== 17. Launch QA fixes (AlcorDesign sweep at ecc9e21c, 2026-10-28) ===== */
+
+/* App header actions ("Open AlcorMusic", "Open editor") are compact primaries. The label is one text run
+   (alcor-product-names.js only wraps names inside uppercase text), so no gap has to stand in for a space. */
+html body.alcor-std.alcor-std.alcor-std :is(.aa-header-action, .av-header-action) {
+  height: var(--button-height-compact);
+  padding: 0 16px;
+  font-size: 0.875rem;
+}
+
+/* Decorative hero chip rows on the app landings go, like every other chip band. */
+html body.alcor-std.alcor-std :is(.ap-lp-promise, .av-proof-list) {
+  display: none !important;
+}
+
+/* Two-column app heroes: the page h1 size wraps to five lines in a half-width column. */
+html
+  body.alcor-std.alcor-std:is(
+    .alcor-photo-landing,
+    .alcor-video-landing,
+    .alcor-music-landing,
+    .alcor-qr-landing,
+    .alcor-translate-landing
+  )
+  main
+  h1 {
+  font-size: clamp(
+    2.375rem,
+    1.3rem + 2.8vw,
+    4rem
+  ); /* 94% of the Inter size: Sora sets wider (arcana.css) */
+  max-width: 15ch;
+}
+
+/* AlcorMap is an app screen (no alcor-std), but its landing button follows the standard. */
+html body.alcormap-page .am-enter {
+  min-height: 48px;
+  padding: 0 22px;
+  border-radius: 999px;
+  font: 600 0.9375rem/1 var(--font-body);
+  letter-spacing: -0.005em;
+  text-transform: none;
+}
+
+/* ===== 18. Style pass 2 (full-page homepage review at 3744c72d, 2026-10-28) ===== */
+
+/* Brand lockup: the star-haze mark beside the name, in the header and the footer (owner: no Big Dipper mark). */
+html body .site-header .brand-lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+html body .site-header .brand-lockup .brand-star {
+  width: 28px;
+  height: 28px;
+  flex: none;
+}
+html body .site-footer .footer-wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+html body .site-footer .footer-wordmark .brand-star {
+  width: 32px;
+  height: 32px;
+  flex: none;
+}
+/* The star is the Alcor mark's small cut (alcor-star-small.svg, an <img> from alcor_brand_star_svg): star and haze
+ * disc, no hairline arcs, so it stays crisp at 24 to 32px. */
+html body :is(.site-header, .site-footer) .brand-star {
+  display: block;
+}
+
+/* Narrow header. The grid is brand | Menu | Get a quote, and the brand column may shrink below its text, so at 390
+ * the wordmark ran 30px under the Menu button. Up to 640px the lockup is smaller (24px star, 8px gap, 15px name),
+ * which fits beside both buttons from 481px. At 480px and below "Get a quote" leaves the bar: quotes are reached
+ * through the page buttons and the homepage's sticky mobile button, and the brand and the 44px Menu button stay. */
+@media (max-width: 640px) {
+  html body .site-header .brand-lockup {
+    gap: 8px;
+  }
+  html body .site-header .brand-lockup .brand-text {
+    font-size: 15px;
+  }
+  html body .site-header .brand-lockup .brand-star {
+    width: 24px;
+    height: 24px;
+  }
+}
+@media (max-width: 480px) {
+  html body .site-header {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  html body .site-header .header-cta {
+    display: none;
+  }
+}
+
+/* Header layout shift on phones and tablets. Until site.js adds .nav-ready (and the Menu button), site.css lays the
+ * header out in normal flow with the links wrapped under the brand (a no-JavaScript fallback), 100px tall at 390.
+ * When the class arrives the bar becomes the fixed 72px one and the whole page jumps up 100px: the 0.118 CLS on
+ * every page at 390. Where scripting is on, the not-ready header is already the fixed bar with its links tucked
+ * away, so nothing moves when the Menu button appears. Without scripting the fallback is untouched. /for/ pages
+ * switch at 980px instead of 920px. */
+@media (scripting: enabled) and (max-width: 920px) {
+  html body .site-header:not(.nav-ready) {
+    position: fixed;
+  }
+  html body .site-header:not(.nav-ready) .nav-links {
+    display: none;
+  }
+}
+@media (scripting: enabled) and (max-width: 980px) {
+  html body .b2b-header:not(.nav-ready) {
+    position: fixed;
+  }
+  html body .b2b-header:not(.nav-ready) .nav-links {
+    display: none;
+  }
+}
+
+/* The Archetypes showcase copy sits in a narrow column: a section h2 at full size wrapped to four lines. */
+html body.alcor-std.alcor-std .amd-showcase__copy h2 {
+  font-size: clamp(1.75rem, 1rem + 1.4vw, 2.25rem);
+  max-width: 14ch;
+}
+
+/* The Archetype rail starts on the page column and bleeds off to the right, like a shelf. */
+html body.alcor-std.alcor-std .home-arcana-rail .arcana-rail-wrap {
+  padding-inline: max(var(--site-gutter, 20px), calc((100% - var(--site-column, 1180px)) / 2));
+  scroll-padding-inline: max(
+    var(--site-gutter, 20px),
+    calc((100% - var(--site-column, 1180px)) / 2)
+  );
+}
+
+/* Labels are violet; gold belongs to Archetypes and Arcana. */
+html body.alcor-std.alcor-std .audience-card span {
+  color: var(--violet);
+}
+
+/* Step copy reads at body size. */
+html body.alcor-std.alcor-std .how-steps li span {
+  font-size: 1rem;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+/* FAQ: one component for /, /archetypes/, /for/* and /agi/. .faq-block lays the section head (eyebrow, h2) on the
+ * left and the .faq-list on the right (one column under 981px); each row is a <details> whose summary carries a
+ * cyan + on the right that turns into a minus when open. The ID-weight :is() beats site.css's old `#how .faq` rows. */
+html body.alcor-std.alcor-std.alcor-std :is(.faq-block, #x) {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(48px, 8vw, 120px);
+  align-items: start;
+}
+@media (max-width: 980px) {
+  html body.alcor-std.alcor-std.alcor-std :is(.faq-block, #x) {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+  }
+}
+html body.alcor-std.alcor-std.alcor-std :is(.faq-block, #x) > .faq-block__head {
+  margin: 0;
+}
+html body.alcor-std.alcor-std.alcor-std :is(.faq-block, #x) > .faq-block__head > h2 {
+  margin: 12px 0 0;
+}
+html body.alcor-std.alcor-std.alcor-std :is(.faq-list, #x) {
+  margin: 0;
+  max-width: none;
+}
+html body.alcor-std.alcor-std.alcor-std :is(.faq-list, #x) > details {
+  margin: 0;
+  padding: 12px 0;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: none;
+}
+html body.alcor-std.alcor-std.alcor-std :is(.faq-list, #x) > details:first-child {
+  border-top: 1px solid var(--line);
+}
+html body.alcor-std.alcor-std.alcor-std :is(.faq-list, #x) > details > summary {
+  position: relative;
+  display: block;
+  min-height: 44px;
+  padding: 10px 34px 10px 0;
+  cursor: pointer;
+  list-style: none;
+  color: var(--paper);
+  font: 600 1.0625rem/1.4 var(--font-body);
+  letter-spacing: normal;
+}
+html
+  body.alcor-std.alcor-std.alcor-std
+  :is(.faq-list, #x)
+  > details
+  > summary::-webkit-details-marker {
+  display: none;
+}
+html body.alcor-std.alcor-std.alcor-std :is(.faq-list, #x) > details > summary::marker {
+  content: '';
+}
+html body.alcor-std.alcor-std.alcor-std :is(.faq-list, #x) > details > summary::before {
+  content: none;
+}
+html body.alcor-std.alcor-std.alcor-std :is(.faq-list, #x) > details > summary::after {
+  content: '+';
+  position: absolute;
+  top: 10px;
+  right: 4px;
+  color: var(--cyan);
+  font:
+    400 1.0625rem/1.4 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Consolas,
+    monospace;
+}
+html body.alcor-std.alcor-std.alcor-std :is(.faq-list, #x) > details[open] > summary::after {
+  content: '\2212';
+}
+html body.alcor-std.alcor-std.alcor-std :is(.faq-list, #x) > details > p {
+  max-width: 62ch;
+  margin: 4px 0 10px;
+  color: var(--std-body);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+}
+/* The one Big Dipper on the site: beside the note on the name, with Alcor in magenta. Every other
+   constellation was retired (owner, 2026-10-28); alcor_constellation_svg() only draws the 'story' variant. */
+html body.alcor-std.alcor-std .about-sky {
+  margin: 40px 0 0;
+  max-width: 340px;
+}
+html body.alcor-std.alcor-std .about-sky .alcor-constellation.is-story {
+  position: static;
+  inset: auto;
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 0;
+  opacity: 1;
+  transform: none;
+  pointer-events: none;
+}
+html body.alcor-std.alcor-std .about-sky .alcor-constellation-line {
+  fill: none;
+  stroke: rgba(246, 240, 228, 0.26);
+  stroke-width: 1;
+}
+html body.alcor-std.alcor-std .about-sky .alcor-constellation-star {
+  fill: var(--paper);
+}
+html body.alcor-std.alcor-std .about-sky .alcor-constellation-alcor {
+  fill: var(--magenta);
+}
+html body.alcor-std.alcor-std .about-sky .alcor-constellation-halo {
+  fill: rgba(255, 94, 196, 0.22);
+}
+html body.alcor-std.alcor-std .about-sky figcaption {
+  margin-top: 12px;
+  color: var(--quiet);
+  font-size: var(--type-small, 0.875rem);
+}
+@media (max-width: 639px) {
+  html body.alcor-std.alcor-std .about-sky {
+    max-width: 260px;
+    margin-top: 28px;
+  }
+}
+
+/* ===== 19. Launch polish (site-wide review, 2026-10-28) ===== */
+
+/* 404: the section is a 22px-gap start-aligned grid, so the app grid takes the whole row and the gaps are
+ * topped up to the standard's 48px (32px on phones) from the heading to the grid, 72px (56px) before the heading. */
+html body.alcor-std.alcor-std .error-404 .section-inner > .card-grid {
+  width: 100%;
+  margin-top: 26px;
+}
+html body.alcor-std.alcor-std .error-404 .error-404-tools-title {
+  margin-top: 50px;
+}
+@media (max-width: 639px) {
+  html body.alcor-std.alcor-std .error-404 .section-inner > .card-grid {
+    margin-top: 10px;
+  }
+  html body.alcor-std.alcor-std .error-404 .error-404-tools-title {
+    margin-top: 34px;
+  }
+}
+
+/* ===== 20. Design lint fixes (full-site lint, 2026-10-28) ===== */
+
+/* Tap targets on phones. The breadcrumb links and "See all 22 Archetype designs" take their own 44px line. The
+ * AlcorOS address-bar link ("Open the full site") keeps its ellipsis, so it gets padding rather than a flex display. */
+@media (max-width: 639px) {
+  html body.alcor-std.alcor-std :is(.alcor-breadcrumbs, .abr-neighbors__all) a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+  /* The 44px link box centres its text; the current item is plain text at the top of its row. Baseline-aligned
+   * rows put "Archetypes" and "/ The Emperor" on one line (fb-archqa). */
+  html body.alcor-std.alcor-std .alcor-breadcrumbs ol {
+    align-items: baseline;
+  }
+  /* The order section's email and phone links (polish.css gives them 12px on top only: 35px). */
+  html body.alcor-std.alcor-std .closing-email a {
+    padding-block: 10.5px;
+    margin-block: -10.5px;
+  }
+  html body.alcor-std.alcor-std .amd-browserbar > a {
+    box-sizing: border-box;
+    min-height: 44px;
+    padding-block: 14px;
+  }
+}
+
+/* The offer heading on a brand page ("This site, with your name on the door.") is Alcor chrome, so it is the standard
+ * h2. The brand's display weight (300 on some) and its own size belong to the sample site above it. */
+html body.alcor-std.alcor-std main[data-brand] .abr-section.abr-offer h2.abr-heading {
+  max-width: 20ch;
+  font-size: var(--type-h2);
+  font-style: normal;
+  font-weight: 700;
+  text-transform: none;
+  text-wrap: balance;
+}
+
+/* AlcorOS monitor chrome. The menu bar of Alcor's own monitors is Inter (a sample brand's monitor keeps its brand
+ * faces). The two buttons under the bezel are compact secondary pills: Inter 600 .875rem, 40px, 44px on phones. The
+ * bezel label and the monospace address bar are the device's own look and stay. */
+html body.alcor-std.alcor-std .amd-monitor:not([data-alcor-brand-monitor]) .amd-menubar {
+  font-family: var(--font-body);
+}
+html body.alcor-std.alcor-std .amd-controls > div > button {
+  height: 40px;
+  min-height: 40px;
+  padding: 0 16px;
+  border-radius: 999px;
+  font: 600 0.875rem/1 var(--font-body);
+  letter-spacing: -0.005em;
+}
+@media (max-width: 639px) {
+  html body.alcor-std.alcor-std .amd-controls > div > button {
+    height: auto;
+    min-height: 44px;
+  }
+}
+
+/* ===== 18. Audit fixes (fb-audit-site, 2026-10-29) ===== */
+
+/* Phones: every stand-alone control is at least 44px tall in its own box, not only through a hit-area overlay. */
+@media (max-width: 639px), (pointer: coarse) {
+  html body.alcor-std.alcor-std.alcor-std :is(.chip, .ahub-filter button, .platform-chips a) {
+    height: 44px;
+    min-height: 44px;
+    padding-inline: 16px;
+  }
+  html body.alcor-std.alcor-std.alcor-std.alcor-std .platform-card-actions > a {
+    min-height: 44px;
+  }
+  html body.alcor-std.alcor-std.alcor-std .card__body > h3 > a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+  html body .site-footer .footer-group a {
+    min-height: 44px;
+  }
+}
+
+/* /platform/: the card fills its row height so every card's actions sit on the same bottom line; the chip row
+   fades at its right edge on phones so a cut chip reads as "scroll for more". */
+html body.alcor-std.alcor-std .platform-page .platform-card {
+  display: flex;
+}
+html body.alcor-std.alcor-std .platform-page .platform-card-inner {
+  flex: 1;
+  min-width: 0;
+}
+html body.alcor-std.alcor-std .platform-page .platform-card-body {
+  justify-content: flex-start;
+}
+html body.alcor-std.alcor-std .platform-page .platform-card-body .platform-card-actions {
+  margin-top: auto;
+}
+@media (max-width: 760px) {
+  html body.alcor-std.alcor-std .platform-page .platform-chips-row {
+    padding-inline-end: 48px;
+    -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 56px), transparent);
+    mask-image: linear-gradient(90deg, #000 calc(100% - 56px), transparent);
+  }
+}
+
+/* Homepage on phones: the free apps are a slider of the same full cards as desktop (owner 2026-10-30). */
+@media (max-width: 767px) {
+  html body.alcor-std.alcor-std.alcor-std #products .product-grid {
+    display: flex;
+    gap: 12px;
+    margin-inline: calc(50% - 50vw);
+    padding: 4px max(20px, calc(50vw - 50%)) 12px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 20px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  html body.alcor-std.alcor-std.alcor-std #products .product-grid::-webkit-scrollbar {
+    display: none;
+  }
+  html body.alcor-std.alcor-std.alcor-std #products .product {
+    flex: 0 0 min(84vw, 340px);
+    scroll-snap-align: center;
+  }
+}
+
+/* Homepage quote section: one centered composition (owner 10-29 "Can we also center the form and text?", which
+ * replaces the earlier left alignment). Eyebrow, h2 and intro centered (intro 60ch), the form a 720px column on the
+ * same center with its labels left-aligned, the submit button and the lines under it centered. No static star
+ * tile: site.js draws a twinkling canvas (.quote-stars) behind the section (owner 10-29 "have the stars in the
+ * contact form twinkle on scroll or mouse move"). */
+html body.alcor-std.alcor-std.alcor-std.home #contact.closing {
+  position: relative;
+  isolation: isolate;
+}
+html body.alcor-std.alcor-std.alcor-std.home #contact.closing .quote-stars {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+html body.alcor-std.alcor-std.alcor-std.home #contact.closing .closing-inner {
+  width: min(720px, 100%);
+  margin-inline: auto;
+  text-align: center;
+}
+html body.alcor-std.alcor-std.alcor-std.home #contact.closing h2 {
+  margin-inline: auto;
+}
+html
+  body.alcor-std.alcor-std.alcor-std.home
+  #contact.closing
+  .closing-inner
+  > p:not(.closing-email):not(.eyebrow) {
+  max-width: 60ch;
+  margin-inline: auto;
+}
+html body.alcor-std.alcor-std.alcor-std.home #contact.closing .closing-form {
+  width: min(720px, 100%);
+  max-width: 720px;
+  margin-inline: auto;
+  text-align: left;
+}
+html body.alcor-std.alcor-std.alcor-std.home #contact.closing .alcor-contact button[type='submit'] {
+  justify-self: center;
+}
+/* The body-paragraph measure (690px) would leave these lines on the form's left; they take the full column. */
+html
+  body.alcor-std.alcor-std.alcor-std.home
+  #contact.closing
+  .alcor-contact
+  :is(.ac-note, .ac-status) {
+  max-width: none;
+  text-align: center;
+}
+html body.alcor-std.alcor-std.alcor-std.home #contact.closing .closing-email {
+  text-align: center;
+}
+
+/* ===== 21. Night sky and the full mark (fb-home, 2026-10-29) ===== */
+
+/* The site footer (footer.php) carries the full Alcor mark (alcor-star.svg, with its arcs) at 48px; the header and the
+ * compact app footers keep the small cut. */
+html body .site-footer .footer-brand .footer-wordmark {
+  gap: 12px;
+}
+html body .site-footer .footer-brand .footer-wordmark .brand-star {
+  width: 48px;
+  height: 48px;
+}
+/* 404: the full mark above the head. */
+html body .error-404 .error-404-mark {
+  display: block;
+  width: 64px;
+  height: 64px;
+  margin: 0 0 20px;
+}
+@media (max-width: 639px) {
+  html body .error-404 .error-404-mark {
+    width: 52px;
+    height: 52px;
+  }
+}
+/* No static star tile anywhere: the site footer has none (owner 10-29: "Also, remove the stars from the footer"; it
+ * keeps its full mark), and the homepage quote section has site.js's twinkling canvas instead (section 20). */
+
+/* The fixed phone call to action is header black: Safari tints its toolbar from what sits at the bottom edge, and a teal button turned the whole bar teal. */
+html body.alcor-std.alcor-std.alcor-std :is(.mobile-cta, .b2b-mobile-cta),
+html
+  body.alcor-std.alcor-std.alcor-std
+  :is(.mobile-cta, .b2b-mobile-cta):is(:hover, :active):not(:disabled):not([aria-disabled='true']) {
+  background: #050608;
+  color: #f6f0e4;
+  border: 1px solid rgba(83, 217, 212, 0.55);
+}
+
+/* The gap from the apps down to the desktop section: two full section paddings read as a hole. */
+html body.alcor-std.alcor-std.alcor-std #products {
+  padding-bottom: 48px;
+}
+html body.alcor-std.alcor-std.alcor-std #products + .alcor-demo-section {
+  padding-top: 48px !important;
+}
+
+/* Phones meet the Archetypes straight after the apps; desktop keeps the document order. */
+@media (max-width: 760px) {
+  html body.home.alcor-std main#top {
+    display: flex;
+    flex-direction: column;
+  }
+  html body.home.alcor-std main#top > * {
+    order: 3;
+    min-width: 0;
+  }
+  html body.home.alcor-std main#top > .hero {
+    order: 0;
+  }
+  html body.home.alcor-std main#top > #products {
+    order: 1;
+  }
+  html body.home.alcor-std main#top > #arcana,
+  html body.home.alcor-std main#top > .home-arcana-rail {
+    order: 2;
+  }
+}
+
+/* The price line sits clear of the buttons above it. */
+html body.alcor-std.alcor-std.alcor-std .abr-checkout-note {
+  margin-top: 20px;
+}
+
+/* Homepage Archetypes on phones: heading and words, then the monitor directly above the site name and controls. */
+@media (max-width: 760px) {
+  html body.home.alcor-std .amd-showcase {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  html body.home.alcor-std .amd-showcase__copy {
+    display: contents;
+  }
+  html body.home.alcor-std .amd-showcase__copy > * {
+    order: 2;
+  }
+  html body.home.alcor-std .amd-showcase__copy > :is(.section-kicker, h2, .amd-showcase__lede) {
+    order: 0;
+  }
+  html body.home.alcor-std .amd-showcase__stage {
+    order: 1;
+    margin-block: 8px 24px;
+  }
+  html body.home.alcor-std .amd-showcase__copy > * {
+    width: 100%;
+    max-width: none;
+    box-sizing: border-box;
+  }
+  /* Two lines of industry are the tallest case, so the card and everything under it hold still between slides. */
+  html body.home.alcor-std .amd-showcase__now {
+    min-height: 108px !important;
+    align-content: start;
+  }
+}

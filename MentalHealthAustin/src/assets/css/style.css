@@ -1,0 +1,219 @@
+h1, h2, h3, h4, a {
+    font-family: 'M PLUS 1p', sans-serif;
+}
+
+/* Define font sizes for each heading level */
+h1 {
+    font-size: 36px; /* You can adjust the size as needed */
+}
+
+h2 {
+    font-size: 30px; /* You can adjust the size as needed */
+}
+
+h3 {
+    font-size: 24px; /* You can adjust the size as needed */
+}
+
+h4 {
+    font-size: 20px; /* You can adjust the size as needed */
+}
+
+body {
+	min-height: 100vh;
+	margin: 0;
+}
+
+
+nav {
+	background-color: #FFFFFF; /* Grey background color */
+	padding: 25px; /* Add some padding for spacing */
+	border-bottom: 2px solid #77D4FC;
+	display: flex;
+}
+
+/* Style for the navigation links */
+nav ul {
+	list-style-type: none; /* Remove bullet points */
+	margin: 0;
+	padding: 0;
+}
+
+nav li {
+	display: inline; /* Display list items horizontally */
+	margin-right: 10px; /* Add spacing between links */
+	margin-left: 10px;
+}
+
+nav a {
+	text-decoration: none; /* Remove underline on links */
+	color: #010C80; /* Link text color */
+	font-weight: bold; /* Make the text bold */
+}
+
+nav a:hover{
+	color: #77D4FC !important;
+}
+
+.navbar .container {
+	justify-content: center;
+}
+
+.navbar-collapse {
+    flex-grow: 0 !important;
+}
+
+.navbar-brand {
+    padding-top: 0px !important;
+}
+
+nav img {
+	width: 315px;
+	margin-right: 40px;
+}
+
+.display-flex{
+	display:flex;
+	justify-content: center;
+    align-items: center;
+}
+
+.text-align-center {
+	text-align: center;
+}
+
+/*Home Page*/
+
+section.home {
+	/* Original photo removed (unknown license); a gradient keeps the layout. */
+	background-image: linear-gradient(135deg, #1f4e79 0%, #3a7ca5 55%, #81c3d7 100%);
+	background-size: cover;
+	height: 100vh;
+}
+
+section.home h1{
+	color: #010C80;
+	font-weight: 100;
+	font-size: 30px;
+	padding-left: 20px;
+    padding-right: 20px;
+	margin-bottom: 0;
+}
+
+.result {
+	padding-bottom: 10px;
+}
+
+.bubble {
+	border-radius: 100px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.8);
+}
+
+/* Visualization Page */
+section.visuals {
+	/* Original photo removed (unknown license); same gradient as the home section. */
+	background-image: linear-gradient(135deg, #1f4e79 0%, #3a7ca5 55%, #81c3d7 100%);
+	background-size: cover;
+	height: 100vh;
+}
+
+section.visuals h1{
+	color: #010C80;
+	font-weight: 100;
+	font-size: 30px;
+	padding-left: 20px;
+    padding-right: 20px;
+	margin-bottom: 0;
+}
+
+.result {
+	padding-bottom: 10px;
+}
+
+.bubble {
+	border-radius: 100px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.8);
+}
+
+/*About Page*/
+
+section.about h1, .dark-blue, h1 {
+	color: #010C80 !important;
+}
+
+section.about h2, .light-blue, h2 {
+	color: #77D4FC !important;
+}
+
+.team-container {
+	width: 300px; /* Maximum width for the image container */
+	height: 420px; /* Maximum height for the image container */
+	overflow: hidden; /* Hide overflow if the image exceeds container dimensions */
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	max-width: 100%; /* Initially, take up the full width of the card */
+  	max-height: 100%; /* Initially, take up the full height of the card */
+  }
+  
+  .team-image {
+	max-width: 100%; /* Limit the image's maximum width to fit the container */
+	max-height: 100%; /* Limit the image's maximum height to fit the container */
+	width: 100%; /* Make the image take up the entire container width */
+	height: 100%; /* Make the image take up the entire container height */
+  }
+  
+.card.tile img {
+	max-height: 500px;
+    max-width: 500px;
+}
+
+.card.info img {
+	max-height: 500px;
+    max-width: 500px;
+}
+  
+.overviewTile li {
+	text-overflow: ellipsis;
+	white-space: nowrap;
+  	overflow: hidden;
+}
+
+.map-container {
+	width: 100%;
+	height: 250px;
+}
+
+.highlight {
+	background-color: yellow;
+	font-weight: bold;
+}
+
+mark {
+	padding: 0 !important;
+}
+
+
+
+/* Mobile */
+@media (max-width: 768px) {
+	.col {
+		width: 100% !important;
+	}
+}
+
+/* Tablet */
+@media (max-width: 992px) {
+	
+}
+
+@media (max-width: 1200px) {
+ 
+}
+
+
+@media (max-width: 1400px) {
+  
+}

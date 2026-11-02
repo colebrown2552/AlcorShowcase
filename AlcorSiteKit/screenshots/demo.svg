@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="1039" viewBox="0 0 960 1039" role="img" aria-label="AlcorSiteKit: land, test and promote through a strict gate">
+  <rect width="960" height="1039" rx="10" fill="#0d1117"/>
+  <rect width="960" height="34" rx="10" fill="#161b22"/>
+  <rect y="24" width="960" height="10" fill="#161b22"/>
+  <circle cx="20" cy="17" r="6" fill="#ff5f57"/><circle cx="40" cy="17" r="6" fill="#febc2e"/>
+  <circle cx="60" cy="17" r="6" fill="#28c840"/>
+  <text x="480.0" y="22" fill="#8b949e" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13">AlcorSiteKit: land, test and promote through a strict gate</text>
+  <g font-family="Cascadia Mono, Consolas, Menlo, DejaVu Sans Mono, monospace" font-size="14">
+        <text x="18" y="66" fill="#7ee787" xml:space="preserve">$ python AlcorSiteKit/demo/run_demo.py</text>
+    <text x="18" y="85" fill="#e6edf3" xml:space="preserve">sitekit demo: offline, loopback only. Each step prints the real CLI&#x27;s output.</text>
+    <text x="18" y="104" fill="#e6edf3" xml:space="preserve"></text>
+    <text x="18" y="123" fill="#e6edf3" xml:space="preserve">== 0. Set up: the approver mints one-time codes</text>
+    <text x="18" y="142" fill="#e6edf3" xml:space="preserve"></text>
+    <text x="18" y="161" fill="#e6edf3" xml:space="preserve">  $ sitekit approve --count 3</text>
+    <text x="18" y="180" fill="#e6edf3" xml:space="preserve">      (output not shown)</text>
+    <text x="18" y="199" fill="#e6edf3" xml:space="preserve">  [proved] three one-time codes were minted and shown once</text>
+    <text x="18" y="218" fill="#e6edf3" xml:space="preserve">  [proved] only hashes are stored: no code appears in the approval file</text>
+    <text x="18" y="237" fill="#e6edf3" xml:space="preserve"></text>
+    <text x="18" y="256" fill="#e6edf3" xml:space="preserve">== 1. Land release 1 on staging</text>
+    <text x="18" y="275" fill="#e6edf3" xml:space="preserve"></text>
+    <text x="18" y="294" fill="#e6edf3" xml:space="preserve">  $ sitekit land &lt;work&gt;\src\v1</text>
+    <text x="18" y="313" fill="#e6edf3" xml:space="preserve">      PUSHED release=e2a5230e files=6</text>
+    <text x="18" y="332" fill="#e6edf3" xml:space="preserve">      STAGING serves e2a5230e</text>
+    <text x="18" y="351" fill="#e6edf3" xml:space="preserve">      PASS served-files: 6 files match the release</text>
+    <text x="18" y="370" fill="#e6edf3" xml:space="preserve">      GATES served=0 suite=0 head=e2a5230e</text>
+    <text x="18" y="389" fill="#e6edf3" xml:space="preserve">      LANDED</text>
+    <text x="18" y="408" fill="#e6edf3" xml:space="preserve">  [proved] staging serves release 1; the served-files gate passed</text>
+    <text x="18" y="427" fill="#e6edf3" xml:space="preserve">  [proved] production was not touched by a staging land</text>
+    <text x="18" y="446" fill="#e6edf3" xml:space="preserve"></text>
+    <text x="18" y="465" fill="#e6edf3" xml:space="preserve">  $ sitekit land &lt;work&gt;\src\v1</text>
+    <text x="18" y="484" fill="#e6edf3" xml:space="preserve">      NOTHING_TO_LAND: staging already serves e2a5230e</text>
+    <text x="18" y="503" fill="#e6edf3" xml:space="preserve">  [proved] landing identical content again is refused</text>
+    <text x="18" y="522" fill="#e6edf3" xml:space="preserve"></text>
+    <text x="18" y="541" fill="#e6edf3" xml:space="preserve">== 2. Promotion needs a contract run first</text>
+    <text x="18" y="560" fill="#e6edf3" xml:space="preserve"></text>
+    <text x="18" y="579" fill="#e6edf3" xml:space="preserve">  $ sitekit promote</text>
+    <text x="18" y="598" fill="#e6edf3" xml:space="preserve">      ok   staging serves a commit</text>
+    <text x="18" y="617" fill="#e6edf3" xml:space="preserve">      TODO contract receipt is for that commit - missing or unreadable</text>
+    <text x="18" y="636" fill="#e6edf3" xml:space="preserve">      TODO contract is GREEN - no contract receipt to read</text>
+    <text x="18" y="655" fill="#e6edf3" xml:space="preserve">      production now: release (pre-controller), controller no status yet</text>
+    <text x="18" y="674" fill="#e6edf3" xml:space="preserve">      Not ready.</text>
+    <text x="18" y="693" fill="#e6edf3" xml:space="preserve">  [proved] promote says not ready: there is no contract receipt yet</text>
+    <text x="18" y="712" fill="#e6edf3" xml:space="preserve">... (210 lines omitted) ...</text>
+    <text x="18" y="731" fill="#e6edf3" xml:space="preserve">      pointer     5 entries, head -&gt; initial (chain verified)</text>
+    <text x="18" y="750" fill="#e6edf3" xml:space="preserve">      contract    RED 20 pass / 3 fail at &lt;time&gt; on 94c2befc</text>
+    <text x="18" y="769" fill="#e6edf3" xml:space="preserve">      hold        none</text>
+    <text x="18" y="788" fill="#e6edf3" xml:space="preserve">      jobs        none running</text>
+    <text x="18" y="807" fill="#e6edf3" xml:space="preserve">  [proved] the operator&#x27;s chain check cannot see an edit to the newest entry</text>
+    <text x="18" y="826" fill="#e6edf3" xml:space="preserve">  [proved] the controller&#x27;s anchor does, and rejects the log</text>
+    <text x="18" y="845" fill="#e6edf3" xml:space="preserve">  [proved] restored, it carries on</text>
+    <text x="18" y="864" fill="#e6edf3" xml:space="preserve"></text>
+    <text x="18" y="883" fill="#e6edf3" xml:space="preserve">The host side, as the controller logged its decisions:</text>
+    <text x="18" y="902" fill="#e6edf3" xml:space="preserve">  controller: live e2a5230e</text>
+    <text x="18" y="921" fill="#e6edf3" xml:space="preserve">  controller: needs-approval 835f1459 approval code missing or not valid; production is unchanged</text>
+    <text x="18" y="940" fill="#e6edf3" xml:space="preserve">  controller: live 835f1459</text>
+    <text x="18" y="959" fill="#e6edf3" xml:space="preserve">  controller: live e2a5230e</text>
+    <text x="18" y="978" fill="#e6edf3" xml:space="preserve">  controller: live initial</text>
+    <text x="18" y="997" fill="#e6edf3" xml:space="preserve"></text>
+    <text x="18" y="1016" fill="#e6edf3" xml:space="preserve">All 43 claims proved in 14.0s.</text>
+  </g>
+</svg>

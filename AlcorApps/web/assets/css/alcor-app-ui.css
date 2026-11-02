@@ -1,0 +1,1318 @@
+/*
+ * Alcor app UI. One interface standard for every Alcor product, in the main site's language.
+ *
+ * How it works: tokens in design-system.css, then one block per product that maps that app's own classes onto
+ * the standard. Selectors carry an `html` prefix so they win over app styles that print later
+ * (some apps inline their CSS in the body). Phone layout for heavy editors belongs to AlcorFrame.
+ *
+ * The standard (matches the homepage, site.css):
+ *   type      Segoe UI stack; headings 700, h1 -.02em, h2 0 tracking, paper #f6f0e4
+ *   eyebrow   purple, 12px, 700, .12em tracking, uppercase
+ *   header    64px sticky glass bar, "✦ Alcor" + product name, quiet 13px nav, one ghost action
+ *   buttons   marketing CTAs use the homepage tokens: primary = magenta #ff5ec4 fill, #160919 text,
+ *             50px (46px on phones), 6px radius, sentence case (owner 2026-10-29: no uppercase buttons); secondary = ghost with
+ *             a warm line. Buttons inside the working tools (editors, reconcile/finance/translate
+ *             panels) keep their app styling, including cyan where they had it.
+ *   layout    landing sections share the homepage column: 1180px, 72/34/16px edges, 64px (48px on
+ *             phones) section padding
+ *   surfaces  square #0b0d13 panels on #050608, 1px warm line
+ *   focus     2px cyan ring, 2px offset
+ */
+
+/* ---------- Reusable components (for new markup) ---------- */
+
+html .aui-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: var(--button-height);
+  padding: var(--button-padding);
+  border: 1px solid rgba(246, 240, 228, 0.22);
+  border-radius: var(--aui-radius);
+  background: rgba(246, 240, 228, 0.05);
+  color: var(--aui-paper);
+  font: var(--button-font);
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+html .aui-button:hover {
+  transform: translateY(-1px);
+  border-color: var(--line-hover);
+  color: var(--aui-paper);
+}
+html .aui-button--primary {
+  border-color: var(--action-primary);
+  background: var(--action-primary);
+  color: var(--action-ink);
+  box-shadow: var(--button-shadow);
+}
+html .aui-button--primary:hover {
+  border-color: var(--action-primary-hover);
+  background: var(--action-primary-hover);
+  color: var(--action-ink);
+}
+html .aui-panel {
+  border: 1px solid var(--aui-line);
+  background: var(--aui-surface);
+}
+
+/* ---------- App landing pages: one chrome for Music, QR, Translate, Reconcile, Map, ERP ---------- */
+
+/* Page: house type and ground. */
+html :is(.am-page, .aq-page, .at-page, .aerp-page, .am-shell),
+html body:is(.alcor-qr, .alcor-translate, .alcor-reconcile) {
+  font-family: var(--aui-font);
+}
+html body:is(.alcor-qr, .alcor-translate, .alcor-reconcile),
+html :is(.am-landing, .aq-page:not(.aq-editor-page), .at-landing, .aerp-page) {
+  background-color: var(--aui-void);
+}
+html :is(.am-page, .aq-page, .at-page, .aerp-page, .am-shell, body.alcor-reconcile) :focus-visible {
+  outline: 2px solid var(--aui-cyan);
+  outline-offset: 2px;
+}
+
+/* Header: 64px sticky glass bar under the parent bar. Map keeps its overlay header (it floats on the map). */
+html :is(.am-site-header, .aq-header, .at-header, .ar-header, .aerp-header) {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  min-height: 64px;
+  height: auto;
+  margin: 0;
+  padding: 0 var(--aui-gutter);
+  border-bottom: 1px solid var(--aui-line);
+  background: rgba(5, 6, 8, 0.86);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  font-family: var(--aui-font);
+}
+
+/* Lockup: gold star, "Alcor" heavy, product name regular. */
+html :is(.am-site-header .aa-brand, .aq-brand, .at-brand, .ar-brand, .aerp-brand, .am-brand) {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  color: var(--aui-paper);
+  font: 800 18px/1 var(--aui-font);
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  white-space: nowrap;
+}
+html :is(.aq-brand, .at-brand, .ar-brand) span {
+  color: var(--aui-paper);
+  font-weight: 400;
+}
+html :is(.aq-brand, .at-brand, .ar-brand)::before {
+  content: '';
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin-right: 9px;
+  background: url('../site/logos/alcor-star-small.svg') center / contain no-repeat;
+}
+html .am-site-header .aa-brand .aa-brand-mark {
+  margin-right: 9px;
+  color: var(--aui-violet);
+  font-weight: 400;
+}
+html .am-site-header .aa-brand span:last-child {
+  font-weight: 400;
+}
+html .am-site-header .aa-brand strong,
+html .aerp-brand strong {
+  font-weight: 800;
+}
+html .aerp-brand {
+  font-weight: 400;
+}
+html .aerp-brand .aerp-brand-mark {
+  margin-right: 9px;
+  color: var(--aui-violet);
+  font-weight: 400;
+}
+html .am-brand {
+  gap: 0.4em;
+}
+html .am-brand > span {
+  color: var(--aui-gold);
+}
+
+/* Header action label: the full label from 480px up, "Open app" below it, so the bar never overflows a
+   phone. The landing headers (Photo, Video, Music, QR, Translate) put both inside the outlined
+   .btn--secondary.btn--compact action; the hero below carries the product's name. */
+html .aa-cta-short {
+  display: none;
+}
+@media (max-width: 479px) {
+  html .aa-cta-long {
+    display: none;
+  }
+  html .aa-cta-short {
+    display: inline;
+  }
+}
+
+/* Header nav: quiet 13px links. */
+html :is(.am-site-header nav, .aq-nav, .at-nav, .ar-nav) {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+html :is(.am-site-header nav a, .aq-nav a:not(.aq-button), .at-nav a:not(.at-button), .ar-nav a) {
+  color: var(--aui-muted);
+  font: 600 13px/1 var(--aui-font);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+html
+  :is(
+    .am-site-header nav a,
+    .aq-nav a:not(.aq-button),
+    .at-nav a:not(.at-button),
+    .ar-nav a
+  ):hover {
+  color: var(--aui-paper);
+}
+/* Kickers: the house gold label. */
+
+/* Hero headline and lede. */
+html :is(.am-hero h1, .aq-hero h1, .at-hero h1, .ar-intro h1, .am-intro h1, .aerp-intro h1) {
+  margin: 0 0 20px;
+  color: var(--aui-paper);
+  font: 700 var(--aui-h1) / 0.98 var(--aui-font);
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+html
+  :is(.am-hero h1 + p, .aq-hero h1 + p, .at-lede, .ar-lede, .am-intro h1 + p, .aerp-intro h1 + p) {
+  max-width: 60ch;
+  color: var(--aui-muted);
+  font: 400 clamp(17px, 1.3vw, 19px) / 1.6 var(--aui-font);
+}
+
+/* Section headings. */
+html :is(.am-section h2, .aq-section h2, .at-section h2, .am-details h2) {
+  margin: 0 0 16px;
+  color: var(--aui-paper);
+  font: 700 var(--aui-h2) / 1.04 var(--aui-font);
+  letter-spacing: 0;
+  text-wrap: balance;
+}
+
+/* Buttons inside the apps: primary cyan, secondary ghost. Landing pages override these with the
+   homepage CTA tokens further down ("App landing pages: homepage standard"). */
+html
+  :is(
+    .am-page,
+    .aq-page,
+    .at-page,
+    .aerp-page,
+    .am-shell,
+    body.alcor-reconcile,
+    body.alcor-qr,
+    body.alcor-translate
+  )
+  :is(
+    .am-primary,
+    .am-secondary,
+    .aa-header-action,
+    .aq-button,
+    .at-button,
+    .ar-button,
+    .aerp-cta,
+    .am-enter
+  ) {
+  border-radius: var(--aui-radius);
+  font-family: var(--aui-font);
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease,
+    color 0.2s ease;
+}
+html
+  :is(
+    .am-page,
+    .aq-page,
+    .at-page,
+    .aerp-page,
+    .am-shell,
+    body.alcor-reconcile,
+    body.alcor-qr,
+    body.alcor-translate
+  )
+  :is(
+    .am-primary,
+    .aa-header-action,
+    .aq-button-primary,
+    .at-button-primary,
+    .ar-button-primary,
+    .aerp-cta
+  ) {
+  border: 1px solid var(--aui-cyan);
+  background: var(--aui-cyan);
+  color: var(--aui-ink);
+}
+html
+  :is(
+    .am-page,
+    .aq-page,
+    .at-page,
+    .aerp-page,
+    .am-shell,
+    body.alcor-reconcile,
+    body.alcor-qr,
+    body.alcor-translate
+  )
+  :is(
+    .am-primary,
+    .aa-header-action,
+    .aq-button-primary,
+    .at-button-primary,
+    .ar-button-primary,
+    .aerp-cta
+  ):hover {
+  background: #6fe3de;
+  border-color: #6fe3de;
+  color: var(--aui-ink);
+  box-shadow: 0 12px 30px -14px rgba(83, 217, 212, 0.7);
+}
+html
+  :is(
+    .am-page,
+    .aq-page,
+    .at-page,
+    .aerp-page,
+    .am-shell,
+    body.alcor-reconcile,
+    body.alcor-qr,
+    body.alcor-translate
+  )
+  :is(
+    .am-secondary,
+    .aq-button:not(.aq-button-primary),
+    .at-button:not(.at-button-primary),
+    .ar-button:not(.ar-button-primary),
+    .am-enter
+  ) {
+  border: 1px solid var(--aui-line-strong);
+  background: rgba(246, 240, 228, 0.04);
+  color: var(--aui-paper);
+}
+html
+  :is(
+    .am-page,
+    .aq-page,
+    .at-page,
+    .aerp-page,
+    .am-shell,
+    body.alcor-reconcile,
+    body.alcor-qr,
+    body.alcor-translate
+  )
+  :is(
+    .am-secondary,
+    .aq-button:not(.aq-button-primary),
+    .at-button:not(.at-button-primary),
+    .ar-button:not(.ar-button-primary),
+    .am-enter
+  ):hover {
+  border-color: rgba(246, 240, 228, 0.5);
+}
+html
+  :is(
+    .am-hero .am-primary,
+    .am-hero .am-secondary,
+    .aq-hero .aq-button,
+    .aq-nav .aq-button,
+    .at-hero .at-button,
+    .at-nav .at-button,
+    .am-site-header .aa-header-action,
+    .aerp-cta,
+    .am-enter
+  ) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 18px;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0;
+  text-transform: none;
+}
+html
+  :is(
+    .am-hero .am-primary,
+    .am-hero .am-secondary,
+    .aq-hero .aq-button,
+    .at-hero .at-button,
+    .am-enter
+  ):hover {
+  transform: translateY(-1px);
+}
+
+/* Content cards: square house panels. Screenshots keep a small radius. */
+html :is(.am-features article, .am-card, .aq-feature-grid article, .aq-hero-card) {
+  border: 1px solid var(--aui-line);
+  border-radius: 0;
+  background: var(--aui-surface);
+  box-shadow: none;
+}
+html :is(.am-hero-shot, .am-card-art) {
+  border-radius: 8px;
+  border-color: var(--aui-line);
+}
+html :is(.am-features h3, .aq-feature-grid strong) {
+  color: var(--aui-paper);
+  font: 700 18px/1.25 var(--aui-font);
+}
+html :is(.am-features p, .aq-feature-grid p, .am-section > p, .aq-section-lede) {
+  color: var(--aui-muted);
+}
+
+/* Phones: one row header (nav links drop; the primary action stays), full-width hero buttons. */
+@media (max-width: 760px) {
+  html :is(.am-site-header, .aq-header, .at-header, .ar-header, .aerp-header) {
+    min-height: 56px;
+    flex-wrap: nowrap;
+  }
+  html :is(.am-site-header nav, .ar-nav, .aerp-status) {
+    display: none;
+  }
+  html :is(.aq-nav a:not(.aq-button), .at-nav a:not(.at-button)) {
+    display: none;
+  }
+  html :is(.am-hero .am-actions, .aq-hero .aq-actions, .at-hero .at-actions) {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  html
+    :is(.am-hero .am-actions a, .aq-hero .aq-actions .aq-button, .at-hero .at-actions .at-button) {
+    width: 100%;
+    margin: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html
+    :is(
+      .am-primary,
+      .am-secondary,
+      .aa-header-action,
+      .aq-button,
+      .at-button,
+      .ar-button,
+      .aerp-cta,
+      .am-enter
+    ) {
+    transition: none;
+  }
+  html
+    :is(
+      .am-hero .am-primary,
+      .am-hero .am-secondary,
+      .aq-hero .aq-button,
+      .at-hero .at-button,
+      .am-enter
+    ):hover {
+    transform: none;
+  }
+}
+
+/* ---------- Closing block on every app landing: hire us, or try another tool ---------- */
+
+/* Markup: alcor_app_ui_close() in mu-plugins/alcor-app-ui.php. Arcana standard, own class names so the older
+ * uppercase button rules in this file and design-system.css never reach it.
+ *   left   eyebrow, h2, lede, one primary + one secondary button (sentence case, 48px, 999px radius)
+ *   right  "More free tools": compact rows (glyph, wordmark, one line, arrow) in two equal-height columns
+ * The band changes the background to --surface; no rule line or gradient glow marks its edge. */
+html body .aui-close.aui-close {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: #0b0d13;
+  color: #f6f0e4;
+  font-family:
+    'Inter',
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    sans-serif;
+}
+html body .aui-close .aui-close__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: clamp(40px, 6vw, 96px);
+  align-items: start;
+  box-sizing: border-box;
+  width: min(1180px, calc(100% - 144px));
+  margin: 0 auto;
+  padding: clamp(64px, 8vw, 112px) 0;
+}
+html body .aui-close .aui-close__eyebrow {
+  margin: 0 0 16px;
+  color: #b38cff;
+  font:
+    600 12px/1.2 'Inter',
+    system-ui,
+    sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+html body .aui-close h2 {
+  margin: 0 0 0.5em;
+  color: #f6f0e4;
+  font:
+    700 clamp(2rem, 1.3rem + 2.6vw, 3.25rem) / 1.06 'Inter',
+    system-ui,
+    sans-serif;
+  letter-spacing: -0.02em;
+  text-transform: none;
+  text-wrap: balance;
+}
+html body .aui-close .aui-close__lede {
+  max-width: 46ch;
+  margin: 0;
+  color: #b8bec8;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+}
+html body .aui-close .aui-close__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 32px 0 0;
+}
+html body .aui-close a.aui-close__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-height: 48px;
+  margin: 0;
+  padding: 0 22px;
+  border: 1px solid rgba(246, 240, 228, 0.26);
+  border-radius: 999px;
+  background: transparent;
+  color: #f6f0e4;
+  font:
+    600 0.9375rem/1 'Inter',
+    system-ui,
+    sans-serif;
+  letter-spacing: -0.005em;
+  text-transform: none;
+  text-decoration: none;
+  white-space: nowrap;
+  box-shadow: none;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.15s ease;
+}
+html body .aui-close a.aui-close__btn--primary {
+  border-color: #53d9d4;
+  background: #53d9d4;
+  color: #050608;
+}
+html body .aui-close a.aui-close__btn--primary:hover {
+  border-color: #7de3df;
+  background: #7de3df;
+  color: #050608;
+  transform: translateY(-1px);
+}
+html body .aui-close a.aui-close__btn--secondary:hover {
+  border-color: rgba(246, 240, 228, 0.4);
+  background: rgba(246, 240, 228, 0.06);
+  color: #f6f0e4;
+}
+html body .aui-close .aui-close__tools ul {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: 1fr;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+html body .aui-close .aui-close__tools li {
+  display: flex;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+}
+html body .aui-close a.aui-tool {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 72px;
+  padding: 14px 16px;
+  border: 1px solid rgba(246, 240, 228, 0.1);
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(246, 240, 228, 0.035), rgba(246, 240, 228, 0.012)),
+    #11131b;
+  color: #f6f0e4;
+  text-decoration: none;
+  text-transform: none;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease,
+    transform 0.15s ease;
+}
+html body .aui-close .aui-tool__glyph {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(179, 140, 255, 0.26);
+  border-radius: 10px;
+  background: rgba(179, 140, 255, 0.1);
+  color: #c9b2ff;
+}
+html body .aui-close .aui-tool__text {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+html body .aui-close .aui-tool__name {
+  color: #f6f0e4;
+  font:
+    400 1rem/1.2 'Inter',
+    system-ui,
+    sans-serif;
+  letter-spacing: -0.01em;
+}
+html body .aui-close .aui-tool__name b {
+  font-weight: 700;
+}
+html body .aui-close .aui-tool__line {
+  display: -webkit-box;
+  overflow: hidden;
+  color: #959dac;
+  font:
+    400 0.875rem/1.35 'Inter',
+    system-ui,
+    sans-serif;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+html body .aui-close .aui-tool__arrow {
+  color: #959dac;
+  font-size: 1rem;
+  transition:
+    color 0.15s ease,
+    transform 0.15s ease;
+}
+html body .aui-close a.aui-tool:hover {
+  border-color: rgba(246, 240, 228, 0.32);
+  background: linear-gradient(180deg, rgba(246, 240, 228, 0.06), rgba(246, 240, 228, 0.02)), #11131b;
+  transform: translateY(-2px);
+}
+html body .aui-close a.aui-tool:hover .aui-tool__arrow {
+  color: #53d9d4;
+  transform: translateX(3px);
+}
+html body .aui-close :is(a.aui-close__btn, a.aui-tool):focus {
+  outline: none;
+}
+html body .aui-close :is(a.aui-close__btn, a.aui-tool):focus-visible {
+  outline: 2px solid #f6f0e4;
+  outline-offset: 3px;
+}
+@media (max-width: 1023px) {
+  html body .aui-close .aui-close__grid {
+    grid-template-columns: 1fr;
+    width: min(1180px, calc(100% - 80px));
+  }
+}
+@media (max-width: 639px) {
+  html body .aui-close .aui-close__grid {
+    gap: 48px;
+    width: calc(100% - 40px);
+    padding: 64px 0;
+  }
+  html body .aui-close .aui-close__actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+  html body .aui-close a.aui-close__btn {
+    width: 100%;
+    min-height: 44px;
+  }
+  html body .aui-close .aui-close__tools ul {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  html body .aui-close a.aui-tool {
+    min-height: 64px;
+    padding: 12px 14px;
+  }
+}
+
+/* ---------- Start band ----------
+ * Markup: alcor_app_ui_start() in mu-plugins/alcor-app-ui.php. One centered heading, one line, one primary button;
+ * it sits right above the closing block and shares its dark surface and primary button look. */
+html body .aui-start {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: var(--aui-section-y, clamp(64px, 8vw, 112px)) 20px;
+  border: 0;
+  background: #0b0d13;
+  color: #f6f0e4;
+  font-family:
+    'Inter',
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    sans-serif;
+  text-align: center;
+}
+html body .aui-start h2 {
+  margin: 0 auto 0.5em;
+  max-width: 24ch;
+  color: #f6f0e4;
+  font:
+    700 clamp(2rem, 1.3rem + 2.6vw, 3.25rem) / 1.06 'Inter',
+    system-ui,
+    sans-serif;
+  letter-spacing: -0.02em;
+  text-transform: none;
+  text-wrap: balance;
+}
+html body .aui-start p {
+  max-width: 34rem;
+  margin: 0 auto;
+  color: #b8bec8;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  text-wrap: balance;
+}
+html body .aui-start a.aui-start__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-height: 48px;
+  margin: 32px 0 0;
+  padding: 0 22px;
+  border: 1px solid #53d9d4;
+  border-radius: 999px;
+  background: #53d9d4;
+  color: #050608;
+  font:
+    600 0.9375rem/1 'Inter',
+    system-ui,
+    sans-serif;
+  letter-spacing: -0.005em;
+  text-transform: none;
+  text-decoration: none;
+  white-space: nowrap;
+  box-shadow: none;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.15s ease;
+}
+html body .aui-start a.aui-start__btn:hover {
+  border-color: #7de3df;
+  background: #7de3df;
+  color: #050608;
+  transform: translateY(-1px);
+}
+html body .aui-start a.aui-start__btn:focus {
+  outline: none;
+}
+html body .aui-start a.aui-start__btn:focus-visible {
+  outline: 2px solid #f6f0e4;
+  outline-offset: 3px;
+}
+@media (max-width: 639px) {
+  html body .aui-start {
+    padding: 64px 20px;
+  }
+  html body .aui-start a.aui-start__btn {
+    width: 100%;
+    min-height: 44px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html body .aui-start a.aui-start__btn {
+    transition: none;
+  }
+  html body .aui-start a.aui-start__btn:hover {
+    transform: none;
+  }
+}
+/* ---------- App landing pages: homepage standard ----------
+ * Marketing pages only: /alcorqr/, /alcormusic/, /alcortranslate/, /alcormap/, /reconcile/, /erp/.
+ * Every rule is scoped to a landing wrapper (.aq-landing, .am-landing, .at-landing, .am-shell,
+ * .aerp-page, body.alcor-reconcile), so the editors at /alcorqr/editor/, /music/ and /translate/app/
+ * keep their own UI. Inside the working tools only the outer column and spacing change. */
+
+/* Column: one 1180px content edge (x=130 at 1440), the homepage's 72/34/16px edges. */
+html
+  :is(
+    .aq-landing .aq-hero,
+    .aq-landing .aq-section,
+    .am-landing .am-hero,
+    .am-landing .am-section,
+    .at-landing .at-hero,
+    .at-landing .at-section
+  ) {
+  width: var(--aui-wrap);
+  max-width: none;
+  margin-inline: auto;
+  padding: var(--aui-section-y) 0;
+}
+html :is(.aq-landing .aq-hero, .am-landing .am-hero, .at-landing .at-hero) {
+  padding-top: clamp(48px, 6vw, 88px);
+}
+html .at-landing main {
+  padding-bottom: 0;
+}
+
+/* Headings: paper, 700, homepage line-heights; at least 12px to the text that follows. */
+html
+  :is(.aq-landing, .am-landing, .at-landing, .am-shell, .aerp-page, body.alcor-reconcile)
+  :is(h1, h2) {
+  color: var(--aui-paper);
+}
+html
+  :is(
+    .aq-landing .aq-section h2,
+    .am-landing .am-section h2,
+    .at-landing .at-section h2,
+    .am-shell .am-details h2,
+    body.alcor-reconcile .ar-section h2
+  ) {
+  margin: 0 0 16px;
+  font: 700 var(--aui-h2) / 1.04 var(--aui-font);
+  letter-spacing: 0;
+  text-wrap: balance;
+}
+html :is(.am-landing .am-features h3, .at-landing .at-section h3, .am-shell .am-detail-grid h3) {
+  margin: 0 0 12px;
+  color: var(--aui-paper);
+  font: 700 18px/1.25 var(--aui-font);
+  letter-spacing: 0;
+}
+html :is(.at-landing .at-section p, .at-landing .at-steps li, .am-shell .am-detail-grid p) {
+  color: var(--aui-muted);
+}
+html :is(.at-landing .at-steps strong) {
+  color: var(--aui-paper);
+}
+
+/* Cards: square #0b0d13 panels, warm 1px line. */
+html :is(.at-landing .at-columns > div, .at-landing .at-steps li, body.alcor-reconcile .ar-cta) {
+  border: 1px solid var(--aui-line);
+  border-radius: 0;
+  background: var(--aui-surface);
+  box-shadow: none;
+}
+html .aq-landing .aq-feature-grid strong {
+  margin-bottom: 12px;
+}
+html .at-landing .at-steps li::before {
+  background: rgba(215, 181, 109, 0.14);
+  color: var(--aui-gold);
+}
+html
+  :is(
+    .aq-landing .aq-feature-grid article,
+    .am-landing .am-features article,
+    .at-landing .at-columns > div
+  ) {
+  padding: 24px;
+}
+html .at-landing .at-steps li {
+  padding: 24px 24px 24px 64px;
+}
+
+/* CTAs: the homepage .primary-link / .secondary-link tokens. */
+html
+  :is(
+    .aq-landing .aq-hero .aq-button-primary,
+    .aq-landing .aq-section .aq-button-primary,
+    .am-landing main .am-primary,
+    .at-landing main .at-button-primary,
+    body.alcor-reconcile .ar-cta .ar-button-primary,
+    .aerp-page .aerp-close a,
+    .am-shell .am-intro .am-enter,
+    .aui-close .aui-button--primary
+  ) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: var(--button-height);
+  margin: 0;
+  padding: var(--button-padding);
+  border: 1px solid var(--action-primary);
+  border-radius: var(--aui-radius);
+  background: var(--action-primary);
+  color: var(--action-ink);
+  box-shadow: var(--button-shadow);
+  font: var(--button-font);
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+  text-align: center;
+}
+html
+  :is(
+    .aq-landing .aq-hero .aq-button-primary,
+    .aq-landing .aq-section .aq-button-primary,
+    .am-landing main .am-primary,
+    .at-landing main .at-button-primary,
+    body.alcor-reconcile .ar-cta .ar-button-primary,
+    .aerp-page .aerp-close a,
+    .am-shell .am-intro .am-enter,
+    .aui-close .aui-button--primary
+  ):is(:hover, :focus-visible) {
+  border-color: var(--action-primary-hover);
+  background: var(--action-primary-hover);
+  color: var(--action-ink);
+  box-shadow: var(--button-shadow);
+}
+html
+  :is(
+    .aq-landing .aq-hero .aq-button:not(.aq-button-primary),
+    .am-landing main .am-secondary,
+    .at-landing main .at-button:not(.at-button-primary),
+    .aui-close .aui-button:not(.aui-button--primary)
+  ) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--button-height);
+  margin: 0;
+  padding: var(--button-padding);
+  border: 1px solid rgba(246, 240, 228, 0.22);
+  border-radius: var(--aui-radius);
+  background: rgba(246, 240, 228, 0.05);
+  color: var(--aui-paper);
+  font: var(--button-font);
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+  text-align: center;
+}
+html
+  :is(
+    .aq-landing .aq-hero .aq-button:not(.aq-button-primary),
+    .am-landing main .am-secondary,
+    .at-landing main .at-button:not(.at-button-primary),
+    .aui-close .aui-button:not(.aui-button--primary)
+  ):hover {
+  border-color: var(--line-hover);
+  background: rgba(246, 240, 228, 0.05);
+  color: var(--aui-paper);
+}
+html .am-shell section.am-intro button.am-enter {
+  margin-top: 24px;
+}
+html .am-shell .am-intro .am-enter span {
+  margin-left: 4px;
+}
+html .am-shell .am-intro .am-consent {
+  margin-top: 16px;
+}
+html .am-shell .am-intro.aui-has-constellation > .alcor-constellation {
+  top: 24px;
+  right: -24px;
+  width: min(360px, 60%);
+}
+html
+  :is(
+    .aq-landing .aq-actions,
+    .am-landing .am-hero .am-actions,
+    .at-landing .at-actions,
+    .aui-close__actions
+  ) {
+  gap: 12px;
+}
+html
+  :is(
+    .at-landing .at-closer a.at-button.at-button-primary,
+    .aerp-page main.aerp-main .aerp-close a
+  ) {
+  margin-top: 16px;
+}
+
+/* Header action: the homepage's quiet .header-cta, not a second primary. */
+html
+  :is(
+    .aq-landing .aq-nav .aq-button-primary,
+    .am-landing .am-site-header .aa-header-action,
+    .at-landing .at-nav .at-button-primary,
+    .aerp-page .aerp-header .aerp-cta
+  ) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 0 14px;
+  border: 1px solid rgba(246, 240, 228, 0.18);
+  border-radius: var(--aui-radius);
+  background: rgba(246, 240, 228, 0.04);
+  color: var(--aui-paper);
+  box-shadow: none;
+  font: 800 12px/1.15 var(--aui-cta-font);
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+html
+  :is(
+    .aq-landing .aq-nav .aq-button-primary,
+    .am-landing .am-site-header .aa-header-action,
+    .at-landing .at-nav .at-button-primary,
+    .aerp-page .aerp-header .aerp-cta
+  ):hover {
+  border-color: var(--aui-violet);
+  background: rgba(246, 240, 228, 0.04);
+  color: var(--aui-paper);
+  box-shadow: none;
+}
+
+/* Brand lockups are links: give them a full tap height. */
+html
+  :is(
+    .aq-landing .aq-brand,
+    .am-landing .am-site-header .aa-brand,
+    .at-landing .at-brand,
+    .am-shell .am-brand,
+    .aerp-page .aerp-brand,
+    body.alcor-reconcile .ar-brand
+  ) {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+
+/* Badges: the homepage pill with a small cyan dot. */
+html body.alcor-reconcile .ar-facts {
+  gap: 10px;
+  margin-top: 24px;
+  color: var(--aui-muted);
+}
+html body.alcor-reconcile .ar-facts li {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid rgba(246, 240, 228, 0.14);
+  border-radius: 999px;
+  background: rgba(5, 6, 8, 0.5);
+  color: rgba(246, 240, 228, 0.82);
+  font-size: 13px;
+}
+html body.alcor-reconcile .ar-facts li::before {
+  content: '';
+  margin: 0;
+  inline-size: 6px;
+  block-size: 6px;
+  border-radius: 50%;
+  background: var(--aui-cyan);
+  box-shadow: 0 0 10px var(--aui-cyan);
+}
+
+/* AlcorMap: the hero copy, header and status sit on the same column as the sections below. */
+html .am-shell .am-header {
+  left: var(--aui-pad-x);
+  right: var(--aui-pad-x);
+}
+html .am-shell .am-intro {
+  width: min(620px, calc(100% - 2 * var(--aui-edge)));
+  margin-left: var(--aui-pad-x);
+  padding: clamp(112px, 15vh, 156px) 0 88px;
+}
+html .am-shell .am-status {
+  left: var(--aui-pad-x);
+}
+html .am-shell .am-details {
+  gap: clamp(32px, 6vw, 96px);
+  padding: var(--aui-section-y) var(--aui-pad-x);
+}
+html .am-shell .am-details h2 {
+  margin: 0;
+}
+html .am-shell .am-detail-grid {
+  gap: 32px;
+}
+html .am-shell .am-detail-grid p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+}
+html .am-shell .am-marker-panel h2 {
+  font-family: var(--aui-font);
+  letter-spacing: 0.04em;
+}
+
+/* AlcorReconcile: one column for the intro, tool, sections and closing block. */
+html body.alcor-reconcile .ar-main {
+  max-width: none;
+  padding: 0;
+}
+html body.alcor-reconcile .ar-main > :not(.aui-close) {
+  width: var(--aui-wrap);
+  max-width: none;
+  margin-inline: auto;
+}
+html
+  :is(
+    .aq-landing .aq-header,
+    .am-landing .am-site-header,
+    .at-landing .at-header,
+    .aerp-page .aerp-header,
+    body.alcor-reconcile .ar-header
+  ) {
+  padding-inline: var(--aui-pad-x);
+}
+html body.alcor-reconcile .ar-intro {
+  padding: clamp(48px, 6vw, 88px) 0 var(--aui-section-y);
+}
+html body.alcor-reconcile .ar-intro h1 {
+  max-width: 16ch;
+}
+html body.alcor-reconcile .ar-section {
+  padding: var(--aui-section-y) 0 0;
+}
+html body.alcor-reconcile .ar-section > * {
+  max-width: 860px;
+}
+html body.alcor-reconcile .ar-cta {
+  margin-block: var(--aui-section-y);
+  padding: 24px;
+}
+html body.alcor-reconcile .ar-cta-line {
+  color: var(--aui-paper);
+}
+html body.alcor-reconcile .ar-tool-heading {
+  margin: 0 0 12px;
+}
+html body.alcor-reconcile .ar-drop {
+  gap: 12px;
+}
+html body.alcor-reconcile .ar-footer {
+  max-width: none;
+  width: var(--aui-wrap);
+  padding-inline: 0;
+}
+html body.alcor-reconcile .ar-check {
+  min-width: 44px;
+  padding-right: 8px;
+}
+
+/* Signature constellation behind the hero copy (theme helper alcor_constellation_svg()). The
+   base drawing rules live in polish.css; reconcile does not load it, so they are repeated for it. */
+html .aui-has-constellation {
+  position: relative;
+  isolation: isolate;
+}
+html .aui-has-constellation > .alcor-constellation {
+  position: absolute;
+  z-index: -1;
+  top: -36px;
+  right: 0;
+  width: min(400px, 64%);
+  height: auto;
+  transform: none;
+  opacity: 0.8;
+  pointer-events: none;
+}
+html .aui-has-constellation--wide > .alcor-constellation {
+  top: 50%;
+  width: min(480px, 40vw);
+  transform: translateY(-50%);
+}
+html .alcor-constellation > .alcor-constellation-star {
+  --i: 0;
+}
+html .alcor-constellation > .alcor-constellation-star:nth-of-type(2) {
+  --i: 1;
+}
+html .alcor-constellation > .alcor-constellation-star:nth-of-type(3) {
+  --i: 2;
+}
+html .alcor-constellation > .alcor-constellation-star:nth-of-type(4) {
+  --i: 3;
+}
+html .alcor-constellation > .alcor-constellation-star:nth-of-type(5) {
+  --i: 4;
+}
+html .alcor-constellation > .alcor-constellation-star:nth-of-type(6) {
+  --i: 5;
+}
+html .alcor-constellation > .alcor-constellation-star:nth-of-type(7) {
+  --i: 6;
+}
+html body.alcor-reconcile .alcor-constellation {
+  position: absolute;
+  pointer-events: none;
+  overflow: visible;
+}
+html body.alcor-reconcile .alcor-constellation-line {
+  fill: none;
+  stroke: rgba(179, 140, 255, 0.42);
+  stroke-width: 1;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: aui-alcor-draw 2.6s cubic-bezier(0.65, 0, 0.35, 1) 0.35s forwards;
+}
+html body.alcor-reconcile .alcor-constellation-star {
+  fill: #f6f0e4;
+  opacity: 0;
+  animation:
+    aui-alcor-star-in 0.5s ease calc(0.35s + var(--i, 0) * 0.32s) forwards,
+    aui-alcor-twinkle 5.5s ease-in-out calc(3.2s + var(--i, 0) * 0.7s) infinite;
+}
+html body.alcor-reconcile .alcor-constellation-alcor {
+  fill: #ff5ec4;
+  opacity: 0;
+  animation: aui-alcor-star-in 0.8s ease 2.9s forwards;
+}
+html body.alcor-reconcile .alcor-constellation-halo {
+  fill: rgba(255, 94, 196, 0.22);
+  transform-origin: 101px 29px;
+  animation: aui-alcor-halo 3.6s ease-in-out 3.4s infinite;
+}
+@keyframes aui-alcor-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes aui-alcor-star-in {
+  to {
+    opacity: 1;
+  }
+}
+@keyframes aui-alcor-twinkle {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+@keyframes aui-alcor-halo {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.9);
+    opacity: 0.25;
+  }
+}
+
+@media (max-width: 760px) {
+  html :is(.aq-landing .aq-hero, .am-landing .am-hero, .at-landing .at-hero) {
+    padding-top: 40px;
+  }
+  html
+    :is(
+      .aq-landing .aq-hero .aq-button,
+      .am-landing main .am-primary,
+      .am-landing main .am-secondary,
+      .at-landing main .at-button,
+      body.alcor-reconcile .ar-cta .ar-button-primary,
+      .aerp-page .aerp-close a,
+      .am-shell .am-intro .am-enter,
+      .aui-close .aui-button
+    ) {
+    min-height: var(--button-height);
+    width: 100%;
+    padding: var(--button-padding);
+  }
+  html
+    :is(
+      .aq-landing .aq-nav .aq-button-primary,
+      .am-landing .am-site-header .aa-header-action,
+      .at-landing .at-nav .at-button-primary,
+      .aerp-page .aerp-header .aerp-cta
+    ) {
+    min-height: 44px;
+  }
+  html .at-landing .at-steps li {
+    padding: 20px 18px 20px 58px;
+  }
+  html .am-shell .am-intro {
+    padding-top: 104px;
+  }
+  html body.alcor-reconcile .ar-intro {
+    padding-top: 40px;
+  }
+  html body.alcor-reconcile .ar-cta {
+    padding: 20px 16px;
+  }
+  html .aui-has-constellation > .alcor-constellation,
+  html .aui-has-constellation--wide > .alcor-constellation {
+    top: -20px;
+    right: -4px;
+    width: 150px;
+    transform: none;
+    opacity: 0.55;
+  }
+  html .am-shell .am-intro.aui-has-constellation > .alcor-constellation {
+    top: 40px;
+    right: 0;
+    width: 150px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html body .aui-close :is(a.aui-close__btn, a.aui-tool, .aui-tool__arrow) {
+    transition: none;
+  }
+  html body .aui-close :is(a.aui-close__btn, a.aui-tool, a.aui-tool .aui-tool__arrow):hover,
+  html body .aui-close a.aui-tool:hover .aui-tool__arrow {
+    transform: none;
+  }
+  html body.alcor-reconcile .alcor-constellation-line {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+  html body.alcor-reconcile :is(.alcor-constellation-star, .alcor-constellation-alcor) {
+    animation: none;
+    opacity: 1;
+  }
+  html body.alcor-reconcile .alcor-constellation-halo {
+    animation: none;
+  }
+}
+
+/* iOS zooms the page into any field set under 16px. On touch screens every app field (AlcorVideo, Photo, Music,
+   QR, Reconcile, Map, the /agi/ arcade, ...) reads at 16px; desktop keeps each app's compact size. */
+@media (pointer: coarse) {
+  html body :is(input, select, textarea) {
+    font-size: 16px !important;
+  }
+}

@@ -1,0 +1,37 @@
+ALCOR 3
+
+# translate_request.alcor is a provider-neutral translation and compilation request.
+# It describes the work; the host's effect gate decides whether any adapter may act.
+PROGRAM Program
+.alcor.goal("Consume source, translate it into canonical .alcor, compile the requested targets, and verify semantic equivalence")
+.alcor.model("local:auto")
+.alcor.thread("alcor/translate-request")
+.alcor.context(max_input=131072, max_output=32768)
+.alcor.source(language=auto, path="stdin", encoding="utf-8")
+.alcor.target(language="alcor", profile="default")
+
+$passes = 3
+FOR $pass FROM 1 TO 3
+  PRINT "translate_request pass " ++ str($pass)
+END FOR
+
+IF $passes >= 3 THEN
+  .alcor.translate(
+    source=.alcor.source,
+    target=.alcor.target,
+    stages=["consume", "normalize", "translate", "compile", "verify"],
+    preserve_semantics=true,
+    fail_closed=true
+  )
+  .alcor.compile(
+    target={language:"alcor", profile:"default"},
+    backends=["interpreter", "python", "c"],
+    verify="byte-identical",
+    receipts=true
+  )
+ELSE
+  PRINT "insufficient verification passes"
+END IF
+
+.alcor.status()
+END PROGRAM

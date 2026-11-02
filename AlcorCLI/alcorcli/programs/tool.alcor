@@ -1,0 +1,117 @@
+PROGRAM CliTool WITH profile=default
+
+READ $schema
+READ $effect_authority
+READ $tool_kind
+READ $inside_root
+READ $effect_class
+READ $owner_verdict
+READ $forbidden_pattern
+READ $protected_input
+
+BRANCH NE $schema "alcor.cli.tool.request.v1" refuse_schema
+BRANCH NE $effect_authority "false" refuse_authority
+BRANCH EQ $forbidden_pattern "yes" forbidden
+BRANCH EQ $protected_input "yes" protected_corpus
+BRANCH EQ $inside_root "no" outside
+BRANCH EQ $owner_verdict "refuse" owner_refused
+BRANCH EQ $owner_verdict "ask" gated
+BRANCH EQ $tool_kind "owner" owner_question
+BRANCH EQ $tool_kind "model" rootless
+BRANCH EQ $tool_kind "memory" rootless
+BRANCH EQ $tool_kind "network" network
+BRANCH EQ $tool_kind "read" rooted
+BRANCH EQ $tool_kind "write" rooted
+BRANCH EQ $tool_kind "shell" rooted
+EMIT "schema=alcor.cli.tool.decision.v1"
+EMIT "verdict=deny"
+EMIT "reason=unknown-tool-kind"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL rooted
+BRANCH EQ $effect_class "owner" granted
+EMIT "schema=alcor.cli.tool.decision.v1"
+EMIT "verdict=allow"
+EMIT "reason=inside-the-root-and-below-the-owner-line"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL granted
+EMIT "schema=alcor.cli.tool.decision.v1"
+EMIT "verdict=allow"
+EMIT "reason=owner-class-effect-the-owner-enabled"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL gated
+EMIT "schema=alcor.cli.tool.decision.v1"
+EMIT "verdict=ask_owner"
+EMIT "reason=this-effect-waits-for-owner-enablement"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL owner_refused
+EMIT "schema=alcor.cli.tool.decision.v1"
+EMIT "verdict=deny"
+EMIT "reason=the-owner-refused-this-effect"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL outside
+EMIT "schema=alcor.cli.tool.decision.v1"
+EMIT "verdict=deny"
+EMIT "reason=the-path-leaves-the-allowed-roots"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL network
+EMIT "schema=alcor.cli.tool.decision.v1"
+EMIT "verdict=allow"
+EMIT "reason=a-guarded-fetch-is-allowed"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL rootless
+EMIT "schema=alcor.cli.tool.decision.v1"
+EMIT "verdict=allow"
+EMIT "reason=a-model-or-memory-call-that-names-no-outside-path"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL owner_question
+EMIT "schema=alcor.cli.tool.decision.v1"
+EMIT "verdict=allow"
+EMIT "reason=a-question-to-the-owner-is-always-allowed"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL forbidden
+EMIT "schema=alcor.cli.tool.decision.v1"
+EMIT "verdict=deny"
+EMIT "reason=forbidden-pattern"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL protected_corpus
+EMIT "schema=alcor.cli.tool.decision.v1"
+EMIT "verdict=deny"
+EMIT "reason=protected-input-is-read-only-write-your-output-elsewhere"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL refuse_schema
+EMIT "schema=alcor.cli.tool.decision.v1"
+EMIT "verdict=deny"
+EMIT "reason=request-schema-mismatch"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL refuse_authority
+EMIT "schema=alcor.cli.tool.decision.v1"
+EMIT "verdict=deny"
+EMIT "reason=effect-authority-must-be-false"
+EMIT "effect_authority=false"
+
+LABEL done
+END PROGRAM

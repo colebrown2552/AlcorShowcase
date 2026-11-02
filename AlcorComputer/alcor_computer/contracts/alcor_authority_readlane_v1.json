@@ -1,0 +1,34 @@
+{
+  "schema": "alcor.authority.readlane.contract.v1",
+  "receipt_schema": "alcor.authority.readlane.v1",
+  "extends_receipt_schema": "alcor.authority.receipt.v1",
+  "scope_schema": "alcor.authority.readscope.v1",
+  "operator_output_schema": "alcor.authority.operator-output.v1",
+  "task_input_schema": "alcor.authority.task.v1",
+  "hash_prefix_length": 12,
+  "allowed_verbs": [
+    "read",
+    "search"
+  ],
+  "read_chain_phases": [
+    "prepared",
+    "search",
+    "read",
+    "completed"
+  ],
+  "operator_invariants": {
+    "single_turn": true,
+    "data_only": true,
+    "may_grant_authority": false,
+    "may_widen_scope": false,
+    "may_complete_step": false,
+    "may_mutate_canonical_state": false
+  },
+  "scope_authentication": {
+    "contract_bound": true,
+    "deterministic": true,
+    "process_local_completed_chain_registry": true,
+    "serialized_secret_present": false,
+    "tag_semantics": "integrity_check_not_authentication"
+  }
+}

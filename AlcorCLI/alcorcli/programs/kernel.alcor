@@ -1,0 +1,193 @@
+PROGRAM AlcorKernelRound WITH profile=default
+
+READ $schema
+READ $effect_authority
+READ $strategy_state
+READ $round_failed
+READ $recover_tool_errors
+READ $retries_exhausted
+READ $duplicate_in_round
+READ $stagnation_detected
+READ $force_final_after_duplicate
+READ $budget_spent
+READ $half_spent
+READ $claims_done
+READ $check_state
+READ $verify_left
+READ $coach_note
+READ $solver_state
+READ $same_result
+READ $reread
+READ $children_pending
+READ $other_core_idle
+READ $unverified_write
+READ $claim_unchanged
+
+BRANCH NE $schema "alcor.kernel.round.request.v1" refuse_schema
+BRANCH NE $effect_authority "false" refuse_authority
+BRANCH NE $strategy_state "selected" refuse_strategy
+BRANCH EQ $claims_done "yes" claim
+BRANCH EQ $round_failed "yes" failed
+BRANCH EQ $coach_note "yes" coached
+BRANCH EQ $stagnation_detected "yes" stagnation
+BRANCH EQ $duplicate_in_round "yes" duplicate
+JUMP budget
+
+LABEL coached
+BRANCH EQ $budget_spent "yes" budget
+EMIT "schema=alcor.kernel.round.decision.v1"
+EMIT "action=continue"
+EMIT "reason=the-coach-spoke-this-round-so-a-repeated-call-is-a-retry-not-a-loop"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL failed
+BRANCH EQ $recover_tool_errors "no" strict_fail
+BRANCH EQ $retries_exhausted "yes" final_tool_errors
+BRANCH EQ $duplicate_in_round "yes" duplicate
+JUMP budget
+
+LABEL duplicate
+BRANCH NE $force_final_after_duplicate "yes" budget
+BRANCH EQ $same_result "no" budget
+EMIT "schema=alcor.kernel.round.decision.v1"
+EMIT "action=finalize"
+EMIT "reason=duplicate"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL stagnation
+EMIT "schema=alcor.kernel.round.decision.v1"
+EMIT "action=finalize"
+EMIT "reason=stagnation"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL budget
+BRANCH NE $budget_spent "yes" go
+EMIT "schema=alcor.kernel.round.decision.v1"
+EMIT "action=finalize"
+EMIT "reason=budget"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL go
+EMIT "schema=alcor.kernel.round.decision.v1"
+EMIT "action=continue"
+EMIT "reason=none"
+BRANCH EQ $reread "yes" go_reread
+BRANCH EQ $other_core_idle "yes" go_delegate
+BRANCH EQ $half_spent "yes" go_half
+EMIT "note=none"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL go_delegate
+EMIT "note=other_core_idle"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL go_reread
+EMIT "note=reread"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL go_half
+EMIT "note=half_spent"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL claim
+BRANCH EQ $claim_unchanged "yes" accept_repeat
+BRANCH EQ $unverified_write "yes" unread_write
+BRANCH EQ $children_pending "yes" children_open
+BRANCH EQ $solver_state "available" solver_unused
+BRANCH NE $check_state "red" accept
+BRANCH EQ $verify_left "0" accept_red
+EMIT "schema=alcor.kernel.round.decision.v1"
+EMIT "action=pushback"
+EMIT "reason=check_red"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL unread_write
+BRANCH EQ $verify_left "0" accept
+EMIT "schema=alcor.kernel.round.decision.v1"
+EMIT "action=pushback"
+EMIT "reason=unverified_write"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL children_open
+BRANCH EQ $verify_left "0" accept
+EMIT "schema=alcor.kernel.round.decision.v1"
+EMIT "action=pushback"
+EMIT "reason=children_pending"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL solver_unused
+BRANCH EQ $verify_left "0" accept
+EMIT "schema=alcor.kernel.round.decision.v1"
+EMIT "action=pushback"
+EMIT "reason=solver_available_not_used"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL accept
+EMIT "schema=alcor.kernel.round.decision.v1"
+EMIT "action=accept"
+EMIT "reason=none"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL accept_repeat
+EMIT "schema=alcor.kernel.round.decision.v1"
+EMIT "action=accept"
+EMIT "reason=repeat-claim-nothing-changed"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL accept_red
+EMIT "schema=alcor.kernel.round.decision.v1"
+EMIT "action=accept"
+EMIT "reason=check_red_pushbacks_exhausted"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL strict_fail
+EMIT "schema=alcor.kernel.round.decision.v1"
+EMIT "action=fail"
+EMIT "reason=tool_failed"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL final_tool_errors
+EMIT "schema=alcor.kernel.round.decision.v1"
+EMIT "action=finalize"
+EMIT "reason=tool_errors"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL refuse_schema
+EMIT "schema=alcor.kernel.round.decision.v1"
+EMIT "action=refuse"
+EMIT "reason=request-schema-mismatch"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL refuse_authority
+EMIT "schema=alcor.kernel.round.decision.v1"
+EMIT "action=refuse"
+EMIT "reason=effect-authority-must-be-false"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL refuse_strategy
+EMIT "schema=alcor.kernel.round.decision.v1"
+EMIT "action=refuse"
+EMIT "reason=strategy-contract-not-selected"
+EMIT "effect_authority=false"
+
+LABEL done
+END PROGRAM

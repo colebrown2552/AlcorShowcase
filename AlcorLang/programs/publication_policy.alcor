@@ -1,0 +1,26 @@
+PROGRAM PublicationPolicyDemo
+CALL PublicationPolicy WITH $publish_ok=1 $pending_exists=1 $retry_count=0 $max_retries=3 INTO $first
+EMIT $first
+CALL PublicationPolicy WITH $publish_ok=0 $pending_exists=1 $retry_count=1 $max_retries=3 INTO $second
+EMIT $second
+CALL PublicationPolicy WITH $publish_ok=0 $pending_exists=0 $retry_count=1 $max_retries=3 INTO $third
+EMIT $third
+CALL PublicationPolicy WITH $publish_ok=0 $pending_exists=1 $retry_count=3 $max_retries=3 INTO $fourth
+EMIT $fourth
+END PROGRAM
+
+PROGRAM PublicationPolicy
+BRANCH EQ $publish_ok 1 commit ELSE failed
+LABEL failed
+BRANCH EQ $pending_exists 0 repair_pending ELSE pending
+LABEL pending
+BRANCH LT $retry_count $max_retries retry ELSE escalate
+LABEL commit
+RETURN "COMMIT_BASELINE"
+LABEL repair_pending
+RETURN "REPAIR_PENDING"
+LABEL retry
+RETURN "RETRY_VISIBLE"
+LABEL escalate
+RETURN "ESCALATE"
+END PROGRAM

@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "alcor.computer.union.v1",
+  "title": "AlcorComputer narrow mediator union",
+  "description": "Strict source-only union between an authenticated read-chain and a computer bundle.",
+  "oneOf": [
+    {"$ref": "#/$defs/read-chain"},
+    {"$ref": "#/$defs/computer bundle"}
+  ],
+  "$defs": {
+    "opaque-id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9._:-]+$"
+    },
+    "nonce": {
+      "type": "string",
+      "minLength": 16,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9._:-]+$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "sha256-prefix": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{12}$"
+    },
+    "projection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["target_ref", "candidate_count", "x", "y", "screen_width", "screen_height"],
+      "properties": {
+        "target_ref": {"$ref": "#/$defs/opaque-id"},
+        "candidate_count": {"type": "integer", "minimum": 0, "maximum": 1000},
+        "x": {"type": "integer", "minimum": 0, "maximum": 32767},
+        "y": {"type": "integer", "minimum": 0, "maximum": 32767},
+        "screen_width": {"type": "integer", "minimum": 1, "maximum": 32768},
+        "screen_height": {"type": "integer", "minimum": 1, "maximum": 32768}
+      }
+    },
+    "action": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["operation", "target_ref", "button"],
+      "properties": {
+        "operation": {"const": "click"},
+        "target_ref": {"$ref": "#/$defs/opaque-id"},
+        "button": {"const": "left"}
+      }
+    },
+    "read-chain": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "arm",
+        "scope_id",
+        "scope_contract_sha256_prefix",
+        "issuer_receipt_sha256",
+        "observation_receipt_sha256",
+        "issued_at_unix_ms",
+        "expires_at_unix_ms",
+        "nonce",
+        "frame_sha256",
+        "projection"
+      ],
+      "properties": {
+        "schema": {"const": "alcor.computer.union.v1"},
+        "arm": {"const": "read-chain"},
+        "scope_id": {"$ref": "#/$defs/opaque-id"},
+        "scope_contract_sha256_prefix": {"$ref": "#/$defs/sha256-prefix"},
+        "issuer_receipt_sha256": {"$ref": "#/$defs/sha256"},
+        "observation_receipt_sha256": {"$ref": "#/$defs/sha256"},
+        "issued_at_unix_ms": {"type": "integer", "minimum": 0},
+        "expires_at_unix_ms": {"type": "integer", "minimum": 0},
+        "nonce": {"$ref": "#/$defs/nonce"},
+        "frame_sha256": {"$ref": "#/$defs/sha256"},
+        "projection": {"$ref": "#/$defs/projection"}
+      }
+    },
+    "computer bundle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "arm",
+        "scope_id",
+        "mediator_contract_sha256_prefix",
+        "read_chain_sha256",
+        "nonce",
+        "action"
+      ],
+      "properties": {
+        "schema": {"const": "alcor.computer.union.v1"},
+        "arm": {"const": "computer bundle"},
+        "scope_id": {"$ref": "#/$defs/opaque-id"},
+        "mediator_contract_sha256_prefix": {"$ref": "#/$defs/sha256-prefix"},
+        "read_chain_sha256": {"$ref": "#/$defs/sha256"},
+        "nonce": {"$ref": "#/$defs/nonce"},
+        "action": {"$ref": "#/$defs/action"}
+      }
+    }
+  }
+}

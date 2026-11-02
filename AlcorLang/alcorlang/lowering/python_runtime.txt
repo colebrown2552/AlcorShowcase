@@ -1,0 +1,183 @@
+import hashlib as _hashlib
+import json as _json
+import os as _os
+import re as _re
+import sys as _sys
+
+class _Trap(Exception):
+    def __init__(self, code):
+        Exception.__init__(self, code)
+        self.code = code
+
+_TAPE = []
+_LINES = _sys.stdin.read().splitlines()
+_CUR = [0]
+_STEPS = [0]
+_SEQ = [0]
+_INTERP = _re.compile(r"\$([a-z][a-z0-9_]{0,31})")
+
+def _step():
+    _STEPS[0] += 1
+    if _FUEL and _STEPS[0] > _FUEL:
+        raise _Trap("fuel_exhausted")
+
+def _render(v):
+    if isinstance(v, bool):
+        return "true" if v else "false"
+    if isinstance(v, int):
+        return str(v)
+    return v
+
+def _truth(v):
+    if isinstance(v, bool):
+        return v
+    if isinstance(v, int):
+        return v != 0
+    return v != ""
+
+def _isi(v):
+    return type(v) is int
+
+def _iss(v):
+    return type(v) is str
+
+def _bin(op, a, b):
+    if op in ("ADD", "SUB", "MUL", "DIV", "MOD"):
+        if not (_isi(a) and _isi(b)):
+            raise _Trap("type_mismatch")
+        if op == "ADD":
+            return a + b
+        if op == "SUB":
+            return a - b
+        if op == "MUL":
+            return a * b
+        if b == 0:
+            raise _Trap("div_zero" if op == "DIV" else "mod_zero")
+        return a // b if op == "DIV" else a % b
+    if op == "CAT":
+        if not (_iss(a) and _iss(b)):
+            raise _Trap("type_mismatch")
+        return a + b
+    if op == "CHAR":
+        if not (_iss(a) and _isi(b)) or isinstance(b, bool):
+            raise _Trap("type_mismatch")
+        return "" if (b < 0 or b >= len(a)) else a[b]
+    if op == "FIND":
+        if not (_iss(a) and _iss(b)):
+            raise _Trap("type_mismatch")
+        return a.find(b)
+    if op in ("EQ", "NE"):
+        same = ((_isi(a) and _isi(b)) or (_iss(a) and _iss(b))
+                or (isinstance(a, bool) and isinstance(b, bool))) and a == b
+        return same if op == "EQ" else not same
+    if op in ("LT", "LE", "GT", "GE"):
+        if not ((_isi(a) and _isi(b)) or (_iss(a) and _iss(b))):
+            raise _Trap("type_mismatch")
+        return {"LT": a < b, "LE": a <= b, "GT": a > b, "GE": a >= b}[op]
+    if op == "AND":
+        return _truth(a) and _truth(b)
+    if op == "OR":
+        return _truth(a) or _truth(b)
+    raise _Trap("type_mismatch")
+
+def _un(op, a):
+    if op == "NEG":
+        if not _isi(a):
+            raise _Trap("type_mismatch")
+        return -a
+    if op == "LEN":
+        if not _iss(a):
+            raise _Trap("type_mismatch")
+        return len(a)
+    if op == "STR":
+        return _render(a)
+    if op == "INT":
+        if isinstance(a, bool):
+            return 1 if a else 0
+        if _isi(a):
+            return a
+        if _iss(a) and _re.match(r"\A-?[0-9]+\Z", a):
+            return int(a)
+        raise _Trap("bad_int")
+    if op == "NOT":
+        return not _truth(a)
+    raise _Trap("type_mismatch")
+
+def _g(fr, name):
+    if name not in fr:
+        raise _Trap("undefined_cell")
+    return fr[name]
+
+def _readline(fr, dst):
+    if _CUR[0] >= len(_LINES):
+        raise _Trap("input_exhausted")
+    fr[dst] = _LINES[_CUR[0]]
+    _CUR[0] += 1
+
+def _interp(fr, text):
+    if text is None or "$" not in text:
+        return text
+    def _sub(m):
+        key = "$" + m.group(1)
+        if key not in fr:
+            raise _Trap("undefined_cell")
+        return _render(fr[key])
+    return _INTERP.sub(_sub, text)
+
+def _canonical(value):
+    return _json.dumps(value, ensure_ascii=False, sort_keys=True,
+                       separators=(",", ":"), allow_nan=False).encode("utf-8")
+
+def _digest(value, omitted=None):
+    body = dict(value) if isinstance(value, dict) else value
+    if omitted is not None:
+        body.pop(omitted, None)
+    return _hashlib.sha256(_canonical(body)).hexdigest()
+
+def _effect(fr, desc):
+    """Standalone lowering has no authority: emit one typed refusal receipt."""
+    seq = _SEQ[0]
+    _resolved = {"value": _interp(fr, desc["value_raw"]),
+                 "props": dict((k, _interp(fr, v))
+                               for k, v in desc["props_raw"].items())}
+    _SEQ[0] += 1
+    _idem = _hashlib.sha256(b"conformance").hexdigest()
+    _identity = {"correlation_id": "conformance", "sequence": seq,
+                 "idempotency_sha256": _idem}
+    _request = {
+        "schema": "alcor.effect.request.v1",
+        "request_id": "effect-" + _digest(_identity)[:40],
+        "correlation_id": "conformance",
+        "sequence": seq,
+        "idempotency_sha256": _idem,
+        "run_binding_sha256": _digest({
+            "schema": "alcor.runtime.binding.conformance.v1",
+            "mode": "conformance",
+        }),
+        "descriptor": desc,
+        "resolved": _resolved,
+    }
+    _request["request_sha256"] = _digest(_request, "request_sha256")
+    _receipt = {
+        "schema": "alcor.effect.result.v1",
+        "request_id": _request["request_id"],
+        "request_sha256": _request["request_sha256"],
+        "sequence": seq,
+        "outcome": "refused",
+        "reason_code": "not_wired",
+        "attempted": False,
+        "effect_started": False,
+        "effect_committed": False,
+        "postcondition_verified": False,
+        "result_sha256": None,
+        "replay": "original",
+    }
+    _receipt["receipt_sha256"] = _digest(_receipt, "receipt_sha256")
+    _os.makedirs("receipts", exist_ok=True)
+    with open(_os.path.join("receipts", "effect_%d.json" % seq), "w",
+              encoding="utf-8") as _fh:
+        _fh.write(_canonical(_receipt).decode("utf-8"))
+        _fh.write("\n")
+
+def _out():
+    return ("\n".join(_TAPE) + "\n") if _TAPE else ""

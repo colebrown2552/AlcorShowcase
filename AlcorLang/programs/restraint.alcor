@@ -1,0 +1,52 @@
+PROGRAM AlcorRestraint WITH profile=default
+READ $schema
+READ $answer_pending
+READ $new_answer_present
+READ $effect_authority
+
+BRANCH NE $schema "alcor.restraint.request.v1" reject_schema
+BRANCH NE $effect_authority "false" reject_authority
+BRANCH NE $answer_pending "true" reject_state
+BRANCH EQ $new_answer_present "true" proceed
+BRANCH NE $new_answer_present "false" reject_state
+
+EMIT "schema=alcor.restraint.decision.v1"
+EMIT "accepted=true"
+EMIT "operation=wait"
+EMIT "repeat_question=false"
+EMIT "invent_answer=false"
+EMIT "replacement_activity=false"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL proceed
+EMIT "schema=alcor.restraint.decision.v1"
+EMIT "accepted=true"
+EMIT "operation=continue"
+EMIT "repeat_question=false"
+EMIT "invent_answer=false"
+EMIT "replacement_activity=false"
+EMIT "effect_authority=false"
+JUMP done
+
+LABEL reject_schema
+LET $reason "schema"
+JUMP reject
+LABEL reject_authority
+LET $reason "effect-authority"
+JUMP reject
+LABEL reject_state
+LET $reason "state"
+
+LABEL reject
+EMIT "schema=alcor.restraint.decision.v1"
+EMIT "accepted=false"
+EMIT CAT "reason=" $reason
+EMIT "operation=reject"
+EMIT "repeat_question=false"
+EMIT "invent_answer=false"
+EMIT "replacement_activity=false"
+EMIT "effect_authority=false"
+
+LABEL done
+END PROGRAM

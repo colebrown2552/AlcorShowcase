@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="36 36 440 440" role="img" aria-labelledby="t">
+  <title id="t">Alcor</title>
+  <defs>
+    <radialGradient id="haze" gradientUnits="userSpaceOnUse" cx="256" cy="247" r="230">
+      <stop offset="0" stop-color="#f6f0e4"/>
+      <stop offset=".13" stop-color="#d7b56d"/>
+      <stop offset=".191" stop-color="#cd9678"/>
+      <stop offset=".222" stop-color="#d08283"/>
+      <stop offset=".252" stop-color="#d77690"/>
+      <stop offset=".27" stop-color="#db6f96"/>
+      <stop offset=".287" stop-color="#dd679f"/>
+      <stop offset=".304" stop-color="#e15fa6"/>
+      <stop offset=".326" stop-color="#e55caf"/>
+      <stop offset=".348" stop-color="#de53ac"/>
+      <stop offset=".4" stop-color="#c24a9b"/>
+      <stop offset=".452" stop-color="#a6428a"/>
+      <stop offset=".504" stop-color="#8a397a"/>
+      <stop offset=".557" stop-color="#6e3169"/>
+      <stop offset=".609" stop-color="#532858"/>
+      <stop offset=".661" stop-color="#372047"/>
+      <stop offset=".713" stop-color="#301d40"/>
+      <stop offset=".817" stop-color="#271834"/>
+      <stop offset=".922" stop-color="#1d1328"/>
+      <stop offset="1" stop-color="#170f1f"/>
+    </radialGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="8" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <clipPath id="disc"><circle cx="256" cy="256" r="220"/></clipPath>
+  </defs>
+  <g clip-path="url(#disc)"><g transform="translate(256 256) scale(1.25) translate(-256 -256)">
+      <circle cx="256" cy="256" r="220" fill="url(#haze)"/>
+      <path d="M255 98l28 118 117 39-117 39-28 120-29-120-116-39 116-39z" fill="#f6f0e4" filter="url(#glow)"/>
+      <path d="M255 161l16 67 67 23-67 22-16 69-17-69-66-22 66-23z" fill="#050608" opacity=".52"/>
+      <circle cx="256" cy="256" r="15" fill="#f6f0e4"/>
+  </g></g>
+</svg>
