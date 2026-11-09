@@ -1,0 +1,112 @@
+{
+  "strict": true,
+  "counts": {
+    "pass": 10,
+    "fail": 5,
+    "skip": 2
+  },
+  "steps": [
+    {
+      "component": "AlcorCLI",
+      "name": "tests",
+      "status": "fail",
+      "seconds": 0.032
+    },
+    {
+      "component": "AlcorCLI",
+      "name": "demo",
+      "status": "pass",
+      "seconds": 2.823
+    },
+    {
+      "component": "AlcorLang",
+      "name": "tests",
+      "status": "fail",
+      "seconds": 0.016
+    },
+    {
+      "component": "AlcorLang",
+      "name": "conformance",
+      "status": "pass",
+      "seconds": 1.317
+    },
+    {
+      "component": "AlcorLang",
+      "name": "demo",
+      "status": "pass",
+      "seconds": 9.14
+    },
+    {
+      "component": "AlcorBrowser",
+      "name": "demo",
+      "status": "pass",
+      "seconds": 6.332
+    },
+    {
+      "component": "AlcorComputer",
+      "name": "tests",
+      "status": "fail",
+      "seconds": 0.032
+    },
+    {
+      "component": "AlcorComputer",
+      "name": "demo",
+      "status": "pass",
+      "seconds": 0.114
+    },
+    {
+      "component": "AlcorLedger",
+      "name": "tests",
+      "status": "fail",
+      "seconds": 0.032
+    },
+    {
+      "component": "AlcorLedger",
+      "name": "demo",
+      "status": "pass",
+      "seconds": 0.465
+    },
+    {
+      "component": "AlcorSiteKit",
+      "name": "demo",
+      "status": "pass",
+      "seconds": 4.878
+    },
+    {
+      "component": "AlcorWordPress",
+      "name": "signer",
+      "status": "pass",
+      "seconds": 0.032
+    },
+    {
+      "component": "AlcorWordPress",
+      "name": "playground-demo",
+      "status": "pass",
+      "seconds": 33.504
+    },
+    {
+      "component": "AlcorDesign",
+      "name": "fmt",
+      "status": "skip",
+      "seconds": 0.0
+    },
+    {
+      "component": "AlcorDesign",
+      "name": "tests",
+      "status": "skip",
+      "seconds": 0.0
+    },
+    {
+      "component": "AlcorApps",
+      "name": "assets",
+      "status": "pass",
+      "seconds": 0.114
+    },
+    {
+      "component": "MentalHealthAustin",
+      "name": "backend-tests",
+      "status": "fail",
+      "seconds": 0.114
+    }
+  ]
+}

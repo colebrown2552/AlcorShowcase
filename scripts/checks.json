@@ -1,39 +1,39 @@
 {
   "AlcorCLI": [
-    {"name": "tests", "run": ["{python}", "-m", "pytest", "AlcorCLI/tests", "-q", "-p", "no:cacheprovider"]},
-    {"name": "demo", "run": ["{python}", "AlcorCLI/demo/run_demo.py"]}
+    {"name": "tests", "run": ["{python}", "-m", "pytest", "AlcorCLI/tests", "-q", "-p", "no:cacheprovider"], "timeout": 60},
+    {"name": "demo", "run": ["{python}", "AlcorCLI/demo/run_demo.py"], "timeout": 60}
   ],
   "AlcorLang": [
-    {"name": "tests", "run": ["{python}", "-m", "pytest", "AlcorLang/tests", "-q", "-p", "no:cacheprovider"]},
-    {"name": "conformance", "run": ["{python}", "-m", "alcorlang", "conformance"], "cwd": "AlcorLang"},
-    {"name": "demo", "run": ["{python}", "demo/run_demo.py"], "cwd": "AlcorLang"}
+    {"name": "tests", "run": ["{python}", "-m", "pytest", "AlcorLang/tests", "-q", "-p", "no:cacheprovider"], "timeout": 60},
+    {"name": "conformance", "run": ["{python}", "-m", "alcorlang", "conformance"], "cwd": "AlcorLang", "timeout": 60},
+    {"name": "demo", "run": ["{python}", "demo/run_demo.py"], "cwd": "AlcorLang", "timeout": 60}
   ],
   "AlcorBrowser": [
-    {"name": "demo", "run": ["{python}", "AlcorBrowser/demo/run_demo.py"]}
+    {"name": "demo", "run": ["{python}", "AlcorBrowser/demo/run_demo.py"], "timeout": 60}
   ],
   "AlcorComputer": [
-    {"name": "tests", "run": ["{python}", "-m", "pytest", "AlcorComputer", "-q", "-p", "no:cacheprovider"]},
-    {"name": "demo", "run": ["{python}", "AlcorComputer/demo/run_demo.py"]}
+    {"name": "tests", "run": ["{python}", "-m", "pytest", "AlcorComputer", "-q", "-p", "no:cacheprovider"], "timeout": 60},
+    {"name": "demo", "run": ["{python}", "AlcorComputer/demo/run_demo.py"], "timeout": 60}
   ],
   "AlcorLedger": [
-    {"name": "tests", "run": ["{python}", "-m", "pytest", "AlcorLedger", "-q", "-p", "no:cacheprovider"]},
-    {"name": "demo", "run": ["{python}", "AlcorLedger/demo/run_demo.py"]}
+    {"name": "tests", "run": ["{python}", "-m", "pytest", "AlcorLedger", "-q", "-p", "no:cacheprovider"], "timeout": 60},
+    {"name": "demo", "run": ["{python}", "AlcorLedger/demo/run_demo.py"], "timeout": 60}
   ],
   "AlcorSiteKit": [
-    {"name": "demo", "run": ["{python}", "demo/run_demo.py"], "cwd": "AlcorSiteKit"}
+    {"name": "demo", "run": ["{python}", "demo/run_demo.py"], "cwd": "AlcorSiteKit", "timeout": 60}
   ],
   "AlcorWordPress": [
-    {"name": "signer", "run": ["{python}", "AlcorWordPress/examples/sign_request.py", "--help"]},
-    {"name": "playground-demo", "run": ["node", "AlcorWordPress/demo/run-demo.mjs"], "optional": true}
+    {"name": "signer", "run": ["{python}", "AlcorWordPress/examples/sign_request.py", "--help"], "timeout": 60},
+    {"name": "playground-demo", "run": ["node", "AlcorWordPress/demo/run-demo.mjs"], "optional": true, "timeout": 100}
   ],
   "AlcorDesign": [
-    {"name": "fmt", "run": ["cargo", "fmt", "--check"], "cwd": "AlcorDesign", "optional": true},
-    {"name": "tests", "run": ["cargo", "test", "--locked"], "cwd": "AlcorDesign", "optional": true}
+    {"name": "fmt", "run": ["cargo", "fmt", "--check"], "cwd": "AlcorDesign", "optional": true, "timeout": 60},
+    {"name": "tests", "run": ["cargo", "test", "--locked"], "cwd": "AlcorDesign", "optional": true, "timeout": 60}
   ],
   "AlcorApps": [
-    {"name": "assets", "run": ["{python}", "AlcorApps/tools/check_assets.py"]}
+    {"name": "assets", "run": ["{python}", "AlcorApps/tools/check_assets.py"], "timeout": 60}
   ],
   "MentalHealthAustin": [
-    {"name": "backend-tests", "run": ["{python}", "unit_tests.py"], "cwd": "MentalHealthAustin/backend/API", "optional": true}
+    {"name": "backend-tests", "run": ["{python}", "unit_tests.py"], "cwd": "MentalHealthAustin/backend/API", "optional": true, "timeout": 60}
   ]
 }

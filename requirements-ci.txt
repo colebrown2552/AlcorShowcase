@@ -1,0 +1,2 @@
+pytest  # version unconfirmed
+sqlalchemy==2.0.21
