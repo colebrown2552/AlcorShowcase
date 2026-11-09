@@ -1,0 +1,213 @@
+{
+  "schema": "alcor.recovery.fault-suite.v1",
+  "date": "2026-11-08",
+  "seed": 20261108,
+  "families": [
+    {
+      "id": "before-reservation",
+      "cohort": "retry_safe",
+      "seam": "real",
+      "trials": 30,
+      "recovered": 30,
+      "quarantined": 0,
+      "failed": 0,
+      "effects_expected": 30,
+      "effects_observed": 30,
+      "duplicate_effects": 0
+    },
+    {
+      "id": "after-reservation",
+      "cohort": "retry_safe",
+      "seam": "simulated",
+      "trials": 30,
+      "recovered": 30,
+      "quarantined": 0,
+      "failed": 0,
+      "effects_expected": 30,
+      "effects_observed": 30,
+      "duplicate_effects": 0
+    },
+    {
+      "id": "worker-exit-before-dispatch",
+      "cohort": "retry_safe",
+      "seam": "real",
+      "trials": 30,
+      "recovered": 30,
+      "quarantined": 0,
+      "failed": 0,
+      "effects_expected": 30,
+      "effects_observed": 30,
+      "duplicate_effects": 0
+    },
+    {
+      "id": "ack-lost",
+      "cohort": "quarantine",
+      "seam": "simulated",
+      "trials": 30,
+      "recovered": 0,
+      "quarantined": 30,
+      "failed": 0,
+      "effects_expected": 30,
+      "effects_observed": 30,
+      "duplicate_effects": 0
+    },
+    {
+      "id": "duplicate-delivery",
+      "cohort": "retry_safe",
+      "seam": "simulated",
+      "trials": 30,
+      "recovered": 30,
+      "quarantined": 0,
+      "failed": 0,
+      "effects_expected": 30,
+      "effects_observed": 30,
+      "duplicate_effects": 0
+    },
+    {
+      "id": "stale-lease-generation",
+      "cohort": "retry_safe",
+      "seam": "real",
+      "trials": 30,
+      "recovered": 30,
+      "quarantined": 0,
+      "failed": 0,
+      "effects_expected": 30,
+      "effects_observed": 30,
+      "duplicate_effects": 0
+    },
+    {
+      "id": "provider-timeout",
+      "cohort": "retry_safe",
+      "seam": "simulated",
+      "trials": 30,
+      "recovered": 30,
+      "quarantined": 0,
+      "failed": 0,
+      "effects_expected": 30,
+      "effects_observed": 30,
+      "duplicate_effects": 0
+    },
+    {
+      "id": "out-of-order-receipt",
+      "cohort": "retry_safe",
+      "seam": "simulated",
+      "trials": 30,
+      "recovered": 30,
+      "quarantined": 0,
+      "failed": 0,
+      "effects_expected": 30,
+      "effects_observed": 30,
+      "duplicate_effects": 0
+    },
+    {
+      "id": "receipt-source-mismatch",
+      "cohort": "quarantine",
+      "seam": "simulated",
+      "trials": 30,
+      "recovered": 0,
+      "quarantined": 30,
+      "failed": 0,
+      "effects_expected": 30,
+      "effects_observed": 30,
+      "duplicate_effects": 0
+    },
+    {
+      "id": "stop-while-pending",
+      "cohort": "retry_safe",
+      "seam": "real",
+      "trials": 30,
+      "recovered": 0,
+      "quarantined": 30,
+      "failed": 0,
+      "effects_expected": 0,
+      "effects_observed": 0,
+      "duplicate_effects": 0
+    }
+  ],
+  "totals": {
+    "trials": 300,
+    "recovered": 210,
+    "quarantined": 90,
+    "failed": 0,
+    "duplicate_effects": 0,
+    "effects_expected": 270,
+    "effects_observed": 270
+  },
+  "cohorts": {
+    "retry_safe": {
+      "attempted": 240,
+      "recovered": 210,
+      "quarantined": 30,
+      "failed": 0,
+      "duplicate_effects": 0,
+      "p95": 1.0886765760369599
+    },
+    "quarantine": {
+      "attempted": 60,
+      "recovered": 0,
+      "quarantined": 60,
+      "failed": 0,
+      "duplicate_effects": 0,
+      "p95": null
+    },
+    "real": {
+      "retry_safe": {
+        "attempted": 120,
+        "recovered": 90,
+        "quarantined": 30,
+        "failed": 0,
+        "duplicate_effects": 0,
+        "p95": 1.0999911441467702
+      },
+      "quarantine": {
+        "attempted": 0,
+        "recovered": 0,
+        "quarantined": 0,
+        "failed": 0,
+        "duplicate_effects": 0,
+        "p95": null
+      }
+    },
+    "simulated": {
+      "retry_safe": {
+        "attempted": 120,
+        "recovered": 120,
+        "quarantined": 0,
+        "failed": 0,
+        "duplicate_effects": 0,
+        "p95": 0.20483092684298754
+      },
+      "quarantine": {
+        "attempted": 60,
+        "recovered": 0,
+        "quarantined": 60,
+        "failed": 0,
+        "duplicate_effects": 0,
+        "p95": null
+      }
+    }
+  },
+  "lease": {
+    "lease_s": 1.0,
+    "renew": "heartbeat renew (tasks.renew) on live tasks; hold lease_s_live = 3 x lease_s",
+    "lease_s_live": 3.0
+  },
+  "recovery_seconds": {
+    "p50": 0.009838249068707228,
+    "p95": 1.0886765760369599,
+    "n": 210
+  },
+  "reproduce_quick": "python3 -B fault_suite.py --quick --seed 20261108",
+  "reproduce_full": "python3 -B fault_suite.py --seed 20261108",
+  "source_commit": "add4f916cd030876567ecbe18a3744523a239e91",
+  "sandbox": "Ledger, receipts and both STOP files live in tasks/, STOP-owner and STOP-agentic inside --workdir (tasks.root() checked to be inside it); only AlcorSystem tasks.py is imported; no process control, no systemd, no live worker or home-directory state is used; the only network is loopback to the effect receiver; the suite starts no processes of its own except one git rev-parse.",
+  "limitations": "A finite suite shows no more than the trials it ran: trials per family are small and the faults are injected at fixed points, not found by chance. Real-seam families (before-reservation, worker-exit-before-dispatch, stale-lease-generation, stop-while-pending) exercise tasks.py create/renew/sweep/close in a sandbox ledger; all other families (after-reservation, ack-lost, duplicate-delivery, provider-timeout, out-of-order-receipt, receipt-source-mismatch) are simulated in the suite. tasks.py has no worker-generation fence, so the old worker's late effect is withheld by the suite after the real ledger refuses its tasks.renew on the ABANDONED task; no receiver-side generation fence is tested. The fake receiver is a loopback stand-in, not a real provider. Finished real tasks are not marked DONE (the DONE audit needs verified evidence the sandbox does not model); a sweep after the run abandons their lapsed leases. STOP trials are reported as quarantined, never recovered, although the matrix lists stop-while-pending as retry_safe, so the retry-safe recovery rates (overall and real-seam) are lowered by those trials: quote them with the STOP family's 0 expected effects in mind. The duplicate-delivery guard is an in-run, in-memory set. Recovery times for lease families include the lease wait. Retry-safe recovery rates should be quoted from the real-seam cohort or with the simulated share stated.",
+  "environment": {
+    "python": "3.12.3",
+    "platform": "Linux aarch64",
+    "pool_threads": 16,
+    "quick": false,
+    "trials_per_family": 30,
+    "inject_duplicate_fault": false
+  }
+}

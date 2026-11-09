@@ -1,0 +1,164 @@
+{
+  "results_run": "20261108-r1m-s20261108-opt",
+  "tail": {
+    "threshold_ms": 49.301085062325,
+    "classes": {
+      "common": {
+        "n": 60,
+        "fts_p95_ms": 43.54937304742634,
+        "tail_samples": 11,
+        "tail_queries": 3,
+        "short_term_queries": 0,
+        "tail_short_term_queries": 0
+      },
+      "rare": {
+        "n": 60,
+        "fts_p95_ms": 4.885517992079258,
+        "tail_samples": 0,
+        "tail_queries": 0,
+        "short_term_queries": 0,
+        "tail_short_term_queries": 0
+      },
+      "multi_term": {
+        "n": 50,
+        "fts_p95_ms": 41.99544806033373,
+        "tail_samples": 5,
+        "tail_queries": 1,
+        "short_term_queries": 30,
+        "tail_short_term_queries": 1
+      },
+      "filter": {
+        "n": 50,
+        "fts_p95_ms": 10.361965978518128,
+        "tail_samples": 0,
+        "tail_queries": 0,
+        "short_term_queries": 0,
+        "tail_short_term_queries": 0
+      },
+      "case_variant": {
+        "n": 30,
+        "fts_p95_ms": 3.249544883146882,
+        "tail_samples": 0,
+        "tail_queries": 0,
+        "short_term_queries": 0,
+        "tail_short_term_queries": 0
+      },
+      "no_match": {
+        "n": 25,
+        "fts_p95_ms": 0.09400001727044582,
+        "tail_samples": 0,
+        "tail_queries": 0,
+        "short_term_queries": 0,
+        "tail_short_term_queries": 0
+      },
+      "boundary": {
+        "n": 25,
+        "fts_p95_ms": 266.5264420211315,
+        "tail_samples": 60,
+        "tail_queries": 12,
+        "short_term_queries": 18,
+        "tail_short_term_queries": 12
+      }
+    }
+  },
+  "live": {
+    "records": 1000000,
+    "seed": 20261108,
+    "rounds": 5,
+    "classes": {
+      "common": {
+        "execute_ms_p95": 0.30345702543854713,
+        "fetch_ms_p95": 37.37213206477463,
+        "total_ms_p95": 37.68934914842248,
+        "fetch_share": 0.9910898657393684,
+        "plan": {
+          "query_id": "q012",
+          "rows": 200428,
+          "text": [
+            "SCAN fts VIRTUAL TABLE INDEX 0:M2"
+          ]
+        }
+      },
+      "rare": {
+        "execute_ms_p95": 0.18505705520510674,
+        "fetch_ms_p95": 4.416204057633877,
+        "total_ms_p95": 4.539867863059044,
+        "fetch_share": 0.9444331764303676,
+        "plan": {
+          "query_id": "q069",
+          "rows": 74646,
+          "text": [
+            "SCAN fts VIRTUAL TABLE INDEX 0:M2"
+          ]
+        }
+      },
+      "multi_term": {
+        "execute_ms_p95": 5.663807038217783,
+        "fetch_ms_p95": 37.60029305703938,
+        "total_ms_p95": 37.652852945029736,
+        "fetch_share": 0.7285184173902179,
+        "plan": {
+          "query_id": "q132",
+          "rows": 90081,
+          "text": [
+            "SCAN fts VIRTUAL TABLE INDEX 0:M2",
+            "SEARCH f USING INTEGER PRIMARY KEY (rowid=?)"
+          ]
+        }
+      },
+      "filter": {
+        "execute_ms_p95": 2.8741841670125723,
+        "fetch_ms_p95": 8.525687037035823,
+        "total_ms_p95": 8.793448098003864,
+        "fetch_share": 0.7808487823607222,
+        "plan": {
+          "query_id": "q191",
+          "rows": 6854,
+          "text": [
+            "SCAN fts VIRTUAL TABLE INDEX 0:M2",
+            "SEARCH f USING INTEGER PRIMARY KEY (rowid=?)"
+          ]
+        }
+      },
+      "case_variant": {
+        "execute_ms_p95": 0.17948797903954983,
+        "fetch_ms_p95": 2.6988559402525425,
+        "total_ms_p95": 2.893127966672182,
+        "fetch_share": 0.9320708951394908,
+        "plan": {
+          "query_id": "q224",
+          "rows": 6506,
+          "text": [
+            "SCAN fts VIRTUAL TABLE INDEX 0:M2"
+          ]
+        }
+      },
+      "no_match": {
+        "execute_ms_p95": 0.024191802367568016,
+        "fetch_ms_p95": 9.592622518539429e-05,
+        "total_ms_p95": 0.024271663278341293,
+        "fetch_share": 0.006120174658509074,
+        "plan": {
+          "query_id": "q275",
+          "rows": 0,
+          "text": [
+            "SCAN fts VIRTUAL TABLE INDEX 0:M2"
+          ]
+        }
+      },
+      "boundary": {
+        "execute_ms_p95": 16.455500153824687,
+        "fetch_ms_p95": 237.7491199877113,
+        "total_ms_p95": 237.78464109636843,
+        "fetch_share": 0.9606902437133733,
+        "plan": {
+          "query_id": "q296",
+          "rows": 1000000,
+          "text": [
+            "SCAN f"
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,168 @@
+{
+  "results_run": "20261108-r1m-s20261108",
+  "tail": {
+    "threshold_ms": 67.16779596172273,
+    "classes": {
+      "common": {
+        "n": 60,
+        "fts_p95_ms": 68.48374893888831,
+        "tail_samples": 21,
+        "tail_queries": 5,
+        "short_term_queries": 0,
+        "tail_short_term_queries": 0
+      },
+      "rare": {
+        "n": 60,
+        "fts_p95_ms": 7.464312016963959,
+        "tail_samples": 0,
+        "tail_queries": 0,
+        "short_term_queries": 0,
+        "tail_short_term_queries": 0
+      },
+      "multi_term": {
+        "n": 50,
+        "fts_p95_ms": 40.34428903833032,
+        "tail_samples": 0,
+        "tail_queries": 0,
+        "short_term_queries": 30,
+        "tail_short_term_queries": 0
+      },
+      "filter": {
+        "n": 50,
+        "fts_p95_ms": 10.375292971730232,
+        "tail_samples": 0,
+        "tail_queries": 0,
+        "short_term_queries": 0,
+        "tail_short_term_queries": 0
+      },
+      "case_variant": {
+        "n": 30,
+        "fts_p95_ms": 7.478504907339811,
+        "tail_samples": 0,
+        "tail_queries": 0,
+        "short_term_queries": 0,
+        "tail_short_term_queries": 0
+      },
+      "no_match": {
+        "n": 25,
+        "fts_p95_ms": 0.09187194518744946,
+        "tail_samples": 0,
+        "tail_queries": 0,
+        "short_term_queries": 0,
+        "tail_short_term_queries": 0
+      },
+      "boundary": {
+        "n": 25,
+        "fts_p95_ms": 236.8902990128845,
+        "tail_samples": 55,
+        "tail_queries": 11,
+        "short_term_queries": 18,
+        "tail_short_term_queries": 11
+      }
+    }
+  },
+  "live": {
+    "records": 1000000,
+    "seed": 20261108,
+    "rounds": 5,
+    "classes": {
+      "common": {
+        "execute_ms_p95": 0.37430482916533947,
+        "fetch_ms_p95": 67.16185784898698,
+        "total_ms_p95": 67.27241887710989,
+        "fetch_share": 0.9934624250251484,
+        "plan": {
+          "query_id": "q012",
+          "rows": 200428,
+          "text": [
+            "SCAN fts VIRTUAL TABLE INDEX 0:M2",
+            "SEARCH f USING INTEGER PRIMARY KEY (rowid=?)"
+          ]
+        }
+      },
+      "rare": {
+        "execute_ms_p95": 0.24625705555081367,
+        "fetch_ms_p95": 6.923299981281161,
+        "total_ms_p95": 7.0481321308761835,
+        "fetch_share": 0.9556232476880062,
+        "plan": {
+          "query_id": "q069",
+          "rows": 74646,
+          "text": [
+            "SCAN fts VIRTUAL TABLE INDEX 0:M2",
+            "SEARCH f USING INTEGER PRIMARY KEY (rowid=?)"
+          ]
+        }
+      },
+      "multi_term": {
+        "execute_ms_p95": 5.939313909038901,
+        "fetch_ms_p95": 39.67825905419886,
+        "total_ms_p95": 39.744803216308355,
+        "fetch_share": 0.7343484205891384,
+        "plan": {
+          "query_id": "q132",
+          "rows": 90081,
+          "text": [
+            "SCAN fts VIRTUAL TABLE INDEX 0:M2",
+            "SEARCH f USING INTEGER PRIMARY KEY (rowid=?)"
+          ]
+        }
+      },
+      "filter": {
+        "execute_ms_p95": 3.1272410415112972,
+        "fetch_ms_p95": 9.45916399359703,
+        "total_ms_p95": 9.711483726277947,
+        "fetch_share": 0.7772098856013595,
+        "plan": {
+          "query_id": "q191",
+          "rows": 6854,
+          "text": [
+            "SCAN fts VIRTUAL TABLE INDEX 0:M2",
+            "SEARCH f USING INTEGER PRIMARY KEY (rowid=?)"
+          ]
+        }
+      },
+      "case_variant": {
+        "execute_ms_p95": 0.25049690157175064,
+        "fetch_ms_p95": 6.844898918643594,
+        "total_ms_p95": 6.9456519559025764,
+        "fetch_share": 0.9483246799167374,
+        "plan": {
+          "query_id": "q224",
+          "rows": 6506,
+          "text": [
+            "SCAN fts VIRTUAL TABLE INDEX 0:M2",
+            "SEARCH f USING INTEGER PRIMARY KEY (rowid=?)"
+          ]
+        }
+      },
+      "no_match": {
+        "execute_ms_p95": 0.029232818633317947,
+        "fetch_ms_p95": 0.00011199153959751129,
+        "total_ms_p95": 0.02932874485850334,
+        "fetch_share": 0.005967726443307942,
+        "plan": {
+          "query_id": "q275",
+          "rows": 0,
+          "text": [
+            "SCAN fts VIRTUAL TABLE INDEX 0:M2",
+            "SEARCH f USING INTEGER PRIMARY KEY (rowid=?)"
+          ]
+        }
+      },
+      "boundary": {
+        "execute_ms_p95": 17.782162874937057,
+        "fetch_ms_p95": 243.5831220354885,
+        "total_ms_p95": 243.62411396577954,
+        "fetch_share": 0.9600686831231402,
+        "plan": {
+          "query_id": "q296",
+          "rows": 1000000,
+          "text": [
+            "SCAN f"
+          ]
+        }
+      }
+    }
+  }
+}
