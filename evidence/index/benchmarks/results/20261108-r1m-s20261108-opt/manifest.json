@@ -1,0 +1,47 @@
+{
+  "schema": "index-bench/1",
+  "date": "2026-11-08",
+  "seed": 20261108,
+  "records": 1000000,
+  "dataset_kind": "public-synthetic",
+  "queries": 300,
+  "mismatches": 0,
+  "baseline_scan": {
+    "warm_p50_ms": 48.46740304492414,
+    "warm_p95_ms": 66.29819003865123
+  },
+  "fts": {
+    "warm_p50_ms": 2.936488948762417,
+    "warm_p95_ms": 49.301085062325
+  },
+  "index_size_bytes": 201252864,
+  "corpus_file_bytes": 284459008,
+  "build_seconds": 9.525,
+  "peak_rss_mb": 373.1,
+  "hardware": {
+    "cpu_model": "0xd87",
+    "cores": 20,
+    "ram_gb": 121.6
+  },
+  "reproduce_quick": "python3 -B bench/index_bench.py --records 20000 --seed 20261108",
+  "reproduce_full": "python3 -B bench/index_bench.py --records 1000000 --seed 20261108",
+  "source_commit": "8e12b62b0f372b9d9058bc9b4a55afaac380a60c",
+  "alcor_index_sha256": "3562fbc619ae97c41b32227bf47829f6c6af851637555576fd825da4381fe605",
+  "dataset_sha256": "15790432913151c8853b3ca1888c48a6fcbf312caef4045ebab8f1b62ae46e04",
+  "query_classes": {
+    "common": 60,
+    "rare": 60,
+    "multi_term": 50,
+    "filter": 50,
+    "case_variant": 30,
+    "no_match": 25,
+    "boundary": 25
+  },
+  "rounds": 5,
+  "warmup_rounds": 1,
+  "raw_files": [
+    "queries.jsonl"
+  ],
+  "semantics": "Every term is a literal, case-insensitive substring of the row path, all terms AND-ed. FTS arm: terms of 3 or more characters are quoted phrases ANDed in one MATCH on the FTS5 trigram index (name, path); terms of 1-2 characters use path LIKE '%term%' ESCAPE '\\' with backslash, percent and underscore escaped. Filters: kind equality, ext as name LIKE '%.ext' (escaped), since_mtime as mtime >= N. Baseline arm: the same semantics as plain lower-cased substring tests in Python over the files rows, no FTS table. Compared: the full unlimited set of row ids, before any ranking or limit.",
+  "limitations": "Synthetic ASCII corpus with invented words, not real file trees. Ranking, bm25 and result limits are not benchmarked. Baseline scan is an in-memory Python loop over preloaded rows; FTS runs through sqlite3 from disk pages (page cache warm after warm-up). Warm-cache timings only; caches are never dropped. index_size_bytes is the size of the fts shadow tables (whole-file size if dbstat is unavailable). Non-ASCII case folding is not exercised."
+}

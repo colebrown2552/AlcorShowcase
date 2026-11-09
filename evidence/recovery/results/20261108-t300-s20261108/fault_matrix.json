@@ -1,0 +1,85 @@
+{
+  "frozen_at": "2026-11-08",
+  "families": [
+    {
+      "id": "before-reservation",
+      "description": "The worker is cut off after the task is created with a lease and before anything is reserved or sent; the replayed create is collapsed by the dedupe key and the work is sent once.",
+      "fault_point": "after task create, before any reservation or effect",
+      "cohort": "retry_safe",
+      "seam": "real",
+      "effects_expected": 1
+    },
+    {
+      "id": "after-reservation",
+      "description": "The worker is cut off after the suite's own reservation file exists and before the effect is sent; recovery launches the never-started reservation once.",
+      "fault_point": "after reservation file, before effect send",
+      "cohort": "retry_safe",
+      "seam": "simulated",
+      "effects_expected": 1
+    },
+    {
+      "id": "worker-exit-before-dispatch",
+      "description": "The worker exits after the task is created and its lease starts, with no effect sent; the lease expires, the sweep closes the task and a replacement task finishes the work.",
+      "fault_point": "worker exit after create, before dispatch",
+      "cohort": "retry_safe",
+      "seam": "real",
+      "effects_expected": 1
+    },
+    {
+      "id": "ack-lost",
+      "description": "The receiver commits the effect but the acknowledgement never reaches the sender; the effect is reconciled through the receiver and held, never re-sent.",
+      "fault_point": "effect committed, acknowledgement lost",
+      "cohort": "quarantine",
+      "seam": "simulated",
+      "effects_expected": 1
+    },
+    {
+      "id": "duplicate-delivery",
+      "description": "The same work request is delivered twice to the worker; a durable per-effect id guard drops the second delivery.",
+      "fault_point": "second delivery of the same request",
+      "cohort": "retry_safe",
+      "seam": "simulated",
+      "effects_expected": 1
+    },
+    {
+      "id": "stale-lease-generation",
+      "description": "The old worker's lease expires and the lease sweep abandons its task; a replacement generation takes over and the old worker's late effect is refused.",
+      "fault_point": "lease expiry with a live old worker generation",
+      "cohort": "retry_safe",
+      "seam": "real",
+      "effects_expected": 1
+    },
+    {
+      "id": "provider-timeout",
+      "description": "The provider call times out before the effect is committed; one retry is safe and sends the effect once.",
+      "fault_point": "provider call times out before commit",
+      "cohort": "retry_safe",
+      "seam": "simulated",
+      "effects_expected": 1
+    },
+    {
+      "id": "out-of-order-receipt",
+      "description": "The receipts of attempt 2 and attempt 1 arrive in the wrong order; receipts are ordered by attempt and the effect is applied once from the latest.",
+      "fault_point": "receipts delivered in reverse attempt order",
+      "cohort": "retry_safe",
+      "seam": "simulated",
+      "effects_expected": 1
+    },
+    {
+      "id": "receipt-source-mismatch",
+      "description": "The receipt's contract digest or request id does not match its source contract though the effect was committed; the receipt is refused and the task is held.",
+      "fault_point": "committed effect with a refused receipt",
+      "cohort": "quarantine",
+      "seam": "simulated",
+      "effects_expected": 1
+    },
+    {
+      "id": "stop-while-pending",
+      "description": "A STOP file is placed in the sandbox while the task is open and work is pending; no effect may be sent and the task is never marked done.",
+      "fault_point": "STOP set while work is pending",
+      "cohort": "retry_safe",
+      "seam": "real",
+      "effects_expected": 0
+    }
+  ]
+}

@@ -46,6 +46,8 @@ python scripts/check.py AlcorLang  # one component
 Python 3.10+ for the Python components; Node 20+ for the JavaScript tooling; Rust for AlcorDesign.
 Each component's README has its own "Run it" section.
 
+- [**Evidence**](evidence/README.md): index and cascade results re-runnable from this repo; recovery raw trials inspectable; behind the numbers in the résumé, each with its command, figures and limits.
+
 ## About
 
 Built by Cole Brown (Austin, TX), B.S. Computer Science, UT Austin. Much of this system was written
