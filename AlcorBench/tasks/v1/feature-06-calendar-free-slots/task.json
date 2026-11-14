@@ -1,0 +1,3 @@
+{"id": "feature-06-calendar-free-slots", "title": "Find free slots in a meeting room's day", "category": "feature", "family": "interval-gaps",
+ "difficulty": 2, "split": "holdout", "timeout_s": 60, "protected": ["tests/test_rooms.py"],
+ "created": "2026-11-13", "author": "claude"}

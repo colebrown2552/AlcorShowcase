@@ -1,0 +1,14 @@
+{
+  "id": "bugfix-90-median-even-length",
+  "title": "median returns the upper middle value for even-length lists",
+  "category": "bugfix",
+  "family": "example-median",
+  "difficulty": 1,
+  "split": "train",
+  "timeout_s": 30,
+  "protected": [
+    "tests/test_center.py"
+  ],
+  "created": "2026-11-13",
+  "author": "claude"
+}

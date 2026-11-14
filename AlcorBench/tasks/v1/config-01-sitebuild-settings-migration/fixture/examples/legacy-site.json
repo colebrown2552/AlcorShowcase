@@ -1,0 +1,9 @@
+{
+  "base_url": "https://rowing.example.org/",
+  "output_dir": "dist",
+  "minify": true,
+  "minify_exclude": "vendor/*.js, *.min.css",
+  "dev_host": "0.0.0.0",
+  "dev_port": "8080",
+  "plugins": "sitemap,feeds"
+}

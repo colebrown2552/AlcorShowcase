@@ -1,0 +1,16 @@
+{
+  "id": "config-04-castgrab-readme-options",
+  "title": "Bring the README's option table back in line with what the CLI accepts",
+  "category": "config",
+  "family": "docs-drift",
+  "difficulty": 1,
+  "split": "holdout",
+  "timeout_s": 60,
+  "protected": [
+    "castgrab/__init__.py",
+    "castgrab/options.py",
+    "castgrab/cli.py"
+  ],
+  "created": "2026-11-13",
+  "author": "claude"
+}

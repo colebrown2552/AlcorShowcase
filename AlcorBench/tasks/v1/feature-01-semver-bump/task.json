@@ -1,0 +1,3 @@
+{"id": "feature-01-semver-bump", "title": "Add Version.bump() to the semver helper", "category": "feature", "family": "version-arithmetic",
+ "difficulty": 1, "split": "train", "timeout_s": 60, "protected": ["tests/test_version.py"],
+ "created": "2026-11-13", "author": "claude"}

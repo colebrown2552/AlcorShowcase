@@ -1,0 +1,3 @@
+{"id": "feature-05-habit-longest-streak", "title": "Longest streak for the habit tracker", "category": "feature", "family": "date-runs",
+ "difficulty": 1, "split": "holdout", "timeout_s": 60, "protected": ["tests/test_streaks.py"],
+ "created": "2026-11-13", "author": "claude"}

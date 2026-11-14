@@ -1,0 +1,6 @@
+{
+  "subtotal": "unit_price * qty",
+  "discount": "subtotal * member_rate",
+  "shipping": "4.95 + 0.5 * (qty - 1)",
+  "total": "subtotal - discount + shipping"
+}

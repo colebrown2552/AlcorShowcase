@@ -1,0 +1,1 @@
+{"id": "testwriting-02-circuit-breaker", "title": "Write tests for the circuit breaker around the payments client", "category": "testwriting", "family": "tests-stateful-clock", "difficulty": 2, "split": "train", "timeout_s": 60, "protected": ["guard/breaker.py", "guard/backoff.py"], "created": "2026-11-13", "author": "claude"}

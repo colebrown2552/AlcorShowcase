@@ -1,0 +1,5 @@
+appt_id,clinician,patient_ref,appt_date,length,fee_gbp,notes
+A-1001,R. Okafor,pt-0042,03/02/2026,45,65.00,first assessment
+A-1002,R. Okafor,PT-0107,3/2/2026,30.0,£42.50,"follow-up, knee"
+A-1003,M. Vance, pt-0042 ,10/02/2026,60,,no charge - goodwill
+A-1004,M. Vance,PT-0311,28/02/2026,30,19.99,

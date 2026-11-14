@@ -1,0 +1,15 @@
+{
+  "id": "data-02-greenhouse-readings-flatten",
+  "title": "Flatten nested greenhouse sensor readings from JSONL into a CSV table",
+  "category": "data",
+  "family": "json-flatten",
+  "difficulty": 2,
+  "split": "train",
+  "timeout_s": 60,
+  "protected": [
+    "samples/readings.jsonl",
+    "samples/readings.csv"
+  ],
+  "created": "2026-11-13",
+  "author": "claude"
+}

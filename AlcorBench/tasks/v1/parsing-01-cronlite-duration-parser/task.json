@@ -1,0 +1,14 @@
+{
+  "id": "parsing-01-cronlite-duration-parser",
+  "title": "Parse compound job timeouts like 1h30m and reject malformed ones",
+  "category": "parsing",
+  "family": "duration-parse",
+  "difficulty": 1,
+  "split": "train",
+  "timeout_s": 60,
+  "protected": [
+    "tests/test_durations.py"
+  ],
+  "created": "2026-11-13",
+  "author": "claude"
+}

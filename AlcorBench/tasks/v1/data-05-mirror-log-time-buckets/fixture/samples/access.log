@@ -1,0 +1,6 @@
+2026-03-14T09:02:17Z GET /pkgs/tarn-1.2.0.tar.gz 200 18234 0.041
+2026-03-14T09:03:55Z GET /pkgs/index.json 304 - 0.004
+2026-03-14T09:01:02Z GET /pkgs/tarn-1.1.9.tar.gz 200 17990 0.038
+2026-03-14T09:14:40Z GET /pkgs/index.json 503 312 1.250
+garbage line
+2026-03-14T09:15:00Z HEAD /pkgs/tarn-1.2.0.tar.gz 200 0 0.002

@@ -1,0 +1,14 @@
+{
+  "id": "data-05-mirror-log-time-buckets",
+  "title": "Per-interval traffic report from a package mirror's access log",
+  "category": "data",
+  "family": "log-bucketing",
+  "difficulty": 3,
+  "split": "holdout",
+  "timeout_s": 60,
+  "protected": [
+    "samples/access.log"
+  ],
+  "created": "2026-11-13",
+  "author": "claude"
+}

@@ -1,0 +1,1 @@
+{"id": "bugfix-05-renewal-month-end-drift", "title": "Month-end subscriptions drift to the 28th after February", "category": "bugfix", "family": "date-anchoring", "difficulty": 2, "split": "holdout", "timeout_s": 60, "protected": ["tests/test_calendar.py"], "created": "2026-11-13", "author": "claude"}

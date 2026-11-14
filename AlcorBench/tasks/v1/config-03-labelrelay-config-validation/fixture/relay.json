@@ -1,0 +1,9 @@
+{
+  "queue_name": "pathology-labels",
+  "printers": [
+    {"name": "bench-a", "host": "10.20.0.31", "port": 9100, "media": "label-2x1"},
+    {"name": "dispatch", "host": "10.20.0.40", "media": "label-4x6"}
+  ],
+  "retry": {"attempts": 3, "backoff_s": 0.5},
+  "default_printer": "bench-a"
+}

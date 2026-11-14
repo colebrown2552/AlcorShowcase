@@ -1,0 +1,1 @@
+{"id": "testwriting-01-sms-splitter", "title": "Write unit tests for the SMS message splitter", "category": "testwriting", "family": "tests-pure-function", "difficulty": 1, "split": "train", "timeout_s": 60, "protected": ["notify/sms.py", "notify/quiet_hours.py"], "created": "2026-11-13", "author": "claude"}

@@ -1,0 +1,1 @@
+{"id": "refactor-01-recipe-quantity-formatter", "title": "Deduplicate the quantity formatter in the recipe scaler", "category": "refactor", "family": "dedupe-helper", "difficulty": 1, "split": "train", "timeout_s": 60, "protected": ["tests/test_recipes.py"], "created": "2026-11-13", "author": "claude"}

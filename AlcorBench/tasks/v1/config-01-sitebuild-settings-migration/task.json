@@ -1,0 +1,16 @@
+{
+  "id": "config-01-sitebuild-settings-migration",
+  "title": "Migrate static-site settings files from the flat v1 layout to the nested schema 2",
+  "category": "config",
+  "family": "config-migration",
+  "difficulty": 2,
+  "split": "train",
+  "timeout_s": 60,
+  "protected": [
+    "sitebuild/settings.py",
+    "examples/legacy-site.json",
+    "examples/current-site.json"
+  ],
+  "created": "2026-11-13",
+  "author": "claude"
+}

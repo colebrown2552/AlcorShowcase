@@ -1,0 +1,1 @@
+{"id": "bugfix-01-logrotate-backup-count", "title": "Log rotation keeps one backup fewer than configured", "category": "bugfix", "family": "off-by-one", "difficulty": 1, "split": "train", "timeout_s": 60, "protected": ["tests/test_rotator.py"], "created": "2026-11-13", "author": "claude"}

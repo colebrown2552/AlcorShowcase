@@ -1,0 +1,1 @@
+{"id": "bugfix-03-jobqueue-equal-priority", "title": "Job queue crashes when two jobs share a priority", "category": "bugfix", "family": "priority-ties", "difficulty": 2, "split": "train", "timeout_s": 60, "protected": ["tests/test_queue.py"], "created": "2026-11-13", "author": "claude"}

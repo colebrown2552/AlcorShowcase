@@ -1,0 +1,14 @@
+{
+  "id": "parsing-02-eventlog-kv-tokenizer",
+  "title": "Parse key=value event lines with quoted values and escapes",
+  "category": "parsing",
+  "family": "kv-tokenizer",
+  "difficulty": 2,
+  "split": "train",
+  "timeout_s": 60,
+  "protected": [
+    "eventlog/errors.py"
+  ],
+  "created": "2026-11-13",
+  "author": "claude"
+}
