@@ -196,7 +196,7 @@ The manifest stores the endpoint as scheme and port only, with the host replaced
 
 ## Results
 
-One baseline so far, on the train split only. Holdout has not been run: it is touched only to
+A baseline and one experiment so far, on the train split only. Holdout has not been run: it is touched only to
 confirm a change that already won on train (see `results/HOLDOUT-LOG.md`).
 
 | Run | Model | Scaffold | Tasks | Trials | Pass rate | 95% CI | First try | Flip rate | Median seconds |
@@ -209,3 +209,26 @@ whose trials disagreed with one another, at temperature `0`: the same configurat
 give the same answer twice, which is why every comparison here is paired over tasks and
 repeated. With this few tasks only a large difference between two configurations can be told
 apart from noise. Every figure above has a row in `results/CLAIMS.md` with its command and source.
+
+### Turn-saver experiment
+
+Four arms each turned on tool-loop options from "Agent config" above, with the same model, tasks,
+trials and seed as the baseline (24 train tasks, 3 trials; arms C and D ran on a different lane
+of the same server). No option is shown to change the pass rate at this sample size: every
+paired interval includes zero. Prefetch and auto-test do cut turns and time per trial (median
+turns 12 to 8 with all options on). Arm D, whose one-sentence hint changed nothing measurable
+in how the model batched calls, moved the pass rate as much as the strongest arm: a rough read
+on how large the noise is.
+
+| Arm | Option(s) on | Pass rate (95% CI) | Paired diff vs baseline (95% CI) | Median turns | Median seconds |
+|---|---|---|---|---|---|
+| Baseline | none | 62.5% (45.8% to 77.8%) | - | 12 | 53.4 |
+| A | all four | 72.2% (55.6% to 87.5%) | +9.7 pts (-2.8 to +23.6) | 8 | 35.7 |
+| B | `prefetch` | 66.7% (51.4% to 81.9%) | +4.2 pts (-6.9 to +16.7) | 10 | 37.7 |
+| C | `auto_test`, `finish_gate` | 68.1% (51.4% to 83.3%) | +5.6 pts (-6.9 to +18.1) | 10 | 41.2 |
+| D (control) | `batch_hint` | 72.2% (59.7% to 84.7%) | +9.7 pts (-2.8 to +22.2) | 12 | 45.4 |
+
+Paired differences are per-task, against the baseline, with a task-bootstrap interval. Turns
+and seconds come from one run per arm and have no interval. The full write-up, including tool
+counts, tokens and what changed per task, is `results/TURNS-EXPERIMENT.md`; every figure here
+has a row in `results/CLAIMS.md`.

@@ -1,0 +1,76 @@
+{
+  "agent": "toolloop",
+  "lanes": [
+    "alcor-brain-arc"
+  ],
+  "agent_options": {
+    "base_url": "http://local:8877",
+    "api_key_env": "OPENAI_API_KEY",
+    "request_timeout_s": 300.0,
+    "retries": 4,
+    "backoff_s": 2.0,
+    "max_output_chars": 8000
+  },
+  "config": {
+    "system_prompt": "You are a software engineer working in a git repository; the current directory is the repository root. Use the tools to read files, edit them and run commands such as the project's tests. Paths are relative to the repository root. Make the smallest change that fully solves the request, check it, then call finish with a one-line summary.",
+    "temperature": 0.0,
+    "max_tokens": null,
+    "max_turns": 30,
+    "max_tool_calls": 60,
+    "command_timeout_s": 60,
+    "wall_time_s": 900,
+    "extra_body": {},
+    "auto_test": true,
+    "finish_gate": true
+  },
+  "config_sha256": "924c8c1cd6bf6c87b6dd665b7b432fa079c3808fbf67849514ac8dbdc1e8d6f6",
+  "models_reported": [
+    "alcor-brain-slot1"
+  ],
+  "mixed_models": false,
+  "demo": false,
+  "date": "2026-11-14T04:27:32+00:00",
+  "finished": "2026-11-14T05:25:12+00:00",
+  "complete": true,
+  "unresolved_infra": 0,
+  "missing_trials": 0,
+  "resumed": [],
+  "git_commit": "33b3bc9cf0ae1621636591e2564d9a577d28446c",
+  "git_dirty": true,
+  "python": "3.12.3",
+  "task_roots": [
+    "tasks/v1"
+  ],
+  "split": "train",
+  "task_set_hash": "7eafdde2cb370fdbab01d5e903b099711230da260df258b27aba14ce0a9e7713",
+  "task_ids": [
+    "bugfix-01-logrotate-backup-count",
+    "bugfix-02-invoice-cent-rounding",
+    "bugfix-03-jobqueue-equal-priority",
+    "bugfix-04-shortlink-stale-cache",
+    "cli-01-logstat-stdin",
+    "cli-02-dotenv-unset",
+    "config-01-sitebuild-settings-migration",
+    "config-02-shoebox-env-overrides",
+    "config-03-labelrelay-config-validation",
+    "data-01-clinic-billing-export",
+    "data-02-greenhouse-readings-flatten",
+    "data-03-newsletter-subscriber-dedupe",
+    "feature-01-semver-bump",
+    "feature-02-toc-depth-and-dedupe",
+    "feature-03-bytesize-parse",
+    "feature-04-template-filters",
+    "multifile-01-report-markdown-exporter",
+    "multifile-02-syncplan-ignore",
+    "parsing-01-cronlite-duration-parser",
+    "parsing-02-eventlog-kv-tokenizer",
+    "refactor-01-recipe-quantity-formatter",
+    "refactor-02-inventory-global-state",
+    "testwriting-01-sms-splitter",
+    "testwriting-02-circuit-breaker"
+  ],
+  "trials": 3,
+  "seed": 0,
+  "infra_passes": 4,
+  "infra_backoff_s": 45.0
+}

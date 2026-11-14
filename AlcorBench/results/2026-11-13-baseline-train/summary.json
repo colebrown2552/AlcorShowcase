@@ -1,0 +1,21 @@
+{
+  "schema": "alcorbench.summary.v1",
+  "run": "2026-11-13-baseline-train",
+  "computed_with": "alcorbench.stats.summarize (code commit f53bb3da2c98), seed 0",
+  "split": "train",
+  "n_tasks": 24,
+  "trials_per_task": 3,
+  "graded_trials": 72,
+  "mean_pass": 0.625,
+  "ci_low": 0.4583,
+  "ci_high": 0.7778,
+  "first_try_passes": 15,
+  "first_try_tasks": 24,
+  "first_try_ci_low": 0.4271,
+  "first_try_ci_high": 0.7884,
+  "flip_rate": 0.3333,
+  "median_wall_s": 53.4,
+  "unresolved_infra": 0,
+  "config_sha256": "57117e8087bd4288d9431b8126a4063ae773a15f12416cb047771fe103ab9b08",
+  "task_set_hash": "7eafdde2cb370fdbab01d5e903b099711230da260df258b27aba14ce0a9e7713"
+}
