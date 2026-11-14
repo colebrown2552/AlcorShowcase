@@ -9,6 +9,18 @@ standalone.
 Every component runs on a clean machine with no outside services, and each one ships an offline
 end-to-end demo alongside its tests. `python scripts/check.py` runs all of them.
 
+## Results
+
+- **Local 35B model as a coding agent:** [AlcorBench](AlcorBench) train baseline for `Qwen3.6-35B-A3B`
+  (NVFP4, served locally by vLLM): **62.5%** pass rate, 95% CI 45.8% to 77.8%, on 24 tasks with
+  3 trials each, graded by checks the agent never saw.
+- **Turn-saving agent options:** with all four on, median turns per trial fell from 12 to 8 and
+  median time from 53.4 s to 35.7 s; no option is shown to change the pass rate at this sample size.
+  [Write-up](AlcorBench/results/TURNS-EXPERIMENT.md).
+
+Every figure has a row with its command and source run in
+[AlcorBench/results/CLAIMS.md](AlcorBench/results/CLAIMS.md).
+
 ## Components
 
 ### Agent infrastructure
@@ -20,6 +32,7 @@ end-to-end demo alongside its tests. `python scripts/check.py` runs all of them.
 | <img src="screenshots/tile-AlcorBrowser.png" width="200"> | [**AlcorBrowser**](AlcorBrowser) | Lets AI agents drive a real, signed-in Chrome over MCP: a Manifest V3 extension plus a local broker, with per-agent tokens, receipts, password and CAPTCHA floors, and SHA-256-verified self-updates with rollback. JavaScript + Python. |
 | <img src="screenshots/tile-AlcorComputer.png" width="200"> | [**AlcorComputer**](AlcorComputer) | A contract-bound computer-use mediator: clicks and typing only through observations an authority produced, replay protection, sanitized receipts, real macOS and Windows backends. Python. |
 | <img src="screenshots/tile-AlcorLedger.png" width="200"> | [**AlcorLedger**](AlcorLedger) | A hash-chained, append-only ledger for agent memory with a privacy gate that refuses or redacts secrets before they are written. Python. |
+| | [**AlcorBench**](AlcorBench) | A benchmark of agentic coding tasks graded by hidden, executable checks, with task-level confidence intervals and paired comparisons; runs against any OpenAI-compatible endpoint. Python, standard library only. |
 
 ### Products and web
 
