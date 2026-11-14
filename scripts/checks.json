@@ -19,6 +19,10 @@
     {"name": "tests", "run": ["{python}", "-m", "pytest", "AlcorLedger", "-q", "-p", "no:cacheprovider"], "timeout": 60},
     {"name": "demo", "run": ["{python}", "AlcorLedger/demo/run_demo.py"], "timeout": 60}
   ],
+  "AlcorBench": [
+    {"name": "selfcheck", "run": ["{python}", "-m", "alcorbench", "selfcheck"], "cwd": "AlcorBench", "timeout": 300},
+    {"name": "ci-check", "run": ["{python}", "scripts/ci_check.py"], "cwd": "AlcorBench", "timeout": 420}
+  ],
   "AlcorSiteKit": [
     {"name": "demo", "run": ["{python}", "demo/run_demo.py"], "cwd": "AlcorSiteKit", "timeout": 60}
   ],
