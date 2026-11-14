@@ -1,0 +1,15 @@
+{
+  "id": "data-01-clinic-billing-export",
+  "title": "Convert the clinic appointment export to the billing provider's new upload format",
+  "category": "data",
+  "family": "csv-reshape",
+  "difficulty": 1,
+  "split": "train",
+  "timeout_s": 60,
+  "protected": [
+    "samples/appointments.csv",
+    "samples/billing_expected.csv"
+  ],
+  "created": "2026-11-13",
+  "author": "claude"
+}

@@ -1,0 +1,15 @@
+{
+  "id": "data-03-newsletter-subscriber-dedupe",
+  "title": "De-duplicate newsletter subscribers by normalised email, keeping the newest sign-up",
+  "category": "data",
+  "family": "dedupe-records",
+  "difficulty": 1,
+  "split": "train",
+  "timeout_s": 60,
+  "protected": [
+    "tests/test_dedupe.py",
+    "samples/subscribers.csv"
+  ],
+  "created": "2026-11-13",
+  "author": "claude"
+}

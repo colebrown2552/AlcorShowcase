@@ -1,0 +1,1 @@
+{"id": "refactor-02-inventory-global-state", "title": "Replace the module-level stock dictionary with an Inventory class", "category": "refactor", "family": "remove-global-state", "difficulty": 2, "split": "train", "timeout_s": 60, "protected": [], "created": "2026-11-13", "author": "claude"}

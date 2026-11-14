@@ -1,0 +1,3 @@
+{"id": "feature-04-template-filters", "title": "Filter pipeline for the mini template renderer", "category": "feature", "family": "template-syntax",
+ "difficulty": 2, "split": "train", "timeout_s": 60, "protected": ["tests/test_render.py"],
+ "created": "2026-11-13", "author": "claude"}

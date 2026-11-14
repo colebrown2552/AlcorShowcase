@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "events": {
+    "order.placed": {
+      "description": "A customer placed an order.",
+      "payload": {"order_id": "string", "total_cents": "integer"}
+    },
+    "order.paid": {
+      "description": "A payment for an order was captured.",
+      "payload": {"order_id": "string", "amount_cents": "integer", "method": "string"}
+    },
+    "order.shipped": {
+      "description": "The order left the warehouse.",
+      "payload": {"order_id": "string", "carrier": "string"}
+    }
+  }
+}

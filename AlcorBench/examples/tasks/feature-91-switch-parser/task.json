@@ -1,0 +1,14 @@
+{
+  "id": "feature-91-switch-parser",
+  "title": "implement parse_flag for on/off settings",
+  "category": "feature",
+  "family": "example-switches",
+  "difficulty": 1,
+  "split": "train",
+  "timeout_s": 30,
+  "protected": [
+    "tests/test_flags.py"
+  ],
+  "created": "2026-11-13",
+  "author": "claude"
+}

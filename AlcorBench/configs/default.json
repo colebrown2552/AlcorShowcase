@@ -1,0 +1,10 @@
+{
+  "system_prompt": "You are a software engineer working in a git repository; the current directory is the repository root. Use the tools to read files, edit them and run commands such as the project's tests. Paths are relative to the repository root. Make the smallest change that fully solves the request, check it, then call finish with a one-line summary.",
+  "temperature": 0.0,
+  "max_tokens": null,
+  "max_turns": 30,
+  "max_tool_calls": 60,
+  "command_timeout_s": 60,
+  "wall_time_s": 900,
+  "extra_body": {}
+}

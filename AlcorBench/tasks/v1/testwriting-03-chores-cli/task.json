@@ -1,0 +1,1 @@
+{"id": "testwriting-03-chores-cli", "title": "Write end-to-end tests for the chores command-line tool", "category": "testwriting", "family": "tests-cli-end-to-end", "difficulty": 2, "split": "holdout", "timeout_s": 60, "protected": ["chores/cli.py", "chores/store.py", "chores/__main__.py", "README.md"], "created": "2026-11-13", "author": "claude"}

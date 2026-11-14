@@ -1,0 +1,14 @@
+{
+  "id": "parsing-03-pricing-formula-evaluator",
+  "title": "Replace eval in the shop's pricing formulas with a safe arithmetic evaluator",
+  "category": "parsing",
+  "family": "expr-eval",
+  "difficulty": 3,
+  "split": "holdout",
+  "timeout_s": 60,
+  "protected": [
+    "pricing/errors.py"
+  ],
+  "created": "2026-11-13",
+  "author": "claude"
+}

@@ -1,0 +1,4 @@
+order_id,customer,total
+1001,acme,19.99
+1002,,5.00
+1003,globex

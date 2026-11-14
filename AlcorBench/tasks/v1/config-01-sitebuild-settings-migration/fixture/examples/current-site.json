@@ -1,0 +1,10 @@
+{
+  "schema": 2,
+  "site": {"base_url": "https://rowing.example.org/"},
+  "build": {
+    "output": "dist",
+    "minify": {"enabled": true, "exclude": ["vendor/*.js", "*.min.css"]}
+  },
+  "serve": {"host": "0.0.0.0", "port": 8080},
+  "plugins": ["sitemap", "feeds"]
+}

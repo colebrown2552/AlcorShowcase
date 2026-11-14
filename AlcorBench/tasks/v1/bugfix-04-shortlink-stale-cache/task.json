@@ -1,0 +1,1 @@
+{"id": "bugfix-04-shortlink-stale-cache", "title": "Edited and deleted short links keep redirecting to the old target", "category": "bugfix", "family": "cache-invalidation", "difficulty": 3, "split": "train", "timeout_s": 60, "protected": ["tests/test_service.py"], "created": "2026-11-13", "author": "claude"}

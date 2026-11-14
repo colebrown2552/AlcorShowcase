@@ -1,0 +1,4 @@
+{"device": "gh2-bench-04", "ts": "2026-05-02T06:00:00Z", "reading": {"temp": {"c": 18.5}, "humidity": 71}, "tags": ["north", "seedlings"], "ok": true}
+{"device": "gh2-bench-05", "ts": "2026-05-02T06:00:02Z", "reading": {"temp": {"c": 19.0}, "humidity": null}, "tags": [], "ok": false, "battery": {"v": 3.1}}
+
+{"device": "gh1-bench-01", "ts": "2026-05-02T06:00:05Z", "reading": {"soil": {"moisture": 0.42}}, "note": "probe moved, re-check"}

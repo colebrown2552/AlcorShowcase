@@ -1,0 +1,12 @@
+{
+  "id": "config-02-shoebox-env-overrides",
+  "title": "Let environment variables override the photo-backup agent's file settings, with typed parsing",
+  "category": "config",
+  "family": "env-overrides",
+  "difficulty": 2,
+  "split": "train",
+  "timeout_s": 60,
+  "protected": [],
+  "created": "2026-11-13",
+  "author": "claude"
+}

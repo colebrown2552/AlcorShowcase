@@ -1,0 +1,15 @@
+{
+  "id": "data-04-garden-volunteer-hours-pivot",
+  "title": "Monthly volunteer-hours pivot report for a community garden",
+  "category": "data",
+  "family": "pivot-summary",
+  "difficulty": 2,
+  "split": "holdout",
+  "timeout_s": 60,
+  "protected": [
+    "garden/shifts.py",
+    "samples/shifts.csv"
+  ],
+  "created": "2026-11-13",
+  "author": "claude"
+}

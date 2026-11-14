@@ -1,0 +1,14 @@
+{
+  "id": "config-03-labelrelay-config-validation",
+  "title": "Validate the label-printer relay config with precise, path-qualified error messages",
+  "category": "config",
+  "family": "config-validation",
+  "difficulty": 3,
+  "split": "train",
+  "timeout_s": 60,
+  "protected": [
+    "docs/config-schema.md"
+  ],
+  "created": "2026-11-13",
+  "author": "claude"
+}

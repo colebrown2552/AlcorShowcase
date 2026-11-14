@@ -1,0 +1,1 @@
+{"id": "bugfix-06-contacts-csv-roundtrip", "title": "Contacts with commas, quotes or line breaks are mangled by export/import", "category": "bugfix", "family": "escaping-roundtrip", "difficulty": 3, "split": "holdout", "timeout_s": 60, "protected": ["tests/test_roundtrip.py", "tests/legacy_export.csv"], "created": "2026-11-13", "author": "claude"}

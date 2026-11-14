@@ -1,0 +1,1 @@
+{"id": "bugfix-02-invoice-cent-rounding", "title": "Some invoice line prices come out one cent low", "category": "bugfix", "family": "numeric-parsing", "difficulty": 1, "split": "train", "timeout_s": 60, "protected": ["tests/test_billing.py"], "created": "2026-11-13", "author": "claude"}

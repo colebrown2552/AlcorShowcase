@@ -1,0 +1,3 @@
+__pycache__/
+# Task fixtures carry sample .log files that the repository-wide *.log rule would hide.
+!tasks/**/*.log
